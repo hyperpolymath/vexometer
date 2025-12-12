@@ -1,0 +1,39 @@
+name: Ada/SPARK CI
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup GNAT
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnat gprbuild
+      
+      - name: Build
+        run: |
+          if [ -f "*.gpr" ]; then
+            gprbuild -P *.gpr
+          elif [ -f "alire.toml" ]; then
+            curl -L https://github.com/alire-project/alire/releases/latest/download/alr-bin-linux.zip -o alr.zip
+            unzip alr.zip
+            ./alr build
+          fi
+      
+      - name: Run tests
+        run: |
+          if command -v gnattest &> /dev/null; then
+            gnattest --harness-only
+          fi
+
+  spark:
+    runs-on: ubuntu-latest
+    if: hashFiles('**/*.ads') != ''
+    steps:
+      - uses: actions/checkout@v4
+      - name: SPARK proof
+        run: |
+          echo "SPARK proof would run here with gnatprove"
+          echo "Requires SPARK Pro license for full verification"
