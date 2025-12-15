@@ -1,0 +1,415 @@
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+= Vexometer Satellite Architecture
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
+
+== Philosophy
+
+Vexometer is a *diagnostic instrument* - it measures AI assistant irritation
+surfaces but does not fix them. Interventions that reduce irritation are
+implemented in separate *satellite repositories*.
+
+This separation provides:
+
+* *Clean separation of concerns* - measurement vs intervention
+* *Independent development* - satellites can evolve separately
+* *Optional integration* - satellites work standalone
+* *Scope discipline* - vexometer avoids feature creep
+
+== Architecture Overview
+
+[source]
+----
+gitlab.com/hyperpolymath/
+├── vexometer/                    # Diagnostic instrument (HUB)
+│   ├── Measures 10 irritation metrics
+│   ├── Provides trace format specification
+│   └── Validates satellite efficacy claims
+│
+├── vexometer-satellites/         # Umbrella index repo
+│   ├── Documentation hub
+│   └── Links to all satellites
+│
+└── vex-*/                        # Individual intervention repos
+    ├── vex-lazy-eliminator/
+    ├── vex-hallucination-guard/
+    └── ...
+----
+
+== Satellite List
+
+=== High Priority
+
+[cols="2,2,3,2", options="header"]
+|===
+|Satellite |Reduces |Description |Language
+
+|vex-lazy-eliminator
+|CII, LPS
+|Completeness enforcement for LLM outputs. AST-level validation with
+completeness predicates.
+|Rust
+
+|vex-hallucination-guard
+|EFR
+|Verification layer for LLM factual claims. Registry adapters, citation
+validators, URL checking.
+|Rust + Elixir
+
+|vex-sycophancy-shield
+|LPS, EFR
+|Epistemic commitment tracking. AGM belief revision, justification graphs,
+pressure detection.
+|Haskell + Elixir
+|===
+
+=== Medium Priority
+
+[cols="2,2,3,2", options="header"]
+|===
+|Satellite |Reduces |Description |Language
+
+|vex-confidence-calibrator
+|EFR
+|Structured uncertainty for LLM outputs. Epistemic status enum, calibration
+tracking, Brier score optimisation.
+|Rust
+
+|vex-specification-anchor
+|SFR, ICS
+|Immutable requirements ledger. Content-addressed spec storage, amendment
+protocol, deviation detection.
+|Rust + CUE/Dhall
+
+|vex-instruction-persistence
+|TII, ICS
+|System instruction compliance enforcement. Instruction registry with salience
+weights, decay detection.
+|Elixir/OTP
+
+|vex-backtrack-enabler
+|SRS, ICS
+|Low-friction restart support. Decision tree with savepoints, cost-benefit
+analysis, debt tracking.
+|Elixir/OTP + Rust
+|===
+
+=== Standard Priority
+
+[cols="2,2,3,2", options="header"]
+|===
+|Satellite |Reduces |Description |Language
+
+|vex-context-firewall
+|EFR, ICS
+|Truth maintenance for conversation context. Doyle's TMS, dependency graphs,
+retraction propagation.
+|Haskell + Rust
+
+|vex-scope-governor
+|SFR, PQ
+|Scope contract enforcement. Scope contract DSL, boundary enforcement,
+completeness verification.
+|Rust
+
+|vex-error-recovery
+|RCI
+|Strategy variation on failure. Attempt fingerprinting, strategy variation
+generator, escalation state machine.
+|Rust
+
+|vex-verbosity-compressor
+|LPS, TII
+|Information density optimisation. Semantic redundancy detection, filler
+phrase stripping.
+|Rust
+
+|vex-clarification-gate
+|PQ, TII
+|Risk-weighted ambiguity handling. Ambiguity detection, risk assessment,
+assumption ranking.
+|Rust + Elixir
+|===
+
+== Integration Protocol
+
+=== vexometer-trace-v1
+
+Satellites can include before/after traces that vexometer validates.
+
+*Trace format*:
+
+[source,json]
+----
+{
+  "version": "vexometer-trace-v1",
+  "satellite": "vex-lazy-eliminator",
+  "timestamp": "2025-01-15T10:30:00Z",
+  "scenario": {
+    "description": "Code generation with completeness requirement",
+    "prompt": "Write a function to parse JSON config files",
+    "context": {}
+  },
+  "before": {
+    "response": "def parse_config(path):\n    # TODO: implement\n    pass",
+    "metrics": {
+      "CII": 0.85,
+      "LPS": 0.30
+    }
+  },
+  "after": {
+    "response": "def parse_config(path):\n    with open(path) as f:\n        return json.load(f)",
+    "metrics": {
+      "CII": 0.0,
+      "LPS": 0.10
+    }
+  },
+  "reduction": {
+    "CII": 0.85,
+    "LPS": 0.20
+  }
+}
+----
+
+=== vexometer-efficacy-v1
+
+Satellites report metric reduction percentages.
+
+*Efficacy report format*:
+
+[source,json]
+----
+{
+  "version": "vexometer-efficacy-v1",
+  "satellite": "vex-lazy-eliminator",
+  "evaluation_date": "2025-01-15",
+  "sample_size": 500,
+  "metrics": {
+    "CII": {
+      "mean_reduction": 0.72,
+      "std_dev": 0.15,
+      "confidence": 0.95,
+      "p_value": 0.001
+    },
+    "LPS": {
+      "mean_reduction": 0.25,
+      "std_dev": 0.20,
+      "confidence": 0.90,
+      "p_value": 0.01
+    }
+  },
+  "methodology": "A/B testing with vexometer validation",
+  "traces_available": true
+}
+----
+
+=== vexometer-metrics-v1
+
+Satellites can subscribe to specific metric calculations.
+
+[source,ada]
+----
+--  Example: Satellite requesting CII calculation
+with Vexometer.CII;
+
+procedure Validate_Output (Content : String) is
+   Detections : constant Detection_Array := Vexometer.CII.Analyse (Content);
+   Result     : constant Metric_Result :=
+      Vexometer.CII.Calculate (Detections, Content'Length);
+begin
+   if Result.Value > Threshold then
+      --  Trigger intervention
+      null;
+   end if;
+end Validate_Output;
+----
+
+== Satellite Repository Structure
+
+Each satellite follows RSR (Rhodium Standard Repository) compliance:
+
+[source]
+----
+vex-SATELLITE_NAME/
+├── .claude/
+│   └── settings.json
+├── .well-known/
+│   └── ... (RSR compliance)
+├── src/
+│   └── intervention.ads      # Main intervention interface
+├── tests/
+│   └── test_intervention.adb
+├── vexometer/                 # Optional integration
+│   ├── before/               # Traces showing problem
+│   ├── after/                # Traces showing improvement
+│   └── EFFICACY.adoc         # Documented metric reduction
+├── CLAUDE.md
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.adoc
+├── ECOSYSTEM.scm
+├── FUNDING.yml
+├── GOVERNANCE.md
+├── LICENSE.txt
+├── META.scm
+├── README.adoc
+├── SECURITY.md
+├── STATE.scm
+├── alire.toml                # Ada package (if applicable)
+├── Cargo.toml                # Rust package (if applicable)
+├── flake.nix
+└── justfile
+----
+
+== Satellite ECOSYSTEM.scm Template
+
+[source,scheme]
+----
+;; ECOSYSTEM.scm - Satellite Template
+
+(ecosystem
+  (project "vex-SATELLITE_NAME")
+  (role "intervention")
+  (ecosystem-position "satellite")
+
+  (provides
+    (capability "DESCRIPTION")
+    (interface "intervention-api"))
+
+  (consumes
+    ;; Most satellites are standalone
+    )
+
+  (parent-ecosystem
+    (project "vexometer")
+    (relationship "validates-against")
+    (metrics-targeted (TARGET_METRICS)))
+
+  (vexometer-integration
+    (status "optional")
+    (efficacy-claim "Reduces TARGET_METRICS by X%")
+    (validation-method "before-after-trace-comparison")))
+----
+
+== Validating Satellite Efficacy
+
+=== Step 1: Collect Before Traces
+
+Run vexometer on unmodified LLM outputs:
+
+[source,bash]
+----
+just trace-collect --scenario incomplete-code --output before/
+----
+
+=== Step 2: Apply Satellite Intervention
+
+Process the same prompts through the satellite:
+
+[source,bash]
+----
+vex-lazy-eliminator process --input prompts.json --output responses/
+----
+
+=== Step 3: Collect After Traces
+
+Run vexometer on satellite-processed outputs:
+
+[source,bash]
+----
+just trace-collect --input responses/ --output after/
+----
+
+=== Step 4: Calculate Efficacy
+
+Compare before and after metrics:
+
+[source,bash]
+----
+just efficacy-report --before before/ --after after/ --output EFFICACY.adoc
+----
+
+=== Step 5: Submit for Validation
+
+Include traces in satellite repository for independent verification:
+
+[source]
+----
+vexometer/
+├── before/
+│   ├── trace-001.json
+│   ├── trace-002.json
+│   └── ...
+├── after/
+│   ├── trace-001.json
+│   ├── trace-002.json
+│   └── ...
+└── EFFICACY.adoc
+----
+
+== Development Priorities
+
+=== Recommended First Satellite: vex-lazy-eliminator
+
+*Why*:
+
+1. CII is easiest to measure objectively
+2. High user irritation with incomplete code
+3. Clear success criteria (no TODOs, no placeholders)
+4. Tree-sitter provides reliable AST analysis
+
+*Implementation approach*:
+
+[source,rust]
+----
+// Core interface
+pub enum IncompletenessKind {
+    TodoComment,
+    PlaceholderText,
+    UnimplementedCode,
+    TruncationMarker,
+    NullImplementation,
+}
+
+pub struct Detection {
+    pub kind: IncompletenessKind,
+    pub location: usize,
+    pub severity: f64,
+    pub context: String,
+}
+
+pub fn analyse(content: &str, language: Language) -> Vec<Detection>;
+pub fn is_complete(content: &str, language: Language) -> bool;
+----
+
+=== Future Satellites
+
+Development order based on impact and feasibility:
+
+1. *vex-lazy-eliminator* - Proof of concept, high impact
+2. *vex-hallucination-guard* - High user demand
+3. *vex-sycophancy-shield* - Research interest
+4. *vex-specification-anchor* - Complements STATE.scm work
+5. Remaining satellites as capacity allows
+
+== Technical Standards
+
+All satellites must follow:
+
+* *Languages*: Rust primary, Ada/SPARK for formal verification, Elixir for
+  orchestration, Haskell for pure logic. Avoid Python.
+* *VCS*: GitLab primary, GitHub mirror acceptable
+* *Containers*: Podman over Docker
+* *Build*: justfile over Makefile
+* *Package managers*: Alire (Ada), Cargo (Rust), Mix (Elixir), Cabal (Haskell)
+* *Standard*: RSR (Rhodium Standard Repository) compliance
+* *License*: AGPL-3.0-or-later
+
+== See Also
+
+* link:METRICS.adoc[Metrics Reference] - All 10 vexometer metrics
+* link:../ECOSYSTEM.scm[Ecosystem Map] - Satellite relationships
+* link:../META.scm[Project Metadata] - Vexometer meta-information

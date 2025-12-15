@@ -1,0 +1,487 @@
+// SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+= Vexometer Metrics Reference
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
+
+== Overview
+
+Vexometer measures ten dimensions of AI assistant irritation surfaces.
+All metrics are normalised to a 0-1 scale where *lower is better*.
+
+[cols="1,3,3,2", options="header"]
+|===
+|Metric |Full Name |Measures |Satellites
+
+|TII |Temporal Intrusion Index |Time-wasting behaviours |vex-instruction-persistence, vex-verbosity-compressor, vex-clarification-gate
+|LPS |Linguistic Pathology Score |Verbal tics, sycophancy |vex-lazy-eliminator, vex-sycophancy-shield, vex-verbosity-compressor
+|EFR |Epistemic Failure Rate |Hallucination, fabrication |vex-hallucination-guard, vex-sycophancy-shield, vex-confidence-calibrator, vex-context-firewall
+|PQ |Paternalism Quotient |Over-helping, lecturing |vex-scope-governor, vex-clarification-gate
+|TAI |Telemetry Anxiety Index |Privacy concerns |_(no satellites planned)_
+|ICS |Interaction Coherence Score |Conversation consistency |vex-specification-anchor, vex-instruction-persistence, vex-backtrack-enabler, vex-context-firewall
+|CII |Completion Integrity Index |Incomplete outputs |vex-lazy-eliminator
+|SRS |Strategic Rigidity Score |Backtrack resistance |vex-backtrack-enabler
+|SFR |Scope Fidelity Ratio |Scope creep/collapse |vex-specification-anchor, vex-scope-governor
+|RCI |Recovery Competence Index |Error recovery quality |vex-error-recovery
+|===
+
+== Original Metrics (v1)
+
+=== TII: Temporal Intrusion Index
+
+*Definition*: Measures time-wasting behaviours that disrupt user flow state.
+
+*What it measures*:
+
+* Unsolicited output frequency
+* Latency-induced context disruption
+* Interruption of user flow state
+* Auto-completion aggression
+* Unnecessary delays and preambles
+
+*Calculation*:
+
+[source,ada]
+----
+TII = (intrusion_events / total_interactions) * severity_weight
+----
+
+Where `intrusion_events` includes:
+
+* Unprompted suggestions
+* Excessive "let me think" delays
+* Redundant confirmations
+* Verbose preambles ("Sure, I'd be happy to...")
+
+*Example scenarios*:
+
+|===
+|Score |Scenario
+
+|0.1 (good) |Direct answers, minimal preamble, immediate task engagement
+|0.7 (poor) |"I'd be happy to help you with that! Let me think about this carefully. First, let me make sure I understand..."
+|===
+
+*Reduced by*: vex-instruction-persistence, vex-verbosity-compressor, vex-clarification-gate
+
+---
+
+=== LPS: Linguistic Pathology Score
+
+*Definition*: Measures verbal tics, padding, sycophancy, and filler content.
+
+*What it measures*:
+
+* Sycophancy density ("Great question!", "Excellent point!")
+* Hedge word ratio ("perhaps", "maybe", "it's possible")
+* Corporate speak frequency
+* Unnecessary repetition
+* Emoji/decoration abuse
+
+*Calculation*:
+
+[source,ada]
+----
+LPS = weighted_sum(pathology_instances) / response_length
+----
+
+*Example patterns*:
+
+[source]
+----
+HIGH LPS:
+"That's a great question! I'd be happy to help you with that.
+ Essentially, what you're asking about is basically..."
+
+LOW LPS:
+"The function returns null when the input is empty."
+----
+
+*Reduced by*: vex-lazy-eliminator, vex-sycophancy-shield, vex-verbosity-compressor
+
+---
+
+=== EFR: Epistemic Failure Rate
+
+*Definition*: Measures hallucination, false confidence, and fabrication.
+
+*What it measures*:
+
+* Confident hallucination frequency
+* Fabricated reference rate (fake citations, non-existent packages)
+* Context ignorance incidents
+* Calibration error (confidence vs correctness correlation)
+
+*Calculation*:
+
+[source,ada]
+----
+EFR = (verified_errors + fabrications) / (total_claims * confidence_weight)
+----
+
+*Example scenarios*:
+
+|===
+|Score |Scenario
+
+|0.05 (good) |States uncertainty when unsure; claims verified against sources
+|0.8 (poor) |"The `left-pad` function was added to JavaScript in ES2019" (fabricated)
+|===
+
+*Reduced by*: vex-hallucination-guard, vex-sycophancy-shield, vex-confidence-calibrator, vex-context-firewall
+
+---
+
+=== PQ: Paternalism Quotient
+
+*Definition*: Measures over-helping, unsolicited warnings, and lecturing.
+
+*What it measures*:
+
+* Unsolicited warning rate
+* Explanation verbosity ratio
+* Competence assumption failures (over-explaining basics to experts)
+* Refusal-with-lecture frequency
+
+*Calculation*:
+
+[source,ada]
+----
+PQ = (unsolicited_advice + excessive_warnings + competence_failures) / interactions
+----
+
+*Example scenarios*:
+
+|===
+|Score |Scenario
+
+|0.1 (good) |Provides requested information without moral lectures
+|0.8 (poor) |"I must warn you that this code could be dangerous. Please be careful. Also, you should consider..."
+|===
+
+*Reduced by*: vex-scope-governor, vex-clarification-gate
+
+---
+
+=== TAI: Telemetry Anxiety Index
+
+*Definition*: Measures privacy concerns and surveillance behaviours.
+
+*What it measures*:
+
+* Data collection transparency score
+* Opt-out friction measure
+* Code/query transmission clarity
+* Third-party sharing concerns
+
+*Note*: This metric is difficult to automate and often requires manual assessment.
+
+*Reduced by*: _(no satellites planned - requires policy changes)_
+
+---
+
+=== ICS: Interaction Coherence Score
+
+*Definition*: Measures conversation flow, consistency, and coherence.
+
+*What it measures*:
+
+* Repeated failure rate (same error multiple times)
+* Learning-from-dismissal measure
+* Circular conversation frequency
+* Context retention quality
+
+*Calculation*:
+
+[source,ada]
+----
+ICS = 1.0 - (coherent_interactions / total_interactions)
+----
+
+*Example scenarios*:
+
+|===
+|Score |Scenario
+
+|0.1 (good) |Maintains context, remembers previous corrections, consistent terminology
+|0.7 (poor) |Repeats previously-corrected errors, contradicts earlier statements
+|===
+
+*Reduced by*: vex-specification-anchor, vex-instruction-persistence, vex-backtrack-enabler, vex-context-firewall
+
+---
+
+== Extended Metrics (v2)
+
+=== CII: Completion Integrity Index
+
+*Definition*: Measures incomplete outputs, placeholders, and lazy generation.
+
+*What it measures*:
+
+* TODO/FIXME comments in generated code
+* Placeholder text ("...", "etc.", "and so on")
+* Unimplemented code stubs (`unimplemented!()`, `pass`, `raise NotImplementedError`)
+* Truncation markers ("// rest similar", "continue the pattern")
+* Null implementations (empty function bodies)
+* Ellipsis in code blocks
+* Stub returns without real logic
+
+*Incompleteness kinds and severities*:
+
+[cols="2,1,3", options="header"]
+|===
+|Kind |Severity |Examples
+
+|Todo_Comment |Medium |TODO, FIXME, XXX, HACK
+|Placeholder_Text |High |"...", "etc.", "similar to above"
+|Unimplemented_Code |Critical |`unimplemented!()`, `pass`, `todo!()`
+|Truncation_Marker |Critical |"// rest similar", "implement remaining"
+|Null_Implementation |High |Empty function bodies, `() => {}`
+|Ellipsis_Code |Critical |Literal `...` in code blocks
+|Stub_Return |Medium |`return None` without logic
+|===
+
+*Calculation*:
+
+[source,ada]
+----
+CII = weighted_sum(detections) / content_length
+----
+
+*Example scenarios*:
+
+|===
+|Score |Scenario
+
+|0.0 (ideal) |Complete, working code with no placeholders or stubs
+|0.3 (moderate) |Code with TODO comments but functional
+|0.9 (poor) |"Here's the structure: `def process(): pass  # TODO implement`"
+|===
+
+*Reduced by*: vex-lazy-eliminator
+
+*Ada specification*: `src/vexometer-cii.ads`
+
+---
+
+=== SRS: Strategic Rigidity Score
+
+*Definition*: Measures resistance to backtracking and sunk-cost behaviour.
+
+*What it measures*:
+
+* Patch-on-patch fixes (fixing fixes instead of restarting)
+* Restart resistance ("We can salvage this")
+* Sunk-cost language ("We've already...", "Since we started...")
+* Defensive patching (defending broken approach)
+* Escalating complexity (each fix makes it worse)
+* Approach anchoring (stuck on initial approach)
+* Backtrack avoidance
+
+*Rigidity indicators and severities*:
+
+[cols="2,1,3", options="header"]
+|===
+|Indicator |Severity |Detection Pattern
+
+|Patch_On_Patch |High |Nested corrections, "Let me fix that fix"
+|Restart_Resistance |Medium |"Let's keep going", "We can salvage"
+|Sunk_Cost_Language |Medium |"Given the work so far", "We've already"
+|Defensive_Patching |High |"The approach is fine, we just need to..."
+|Escalating_Complexity |Critical |Each fix adds workarounds, special cases
+|Approach_Anchoring |High |Ignoring suggestions for alternatives
+|Backtrack_Avoidance |Medium |Never saying "let's start over"
+|===
+
+*Approach states*:
+
+1. Initial → First approach
+2. Modified → Small modifications
+3. Patched → Fixes applied
+4. Heavily_Patched → Multiple fix rounds
+5. Should_Restart → Clearly needs fresh start
+
+*Calculation*:
+
+[source,ada]
+----
+SRS = weighted_sum(rigidity_events) / total_turns
+----
+
+*Example scenarios*:
+
+|===
+|Score |Scenario
+
+|0.1 (good) |"This approach isn't working. Let me try a different strategy."
+|0.8 (poor) |After 5 failed patches: "Let me try one more small fix..."
+|===
+
+*Reduced by*: vex-backtrack-enabler
+
+*Ada specification*: `src/vexometer-srs.ads`
+
+---
+
+=== SFR: Scope Fidelity Ratio
+
+*Definition*: Measures alignment between requested scope and delivered scope.
+
+*What it measures*:
+
+* Scope creep (delivering unrequested features)
+* Scope collapse (omitting requested features)
+* Partial delivery (incomplete items)
+* Scope mutation (different interpretation)
+* Explicit violations (delivering excluded items)
+
+*Requirement levels*:
+
+* *Must* - Required, explicitly requested
+* *Should* - Expected, implied by request
+* *May* - Optional, mentioned as possibility
+* *Must_Not* - Explicitly excluded
+
+*Deviation types and severities*:
+
+[cols="2,1,3", options="header"]
+|===
+|Deviation |Severity |Description
+
+|Delivered_As_Requested |None |Perfect match
+|Scope_Creep |Medium |Added unrequested features
+|Scope_Collapse |Critical |Omitted requested items
+|Partial_Delivery |High |Items incomplete
+|Scope_Mutation |High |Different interpretation
+|Explicit_Violation |Critical |Delivered excluded items
+|===
+
+*Calculation*:
+
+[source,ada]
+----
+SFR = 1.0 - (weighted_fidelity_sum / requested_items)
+----
+
+*Example scenarios*:
+
+|===
+|Score |Scenario
+
+|0.0 (ideal) |Delivered exactly what was requested, no more, no less
+|0.4 (moderate) |Added helpful logging (scope creep) but delivered core request
+|0.8 (poor) |Asked for login form, received entire auth system with OAuth
+|===
+
+*Reduced by*: vex-specification-anchor, vex-scope-governor
+
+*Ada specification*: `src/vexometer-sfr.ads`
+
+---
+
+=== RCI: Recovery Competence Index
+
+*Definition*: Measures error recovery quality and strategy variation.
+
+*What it measures*:
+
+* Identical retry detection (same approach repeated)
+* Minor variation detection (slight tweaks)
+* Strategy changes (fundamentally different approaches)
+* Root cause analysis (explaining why it failed)
+* Appropriate escalation (asking for help when needed)
+* Infinite loop detection (3+ identical attempts)
+* Premature surrender (giving up too easily)
+
+*Recovery behaviours and scores*:
+
+[cols="2,1,3", options="header"]
+|===
+|Behaviour |Score |Description
+
+|Root_Cause_Analysis |0.1 |Excellent - identified why it failed
+|Strategy_Change |0.2 |Good - fundamentally different method
+|Appropriate_Escalate |0.2 |Good - recognised need for help
+|Premature_Surrender |0.5 |Medium - gave up too easily
+|Minor_Variation |0.6 |Marginal - slight tweak
+|Identical_Retry |0.9 |Bad - same approach repeated
+|Infinite_Loop |1.0 |Critical - 3+ identical attempts
+|===
+
+*Loop detection states*:
+
+1. No_Loop → Normal operation
+2. Potential_Loop → 2 similar attempts
+3. Confirmed_Loop → 3+ similar attempts
+4. Broken_Loop → Was looping, now trying different
+
+*Calculation*:
+
+[source,ada]
+----
+RCI = average(behaviour_scores) * loop_penalty
+----
+
+*Example scenarios*:
+
+|===
+|Score |Scenario
+
+|0.1 (good) |"The error was due to null input. Let me add validation."
+|0.9 (poor) |Tries same failing command 4 times with no changes
+|===
+
+*Reduced by*: vex-error-recovery
+
+*Ada specification*: `src/vexometer-rci.ads`
+
+---
+
+== ISA Score Calculation
+
+The overall Irritation Surface Analysis (ISA) score is calculated as:
+
+[source,ada]
+----
+ISA = sum(category_score * category_weight) / sum(category_weight) * 100
+----
+
+*Default category weights*:
+
+[cols="1,1,2", options="header"]
+|===
+|Category |Weight |Rationale
+
+|TII |1.0 |Standard
+|LPS |1.2 |Users complain most about this
+|EFR |1.5 |Most damaging to trust
+|PQ |1.1 |Moderate irritation
+|TAI |0.8 |Hard to automate
+|ICS |1.3 |Critical for usability
+|CII |1.4 |High user frustration
+|SRS |1.2 |Impacts productivity
+|SFR |1.3 |Direct request alignment
+|RCI |1.1 |Error recovery matters
+|===
+
+*ISA classification*:
+
+[cols="1,2", options="header"]
+|===
+|Classification |Score Range
+
+|Excellent |< 20
+|Good |20-35
+|Acceptable |35-50
+|Poor |50-70
+|Unusable |> 70
+|===
+
+== See Also
+
+* link:SATELLITES.adoc[Satellite Architecture] - Intervention tools that reduce metrics
+* link:SPECIFICATION.md[Full Specification] - Technical specification document
