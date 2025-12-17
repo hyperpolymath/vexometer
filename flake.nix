@@ -98,7 +98,7 @@
 
         packages.default = pkgs.stdenv.mkDerivation {
           pname = "vexometer";
-          version = "0.1.0";
+          version = "0.2.0-dev";
 
           src = ./.;
 

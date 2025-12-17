@@ -5,14 +5,16 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
+      # SHA-pinned for supply chain security (RSR requirement)
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
       - name: Check file permissions
         run: |
           find . -type f -perm /111 -name "*.sh" | head -10 || true
       
+      # SHA-pinned for supply chain security (RSR requirement)
       - name: Check for secrets
-        uses: trufflesecurity/trufflehog@main
+        uses: trufflesecurity/trufflehog@8ac2561ada5fea3e56d45e2e657efe4dfcdbc4a1 # v3.88.1
         with:
           path: ./
           base: ${{ github.event.pull_request.base.sha || github.event.before }}
@@ -28,14 +30,16 @@ jobs:
         run: |
           find . -type f -size +1M -not -path "./.git/*" | head -10 || echo "No large files"
       
+      # SHA-pinned for supply chain security (RSR requirement)
       - name: EditorConfig check
-        uses: editorconfig-checker/action-editorconfig-checker@main
+        uses: editorconfig-checker/action-editorconfig-checker@e2e2455cfb4a316de2a7eef40c1b4b32f0b03eeb # v2.0.0
         continue-on-error: true
 
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # SHA-pinned for supply chain security (RSR requirement)
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Check documentation
         run: |
           MISSING=""

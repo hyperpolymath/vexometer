@@ -12,7 +12,7 @@ default: build
 
 # Project metadata
 project := "vexometer"
-version := "0.1.0"
+version := "0.2.0-dev"
 
 # Build modes
 build_mode := env_var_or_default("VEXOMETER_BUILD_MODE", "debug")
@@ -95,7 +95,8 @@ docs-html:
 validate:
     @echo "Validating RSR compliance..."
     @echo "Checking required files..."
-    @test -f flake.nix && echo "✓ flake.nix" || echo "✗ flake.nix missing"
+    @test -f guix.scm && echo "✓ guix.scm (primary)" || echo "✗ guix.scm missing (RSR primary)"
+    @test -f flake.nix && echo "✓ flake.nix (fallback)" || echo "✗ flake.nix missing"
     @test -f justfile && echo "✓ justfile" || echo "✗ justfile missing"
     @test -f README.adoc && echo "✓ README.adoc" || echo "✗ README.adoc missing"
     @test -f LICENSE.txt && echo "✓ LICENSE.txt" || echo "✗ LICENSE.txt missing"
