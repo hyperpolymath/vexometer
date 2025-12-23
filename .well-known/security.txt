@@ -1,8 +1,0 @@
-# SPDX-FileCopyrightText: 2024 Jonathan D.A. Jewell
-# SPDX-License-Identifier: AGPL-3.0-or-later
-
-Contact: mailto:security@jewell.dev
-Expires: 2025-12-31T23:59:59.000Z
-Preferred-Languages: en
-Canonical: https://gitlab.com/hyperpolymath/vexometer/-/raw/main/.well-known/security.txt
-Policy: https://gitlab.com/hyperpolymath/vexometer/-/blob/main/SECURITY.md
