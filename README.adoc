@@ -3,7 +3,7 @@
 
 = Vexometer: Irritation Surface Analyser
 
-image:https://img.shields.io/badge/license-Palimpsest--MPL--1.0-purple.svg[Palimpsest-MPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"] image:https://img.shields.io/badge/philosophy-Palimpsest-purple.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-licence"]
+image:[Palimpsest-MPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"] 
 Jonathan D.A. Jewell <jonathan@jewell.dev>
 v0.1.0
 :toc: left
