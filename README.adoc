@@ -323,7 +323,7 @@ _Lower ISA = Better user experience_
 * *GUI Toolkit:* GtkAda
 * *Build System:* Alire (Ada package manager)
 * *Package Management:* Guix primary, Nix fallback
-* *License:* AGPL-3.0-or-later
+* *License:* PMPL-1.0-or-later
 
 === Dependencies (via Alire)
 
@@ -340,7 +340,7 @@ _Lower ISA = Better user experience_
 
 == Contributing
 
-Contributions welcome under AGPL-3.0-or-later. See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc].
+Contributions welcome under PMPL-1.0-or-later. See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc].
 
 Priority areas:
 
@@ -359,7 +359,7 @@ Priority areas:
 
 == License
 
-AGPL-3.0-or-later. See link:LICENSE.txt[LICENSE.txt].
+PMPL-1.0-or-later. See link:LICENSE.txt[LICENSE.txt].
 
 This is free software; you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
