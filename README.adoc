@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 2024-2025 Jonathan D.A. Jewell
-// SPDX-License-Identifier: PMPL-1.0
+// SPDX-License-Identifier: PMPL-1.0-or-later
 
 = Vexometer: Irritation Surface Analyser
 
-image:[Palimpsest-MPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"] 
-Jonathan D.A. Jewell <jonathan@jewell.dev>
+image:https://img.shields.io/badge/License-PMPL--1.0--or--later-6366f1?style=flat&labelColor=4338ca[PMPL-1.0-or-later,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
 v0.1.0
 :toc: left
 :toclevels: 3
@@ -359,7 +360,8 @@ Priority areas:
 
 == License
 
-PMPL-1.0-or-later. See link:LICENSE.txt[LICENSE.txt].
+image:https://img.shields.io/badge/License-PMPL--1.0--or--later-6366f1?style=flat&labelColor=4338ca[PMPL-1.0-or-later,link="https://github.com/hyperpolymath/palimpsest-license"]
 
-This is free software; you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
+This project is licensed under PMPL-1.0-or-later (Palimpsest License). See link:LICENSE.txt[LICENSE.txt] for the full license text.
+
+This is free software; you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.
