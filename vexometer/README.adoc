@@ -251,8 +251,15 @@ Display format selection is controlled by:
 Database backend for benchmark persistence defaults to *VeriSimDB*:
 
 * `VEXOMETER_BENCH_DB_BACKEND=verisimdb`
-* publish endpoint: `VERISIM_API_URL` (default: `http://localhost:8080/api/v1`)
+* repo-local profile file: `config/verisim-profile.env`
+* `VEXOMETER_BENCH_VERISIM_MODE=auto` starts a repo-local sidecar on an auto-selected port (default range `18080-18999`)
+* `VEXOMETER_BENCH_VERISIM_MODE=external` uses `VEXOMETER_BENCH_VERISIM_EXTERNAL_URL`
+* `VEXOMETER_BENCH_VERISIM_MODE=disabled` skips publish
+* explicit endpoint override: `VERISIM_API_URL`
+* optional local core checkout hint: `VERISIM_HOME`
 * set `VEXOMETER_BENCH_REQUIRE_DB=1` to fail the run if publish fails
+
+The profile is runtime-only: it does not vendor the VeriSimDB codebase or any database data into this repository.
 
 == API Providers
 

@@ -80,3 +80,6 @@ htmlcov/
 
 # Benchmark artifacts
 /benchmarks/results/
+
+# Repo-local verisim sidecar runtime state
+/.verisim-local/

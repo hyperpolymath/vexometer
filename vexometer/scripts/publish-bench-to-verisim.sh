@@ -7,7 +7,7 @@ if [[ $# -ne 1 ]]; then
 fi
 
 JSON_PATH="$1"
-API_URL="${VERISIM_API_URL:-http://localhost:8080/api/v1}"
+API_URL="${VERISIM_API_URL:-http://127.0.0.1:18080/api/v1}"
 TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 ENTITY_ID="vexometer-benchmark-${TIMESTAMP//[:T-]/}"
 
