@@ -2,7 +2,7 @@
 <!-- TOPOLOGY.md — Project architecture map and completion dashboard -->
 <!-- Last updated: 2026-02-28 -->
 
-# VEX Toolkit (vex-tools) — Project Topology
+# VEX Toolkit (vexometer) — Project Topology
 
 > Naming convention: **The Vexometer: Irritation Surface Analyser (ISA) for LLMs and related tools** is the canonical title, and **vexometer** remains the compatibility identifier in repo/package/CLI/protocol names.
 

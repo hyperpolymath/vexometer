@@ -9,26 +9,26 @@
   author = {Polymath, Hyper},
   title = {Lazy Eliminator},
   year = {2026},
-  url = {https://github.com/hyperpolymath/vex-tools/tree/main/lazy-eliminator},
+  url = {https://github.com/hyperpolymath/vexometer/tree/main/lazy-eliminator},
   license = {PMPL-1.0-or-later}
 }
 ----
 
 == Harvard Style
 
-Polymath, H. (2026) _Lazy Eliminator_ [Computer software]. Available at: https://github.com/hyperpolymath/vex-tools/tree/main/lazy-eliminator
+Polymath, H. (2026) _Lazy Eliminator_ [Computer software]. Available at: https://github.com/hyperpolymath/vexometer/tree/main/lazy-eliminator
 
 == OSCOLA
 
-Hyper Polymath, 'Lazy Eliminator' (2026) <https://github.com/hyperpolymath/vex-tools/tree/main/lazy-eliminator>
+Hyper Polymath, 'Lazy Eliminator' (2026) <https://github.com/hyperpolymath/vexometer/tree/main/lazy-eliminator>
 
 == MLA
 
-Polymath, Hyper. "Lazy Eliminator." 2026, github.com/hyperpolymath/vex-tools/tree/main/lazy-eliminator.
+Polymath, Hyper. "Lazy Eliminator." 2026, github.com/hyperpolymath/vexometer/tree/main/lazy-eliminator.
 
 == APA 7
 
-Polymath, H. (2026). _Lazy Eliminator_ [Computer software]. GitHub. https://github.com/hyperpolymath/vex-tools/tree/main/lazy-eliminator
+Polymath, H. (2026). _Lazy Eliminator_ [Computer software]. GitHub. https://github.com/hyperpolymath/vexometer/tree/main/lazy-eliminator
 
 == Notes
 

@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
 // SPDX-License-Identifier: PMPL-1.0-or-later
 
-= vex-tools: Unified VEX Toolkit
+= The Vexometer: Irritation Surface Analyser (ISA) for LLMs and Related Tools
 :author: Jonathan D.A. Jewell
-:email: jonathan.jewell@open.ac.uk
+:email: j.d.a.jewell@open.ac.uk
 :toc: left
 :toclevels: 3
 :icons: font
@@ -12,15 +12,16 @@
 image:https://img.shields.io/badge/License-PMPL--1.0--or--later-6366f1?style=flat&labelColor=4338ca[PMPL-1.0-or-later,link="https://github.com/hyperpolymath/palimpsest-license"]
 image:https://img.shields.io/badge/RSR-compliant-brightgreen[RSR Compliant]
 
-Consolidated monorepo for all VEX-related tools centered on *The Vexometer: Irritation Surface Analyser (ISA) for LLMs and related tools*, its satellite intervention system, and the Vext verifiable communications protocol.
+**The Vexometer: Irritation Surface Analyser (ISA) for LLMs and related tools** quantifies irritation across 10 dimensions with standardised, reproducible metrics. This monorepo contains ISA core, its satellite intervention system, the Lazy Eliminator completeness enforcer, and the Vext verifiable communications protocol.
 
-== Naming Convention
+== Naming
 
-* *Canonical product title*: *The Vexometer: Irritation Surface Analyser for LLMs and related tools*
-* *Canonical short name*: *ISA*
-* *Legacy compatibility identifier*: `vexometer`
-* The `vexometer` identifier remains in repository paths, package names, CLI commands, and protocol IDs (for example `vexometer-trace-v1`) to preserve compatibility.
-* See link:NAMING.md[NAMING.md] for the authoritative naming policy used across this repository.
+* *Canonical title*: *The Vexometer: Irritation Surface Analyser for LLMs and related tools*
+* *Short name*: *ISA*
+* The `vexometer` identifier is used in directory paths, package names, CLI commands, and protocol IDs (e.g. `vexometer-trace-v1`).
+* See link:NAMING.md[NAMING.md] for the full naming policy.
+
+NOTE: This repository was previously named `vex-tools`. The canonical name is now `vexometer`.
 
 == Repository Structure
 

@@ -9,26 +9,26 @@
   author = {Polymath, Hyper},
   title = {Vext Email Gateway},
   year = {2026},
-  url = {https://github.com/hyperpolymath/vex-tools/tree/main/vext-email-gateway},
+  url = {https://github.com/hyperpolymath/vexometer/tree/main/vext-email-gateway},
   license = {PMPL-1.0-or-later}
 }
 ----
 
 == Harvard Style
 
-Polymath, H. (2026) _Vext Email Gateway_ [Computer software]. Available at: https://github.com/hyperpolymath/vex-tools/tree/main/vext-email-gateway
+Polymath, H. (2026) _Vext Email Gateway_ [Computer software]. Available at: https://github.com/hyperpolymath/vexometer/tree/main/vext-email-gateway
 
 == OSCOLA
 
-Hyper Polymath, 'Vext Email Gateway' (2026) <https://github.com/hyperpolymath/vex-tools/tree/main/vext-email-gateway>
+Hyper Polymath, 'Vext Email Gateway' (2026) <https://github.com/hyperpolymath/vexometer/tree/main/vext-email-gateway>
 
 == MLA
 
-Polymath, Hyper. "Vext Email Gateway." 2026, github.com/hyperpolymath/vex-tools/tree/main/vext-email-gateway.
+Polymath, Hyper. "Vext Email Gateway." 2026, github.com/hyperpolymath/vexometer/tree/main/vext-email-gateway.
 
 == APA 7
 
-Polymath, H. (2026). _Vext Email Gateway_ [Computer software]. GitHub. https://github.com/hyperpolymath/vex-tools/tree/main/vext-email-gateway
+Polymath, H. (2026). _Vext Email Gateway_ [Computer software]. GitHub. https://github.com/hyperpolymath/vexometer/tree/main/vext-email-gateway
 
 == Notes
 

@@ -9,26 +9,26 @@
   author = {Polymath, Hyper},
   title = {ISA Satellites (formerly Vexometer Satellites)},
   year = {2026},
-  url = {https://github.com/hyperpolymath/vex-tools/tree/main/vexometer-satellites},
+  url = {https://github.com/hyperpolymath/vexometer/tree/main/vexometer-satellites},
   license = {PMPL-1.0-or-later}
 }
 ----
 
 == Harvard Style
 
-Polymath, H. (2026) _ISA Satellites (formerly Vexometer Satellites)_ [Computer software]. Available at: https://github.com/hyperpolymath/vex-tools/tree/main/vexometer-satellites
+Polymath, H. (2026) _ISA Satellites (formerly Vexometer Satellites)_ [Computer software]. Available at: https://github.com/hyperpolymath/vexometer/tree/main/vexometer-satellites
 
 == OSCOLA
 
-Hyper Polymath, 'ISA Satellites (formerly Vexometer Satellites)' (2026) <https://github.com/hyperpolymath/vex-tools/tree/main/vexometer-satellites>
+Hyper Polymath, 'ISA Satellites (formerly Vexometer Satellites)' (2026) <https://github.com/hyperpolymath/vexometer/tree/main/vexometer-satellites>
 
 == MLA
 
-Polymath, Hyper. "ISA Satellites (formerly Vexometer Satellites)." 2026, github.com/hyperpolymath/vex-tools/tree/main/vexometer-satellites.
+Polymath, Hyper. "ISA Satellites (formerly Vexometer Satellites)." 2026, github.com/hyperpolymath/vexometer/tree/main/vexometer-satellites.
 
 == APA 7
 
-Polymath, H. (2026). _ISA Satellites (formerly Vexometer Satellites)_ [Computer software]. GitHub. https://github.com/hyperpolymath/vex-tools/tree/main/vexometer-satellites
+Polymath, H. (2026). _ISA Satellites (formerly Vexometer Satellites)_ [Computer software]. GitHub. https://github.com/hyperpolymath/vexometer/tree/main/vexometer-satellites
 
 == Notes
 

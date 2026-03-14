@@ -5,7 +5,7 @@
     (last-updated "2026-02-28")
     (status active))
   (project-context
-    (name "vex-tools")
+    (name "vexometer")
     (canonical-product-title "The Vexometer: Irritation Surface Analyser for LLMs and related tools")
     (canonical-product-name "ISA")
     (legacy-product-name "Vexometer")

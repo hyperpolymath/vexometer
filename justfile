@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-# vex-tools unified justfile
+# vexometer unified justfile
 # Author: Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
 
 # Default recipe: list available commands

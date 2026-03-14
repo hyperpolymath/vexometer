@@ -4,7 +4,7 @@
     (version "0.2.0")
     (last-updated "2026-02-28"))
   (project
-    (name "vex-tools")
+    (name "vexometer")
     (purpose "Measure and reduce AI assistant irritation surfaces and support verifiable communication workflows")
     (role toolkit-monorepo))
   (components

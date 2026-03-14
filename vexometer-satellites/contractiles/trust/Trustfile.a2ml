@@ -2,7 +2,7 @@
 
 ---
 ### [META]
-id: "did:web:hyperpolymath.github.io:vex-tools:vexometer-satellites"
+id: "did:web:hyperpolymath.github.io:vexometer:vexometer-satellites"
 version: "2026.02"
 context:
   - "https://a2ml.org/ns/v2"
@@ -12,15 +12,15 @@ meta:
   expires: "2027-02-28T00:00:00Z"
   owner: "Hyper Polymath"
   project: "ISA Satellites"
-  repository: "https://github.com/hyperpolymath/vex-tools/tree/main/vexometer-satellites"
-  advisory: "https://github.com/hyperpolymath/vex-tools/security/advisories/new"
+  repository: "https://github.com/hyperpolymath/vexometer/tree/main/vexometer-satellites"
+  advisory: "https://github.com/hyperpolymath/vexometer/security/advisories/new"
   contact: "security@jewell.dev"
 
 ---
 ### [SITE]
 hosting:
-  git_remote: "github.com/hyperpolymath/vex-tools"
-  docs_url: "https://github.com/hyperpolymath/vex-tools/tree/main/vexometer-satellites"
+  git_remote: "github.com/hyperpolymath/vexometer"
+  docs_url: "https://github.com/hyperpolymath/vexometer/tree/main/vexometer-satellites"
 network:
   transport: ["HTTPS", "SSH"]
   dns_provider: "Cloudflare"
@@ -45,7 +45,7 @@ runtime:
 ---
 ### [SECURITY]
 reporting:
-  advisory_url: "https://github.com/hyperpolymath/vex-tools/security/advisories/new"
+  advisory_url: "https://github.com/hyperpolymath/vexometer/security/advisories/new"
   email: "security@jewell.dev"
 hardening:
   branch_protection_required: true

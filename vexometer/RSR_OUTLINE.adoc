@@ -4,7 +4,7 @@
 
 == Status
 
-This directory is an active project inside the `vex-tools` monorepo.
+This directory is an active project inside the `vexometer` monorepo.
 The previous template boilerplate has been retired for this project.
 
 == Source Of Truth

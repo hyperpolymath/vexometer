@@ -26,5 +26,5 @@ We respond within 48 hours.
 
 ## Security Contact
 
-- Advisories: https://github.com/hyperpolymath/vex-tools/security/advisories/new
+- Advisories: https://github.com/hyperpolymath/vexometer/security/advisories/new
 - Email: security@jewell.dev

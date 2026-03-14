@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
-# Mustfile - baseline invariants for vex-tools components
+# Mustfile - baseline invariants for vexometer components
 # See: https://github.com/hyperpolymath/mustfile
 
 version: 1
