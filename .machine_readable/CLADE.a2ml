@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Clade declaration — part of the gv-clade-index registry
+# See: https://github.com/hyperpolymath/gv-clade-index
+
+[identity]
+uuid = "bde141bc-31eb-5e71-a634-772142968fa2"
+primary-forge = "github"
+primary-owner = "hyperpolymath"
+canonical-name = "vexometer"
+prefixed-name = "dx-vexometer"
+
+[clade]
+primary = "dx"
+secondary = ["rm"]
+assigned = "2026-03-16"
+rationale = ""
+
+[forges]
+github = "hyperpolymath/vexometer"
+gitlab = "hyperpolymath/vexometer"
+bitbucket = "hyperpolymath/vexometer"
+
+[lineage]
+type = "standalone"
+parent = "Vexation measurement tool"
+born = "2026-03-16"
