@@ -7,7 +7,7 @@
 --  that cannot be captured by simple regex matching alone.
 --
 --  Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)
---  <jonathan.jewell@open.ac.uk>
+--  <j.d.a.jewell@open.ac.uk>
 --  SPDX-License-Identifier: PMPL-1.0-or-later
 
 pragma Ada_2022;

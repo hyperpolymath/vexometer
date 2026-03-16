@@ -1,7 +1,7 @@
 --  Vexometer.Metrics - Statistical and ISA calculation implementations
 --
 --  Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)
---  <jonathan.jewell@open.ac.uk>
+--  <j.d.a.jewell@open.ac.uk>
 --  SPDX-License-Identifier: PMPL-1.0-or-later
 --
 --  Implements statistical primitives (mean, standard deviation, median,

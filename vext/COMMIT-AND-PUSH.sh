@@ -80,7 +80,7 @@ Thank you for your interest in contributing to Vext!
 
 ## Questions?
 
-Open a GitHub Discussion or contact: jonathan.jewell@open.ac.uk
+Open a GitHub Discussion or contact: j.d.a.jewell@open.ac.uk
 EOL
 
 # Create SECURITY.md
@@ -98,7 +98,7 @@ cat > SECURITY.md << 'EOL'
 
 **DO NOT** open a public issue for security vulnerabilities.
 
-Instead, email: security@vext.org (or jonathan.jewell@open.ac.uk until domain is set up)
+Instead, email: security@vext.org (or j.d.a.jewell@open.ac.uk until domain is set up)
 
 Include:
 - Description of vulnerability
