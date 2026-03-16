@@ -2,7 +2,7 @@
 [package]
 name = "vex-lazy-eliminator"
 version = "0.1.0"
-authors = ["Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"]
+authors = ["Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"]
 edition = "2021"
 license = "PMPL-1.0-or-later"
 description = "Completeness enforcement for LLM-generated code - reduces CII and LPS metrics"

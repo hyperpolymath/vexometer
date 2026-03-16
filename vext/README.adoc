@@ -1,6 +1,6 @@
 = Vext: Verifiable, Extensible Communications Protocol
 :author: Jonathan D.A. Jewell
-:email: jonathan.jewell@open.ac.uk
+:email: j.d.a.jewell@open.ac.uk
 :toc: left
 :toclevels: 3
 
@@ -216,7 +216,7 @@ See: link:LICENSE[Full License Text]
 == Contact
 
 * Author: Jonathan D.A. Jewell
-* Email: jonathan.jewell@open.ac.uk
+* Email: j.d.a.jewell@open.ac.uk
 * GitHub: https://github.com/hyperpolymath/vext
 * Matrix: (coming soon)
 

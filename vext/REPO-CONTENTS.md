@@ -140,7 +140,7 @@ vext/
 ## Questions & Contact
 
 - **Author:** Jonathan D.A. Jewell
-- **Email:** jonathan.jewell@open.ac.uk
+- **Email:** j.d.a.jewell@open.ac.uk
 - **GitHub:** https://github.com/hyperpolymath
 
 ---

@@ -40,7 +40,7 @@ If you cannot use GitHub Security Advisories, you may email us directly:
 
 | | |
 |---|---|
-| **Email** | jonathan.jewell@open.ac.uk |
+| **Email** | j.d.a.jewell@open.ac.uk |
 | **PGP Key** | [Download Public Key](https://hyperpolymath.github.io/pgp.asc) |
 | **Fingerprint** | `TBD` |
 
@@ -49,10 +49,10 @@ If you cannot use GitHub Security Advisories, you may email us directly:
 curl -sSL https://hyperpolymath.github.io/pgp.asc | gpg --import
 
 # Verify fingerprint
-gpg --fingerprint jonathan.jewell@open.ac.uk
+gpg --fingerprint j.d.a.jewell@open.ac.uk
 
 # Encrypt your report
-gpg --armor --encrypt --recipient jonathan.jewell@open.ac.uk report.txt
+gpg --armor --encrypt --recipient j.d.a.jewell@open.ac.uk report.txt
 ```
 
 > **⚠️ Important:** Do not report security vulnerabilities through public GitHub issues, pull requests, discussions, or social media.
@@ -365,7 +365,7 @@ When using vext-email-gateway, we recommend:
 
 | Purpose | Contact |
 |---------|---------|
-| **Security issues** | [Report via GitHub](https://github.com/hyperpolymath/vexometer/security/advisories/new) or jonathan.jewell@open.ac.uk |
+| **Security issues** | [Report via GitHub](https://github.com/hyperpolymath/vexometer/security/advisories/new) or j.d.a.jewell@open.ac.uk |
 | **General questions** | [GitHub Discussions](https://github.com/hyperpolymath/vexometer/discussions) |
 | **Other enquiries** | See [README](README.md) for contact information |
 
