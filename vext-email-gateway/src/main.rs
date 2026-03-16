@@ -2,6 +2,7 @@
 // Vext Email Gateway - Production implementation
 // Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
+#![forbid(unsafe_code)]
 mod types;
 
 use lettre::{

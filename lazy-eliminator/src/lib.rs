@@ -10,6 +10,7 @@
 //! - Truncation markers
 //! - Null implementations
 
+#![forbid(unsafe_code)]
 pub mod analyzer;
 pub mod config;
 pub mod detection;

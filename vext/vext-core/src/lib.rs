@@ -5,6 +5,7 @@
 //! management, notification protocol handling, and optional document processing,
 //! spell checking, and internationalization features.
 
+#![forbid(unsafe_code)]
 pub mod config;
 pub mod error;
 pub mod irc_client;
