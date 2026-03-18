@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 name: Quality Gates
-permissions: read-all
+permissions:
+  contents: read
 
 on:
   pull_request:
