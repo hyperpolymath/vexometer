@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 //! Error types for vextd
 
 use thiserror::Error;
 
 /// Main error type for vext operations
 #[derive(Error, Debug)]
-#[allow(dead_code)]
 pub enum VextError {
     /// IRC connection error
     #[error("IRC connection error: {0}")]

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 //! IRC client implementation
 //!
 //! Handles connection to IRC servers, authentication, and message sending.
@@ -60,7 +61,6 @@ impl RateLimiter {
 }
 
 /// An active IRC connection
-#[allow(dead_code)]
 pub struct IrcConnection {
     /// Server hostname
     pub server: String,
@@ -189,27 +189,43 @@ impl IrcConnection {
         Ok(())
     }
 
-    /// Send a PRIVMSG to a channel
+    /// Send a PRIVMSG to a channel.
+    ///
+    /// Long messages are split into chunks that respect UTF-8 character
+    /// boundaries so multi-byte characters are never torn across packets.
     pub async fn privmsg(&self, target: &str, message: &str) -> VextResult<()> {
-        // Split long messages (IRC limit is typically 512 bytes including CRLF)
-        let max_len = 400; // Leave room for protocol overhead
-        for chunk in message.as_bytes().chunks(max_len) {
-            let chunk_str = String::from_utf8_lossy(chunk);
-            self.send_raw(&format!("PRIVMSG {} :{}", target, chunk_str))
+        // IRC limit is typically 512 bytes including CRLF.
+        // Leave room for "PRIVMSG <target> :" prefix + CRLF.
+        let max_len = 400;
+        let mut remaining = message;
+
+        while !remaining.is_empty() {
+            let chunk = if remaining.len() <= max_len {
+                remaining
+            } else {
+                // Walk backwards from max_len to find the nearest UTF-8
+                // char boundary so we never split a multi-byte character.
+                let mut end = max_len;
+                while !remaining.is_char_boundary(end) && end > 0 {
+                    end -= 1;
+                }
+                &remaining[..end]
+            };
+
+            self.send_raw(&format!("PRIVMSG {} :{}", target, chunk))
                 .await?;
+            remaining = &remaining[chunk.len()..];
         }
         Ok(())
     }
 
     /// Send a NOTICE to a channel
-    #[allow(dead_code)]
     pub async fn notice(&self, target: &str, message: &str) -> VextResult<()> {
         self.send_raw(&format!("NOTICE {} :{}", target, message))
             .await
     }
 
     /// Part from a channel
-    #[allow(dead_code)]
     pub async fn part(&mut self, channel: &str, reason: Option<&str>) -> VextResult<()> {
         let cmd = if let Some(r) = reason {
             format!("PART {} :{}", channel, r)
@@ -234,7 +250,6 @@ impl IrcConnection {
     }
 
     /// Respond to PING
-    #[allow(dead_code)]
     pub async fn pong(&self, token: &str) -> VextResult<()> {
         self.send_raw(&format!("PONG :{}", token)).await
     }

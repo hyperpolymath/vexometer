@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 //! Pandoc document conversion support for vext
 //!
 //! Enables converting commit messages and documentation between formats

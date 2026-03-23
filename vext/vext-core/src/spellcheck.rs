@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 //! Spell checking support for vext commit messages
 //!
 //! Provides optional spell checking for commit messages before sending

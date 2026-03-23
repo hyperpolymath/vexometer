@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 //! Configuration management for vextd
 
 use std::path::Path;
@@ -106,21 +107,36 @@ impl Config {
     }
 
     /// Save configuration to a TOML file
-    #[allow(dead_code)]
     pub fn to_file(&self, path: &Path) -> Result<()> {
         let content = toml::to_string_pretty(self)?;
         std::fs::write(path, content)?;
         Ok(())
     }
 
-    /// Get server-specific configuration for a hostname
+    /// Get server-specific configuration for a hostname.
+    ///
+    /// Supports anchored wildcard matching:
+    /// - `*.example.com` matches any hostname whose suffix after the first dot
+    ///   equals `example.com` (e.g. `irc.example.com`, `chat.example.com`).
+    /// - `prefix.*` matches any hostname whose prefix before the last dot
+    ///   equals `prefix` (e.g. `prefix.net`, `prefix.org`).
+    /// - All other patterns require an exact match.
     pub fn server_config(&self, hostname: &str) -> Option<&ServerConfig> {
         self.servers.iter().find(|s| {
-            if s.pattern.contains('*') {
-                // Simple wildcard matching
-                let pattern = s.pattern.replace('*', "");
-                hostname.contains(&pattern)
+            if let Some(suffix) = s.pattern.strip_prefix("*.") {
+                // *.example.com — match the domain suffix after the first dot
+                hostname
+                    .find('.')
+                    .map(|dot| &hostname[dot + 1..] == suffix)
+                    .unwrap_or(false)
+            } else if let Some(prefix) = s.pattern.strip_suffix(".*") {
+                // prefix.* — match the prefix before the last dot
+                hostname
+                    .rfind('.')
+                    .map(|dot| &hostname[..dot] == prefix)
+                    .unwrap_or(false)
             } else {
+                // Exact match only
                 s.pattern == hostname
             }
         })

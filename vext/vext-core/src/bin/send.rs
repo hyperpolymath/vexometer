@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 //! vext-send - CLI tool for sending notifications to vextd
 //!
 //! Sends JSON notifications to a running vextd daemon.

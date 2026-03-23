@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 //! Connection pool management
 //!
 //! Manages multiple IRC connections per server with automatic scaling.
@@ -16,7 +17,6 @@ use crate::irc_client::{generate_nick, IrcConnection};
 use crate::protocol::IrcTarget;
 
 /// Connection pool entry for a server
-#[allow(dead_code)]
 struct ServerPool {
     /// Active connections
     connections: Vec<Arc<Mutex<IrcConnection>>>,
@@ -33,7 +33,6 @@ impl ServerPool {
     }
 
     /// Get next connection using round-robin
-    #[allow(dead_code)]
     fn next_connection(&mut self) -> Option<Arc<Mutex<IrcConnection>>> {
         if self.connections.is_empty() {
             return None;
@@ -173,7 +172,6 @@ impl ConnectionPool {
     }
 
     /// Gracefully shutdown all connections
-    #[allow(dead_code)]
     pub async fn shutdown(&mut self) {
         info!("Shutting down connection pool");
         for (server, pool) in &mut self.pools {
@@ -188,7 +186,6 @@ impl ConnectionPool {
     }
 
     /// Get statistics about the pool
-    #[allow(dead_code)]
     pub fn stats(&self) -> PoolStats {
         let mut total_connections = 0;
         let mut servers = Vec::new();
