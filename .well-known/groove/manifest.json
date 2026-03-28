@@ -1,0 +1,46 @@
+{
+  "groove_version": "1",
+  "service_id": "vext",
+  "service_version": "0.1.0",
+  "capabilities": {
+    "integrity": {
+      "type": "integrity",
+      "description": "Verifiable communications integrity verification",
+      "protocol": "http",
+      "endpoint": "/api/verify",
+      "requires_auth": false,
+      "panel_compatible": true
+    },
+    "feed-verification": {
+      "type": "feed-verification",
+      "description": "Feed content verification and provenance tracking",
+      "protocol": "http",
+      "endpoint": "/api/feed/verify",
+      "requires_auth": false,
+      "panel_compatible": true
+    },
+    "hash-chain": {
+      "type": "hash-chain",
+      "description": "Hash chain integrity for message sequences",
+      "protocol": "http",
+      "endpoint": "/api/chain",
+      "requires_auth": false,
+      "panel_compatible": false
+    },
+    "attestation": {
+      "type": "attestation",
+      "description": "Cryptographic attestation of content authenticity",
+      "protocol": "http",
+      "endpoint": "/api/attest",
+      "requires_auth": true,
+      "panel_compatible": true
+    }
+  },
+  "consumes": ["voice", "text", "octad-storage"],
+  "endpoints": {
+    "health": "/health",
+    "groove": "/.well-known/groove"
+  },
+  "health": "/health",
+  "applicability": ["individual", "team", "massive-open"]
+}
