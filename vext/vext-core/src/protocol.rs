@@ -134,7 +134,6 @@ fn format_channel(name: &str) -> String {
 }
 
 /// mIRC color codes
-#[allow(dead_code)]
 pub mod colors {
     pub const WHITE: &str = "\x0300";
     pub const BLACK: &str = "\x0301";

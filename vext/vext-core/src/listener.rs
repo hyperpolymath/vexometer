@@ -121,7 +121,6 @@ async fn process_notification(
 }
 
 /// Run a UDP listener (for simpler one-shot notifications)
-#[allow(dead_code)]
 pub async fn run_udp(addr: SocketAddr, pool: Arc<RwLock<ConnectionPool>>) -> Result<()> {
     let socket = UdpSocket::bind(addr).await?;
     info!("UDP listener bound to {}", addr);

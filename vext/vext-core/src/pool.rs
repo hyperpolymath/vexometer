@@ -204,7 +204,6 @@ impl ConnectionPool {
 
 /// Pool statistics
 #[derive(Debug)]
-#[allow(dead_code)]
 pub struct PoolStats {
     pub total_connections: usize,
     pub servers: Vec<String>,
