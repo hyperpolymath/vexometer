@@ -1,7 +1,7 @@
 # Vext Repository Contents
 
 **Created:** 2025-01-31
-**Location:** `/var/mnt/eclipse/repos/vext`
+**Location:** `/var$REPOS_DIR/vext`
 **GitHub:** https://github.com/hyperpolymath/vext (after push)
 
 ---
@@ -21,7 +21,7 @@
 - ✅ `META.scm` - ADRs (Architecture Decision Records), philosophy, governance
 
 ### Documentation (`docs/` directory)
-Should contain (copied from `/var/home/hyper`):
+Should contain (copied from `/var$HOME`):
 - `VEXT-MANIFESTO.md` - Why vext exists, the problem and solution
 - `VEXT-TECHNICAL-SPEC.md` - Protocol specification, message format
 - `VEXT-ANTI-ALGORITHM-ARCHITECTURE.md` - a2ml architecture, cryptographic design
@@ -40,7 +40,7 @@ Should contain (copied from `/var/home/hyper`):
 
 ```bash
 # Open a new terminal (current one has broken bash)
-cd /var/mnt/eclipse/repos/vext
+cd /var$REPOS_DIR/vext
 
 # Make script executable
 chmod +x COMMIT-AND-PUSH.sh
@@ -50,7 +50,7 @@ chmod +x COMMIT-AND-PUSH.sh
 ```
 
 The script will:
-1. Copy documentation from `/var/home/hyper` to `docs/`
+1. Copy documentation from `/var$HOME` to `docs/`
 2. Create LICENSE, CONTRIBUTING.md, SECURITY.md
 3. Initialize git (if needed)
 4. Commit all files with proper message

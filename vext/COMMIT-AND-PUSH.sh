@@ -8,19 +8,19 @@ echo "🚀 Vext Repository Setup and Push Script"
 echo "========================================"
 
 # Navigate to repo
-cd /var/mnt/eclipse/repos/vext
+cd /var$REPOS_DIR/vext
 
 # Copy documentation from home directory
 echo "📄 Copying documentation files..."
 mkdir -p docs
-cp /var/home/hyper/VEXT-MANIFESTO.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-MANIFESTO.md not found"
-cp /var/home/hyper/VEXT-TECHNICAL-SPEC.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-TECHNICAL-SPEC.md not found"
-cp /var/home/hyper/VEXT-MOBILE-SMS-EMAIL.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-MOBILE-SMS-EMAIL.md not found"
-cp /var/home/hyper/VEXT-ADDITIONAL-PROTOCOLS.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-ADDITIONAL-PROTOCOLS.md not found"
-cp /var/home/hyper/VEXT-MULTICAST-ARCHITECTURE.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-MULTICAST-ARCHITECTURE.md not found"
-cp /var/home/hyper/VEXT-ANTI-ALGORITHM-ARCHITECTURE.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-ANTI-ALGORITHM-ARCHITECTURE.md not found"
-cp /var/home/hyper/VEXT-ARXIV-PAPER-PLAN.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-ARXIV-PAPER-PLAN.md not found"
-cp /var/home/hyper/NUJ-VEXT-PROPOSAL.md docs/ 2>/dev/null || echo "  ⚠️  NUJ-VEXT-PROPOSAL.md not found"
+cp /var$HOME/VEXT-MANIFESTO.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-MANIFESTO.md not found"
+cp /var$HOME/VEXT-TECHNICAL-SPEC.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-TECHNICAL-SPEC.md not found"
+cp /var$HOME/VEXT-MOBILE-SMS-EMAIL.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-MOBILE-SMS-EMAIL.md not found"
+cp /var$HOME/VEXT-ADDITIONAL-PROTOCOLS.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-ADDITIONAL-PROTOCOLS.md not found"
+cp /var$HOME/VEXT-MULTICAST-ARCHITECTURE.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-MULTICAST-ARCHITECTURE.md not found"
+cp /var$HOME/VEXT-ANTI-ALGORITHM-ARCHITECTURE.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-ANTI-ALGORITHM-ARCHITECTURE.md not found"
+cp /var$HOME/VEXT-ARXIV-PAPER-PLAN.md docs/ 2>/dev/null || echo "  ⚠️  VEXT-ARXIV-PAPER-PLAN.md not found"
+cp /var$HOME/NUJ-VEXT-PROPOSAL.md docs/ 2>/dev/null || echo "  ⚠️  NUJ-VEXT-PROPOSAL.md not found"
 
 echo "✅ Documentation copied"
 
