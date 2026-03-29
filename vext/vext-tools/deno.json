@@ -14,10 +14,10 @@
     "hook:install": "deno run --allow-read --allow-write src/hooks/Install.res.mjs"
   },
   "imports": {
-    "@std/path": "jsr:@std/path@^1",
-    "@std/fs": "jsr:@std/fs@^1",
-    "@std/cli": "jsr:@std/cli@^1",
-    "@rescript/core": "npm:@rescript/core@^1"
+    "@std/path": "jsr:@std/path@^1.1.4",
+    "@std/fs": "jsr:@std/fs@^1.0.23",
+    "@std/cli": "jsr:@std/cli@^1.0.28",
+    "@rescript/core": "npm:@rescript/core@^1.6.1"
   },
   "compilerOptions": {
     "strict": true,
