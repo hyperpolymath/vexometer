@@ -46,8 +46,8 @@ native-tls = "0.2"
 tokio-native-tls = "0.3"
 openssl-sys = "0.9"
 
-# DNS resolution (SRV records)
-trust-dns-resolver = "0.23"
+# DNS resolution (SRV records) — renamed from trust-dns-resolver
+hickory-resolver = "0.24"
 
 # Document processing (optional)
 pandoc = { version = "0.8", optional = true }

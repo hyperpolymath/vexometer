@@ -46,7 +46,7 @@ tracing-subscriber = "0.3"
 chrono = { version = "0.4", features = ["serde"] }
 
 # Validation (defensive)
-validator = { version = "0.18", features = ["derive"] }
+validator = { version = "0.20", features = ["derive"] }
 
 # Rate limiting (proven algorithm)
 governor = "0.6"
