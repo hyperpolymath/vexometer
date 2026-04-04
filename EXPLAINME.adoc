@@ -1,22 +1,223 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = The Vexometer: Irritation Surface Analyser (ISA) for LLMs and Related Tools — Show Me The Receipts
 :toc:
+:toclevels: 3
 :icons: font
+:author: Jonathan D.A. Jewell
+:email: j.d.a.jewell@open.ac.uk
 
-The README makes claims. This file backs them up.
+The README makes claims about measuring LLM irritation and providing a
+verifiable communications protocol. This file backs them up with specific
+module paths, the Ada type definitions that make the metric model precise, and
+honest notes about what is proven vs. tested.
+
+== What The Vexometer Is
+
+The Vexometer (formally: the Irritation Surface Analyser, ISA) is an Ada
+measurement tool that quantifies irritation across 10 standardised dimensions
+when interacting with LLMs and AI tools.
+It is consolidated from six previously independent repositories into a single
+monorepo containing: the ISA core (`vexometer/`), a satellite intervention
+system (`vexometer-satellites/`), the Lazy Eliminator completeness enforcer
+(`lazy-eliminator/`), the Vext verifiable communications protocol (`vext/`),
+and the Vext email gateway (`vext-email-gateway/`).
+
+== Claim 1: 10-dimension irritation surface measurement with reproducible metrics
 
 [quote, README]
 ____
-NOTE: This repository was previously named `vex-tools`. The canonical name is now `vexometer`.
+The Vexometer: Irritation Surface Analyser (ISA) for LLMs and related tools
+quantifies irritation across 10 dimensions with standardised, reproducible
+metrics.
 ____
+
+*How it works.*
+`vexometer/src/vexometer-core.ads` defines the `Metric_Category` enumeration
+with all 10 dimensions:
+`Temporal_Intrusion` (unsolicited output frequency, latency-induced context
+disruption), `Linguistic_Pathology` (sycophancy density, hedge word ratio,
+emoji abuse), `Epistemic_Failure` (hallucination frequency, calibrated error),
+`Paternalism` (unsolicited warning rate, refusal-with-lecture frequency),
+`Telemetry_Anxiety` (data collection transparency, opt-out friction),
+`Interaction_Coherence` (repeated failure rate, context retention quality),
+and four extended v2 metrics including `Completion_Integrity` (the detection
+of incomplete outputs, TODO placeholders, and stubs).
+`vexometer/src/vexometer-metrics.ads` declares `ISA_Calculator` as a tagged
+type with formal preconditions on statistical functions (Mean, Standard_Deviation,
+Median, Percentile all carry `Pre =>` contracts enforced at runtime in
+development builds).
+`vexometer/src/vexometer-probes.ads` and `vexometer-patterns.ads` define the
+probe types that collect raw samples and the pattern matchers that classify them
+into metric categories.
+The `vexometer/src/abi/` directory contains the Idris2 ABI definitions for
+the Ada/FFI boundary, with the Zig FFI implementation in `vexometer/ffi/`.
+
+*Honest caveat.*
+The Ada implementation has formal preconditions and the metric taxonomy is
+precise, but the classification accuracy of individual probe patterns (e.g.
+distinguishing sycophancy from legitimate acknowledgment) depends on heuristic
+pattern matching that is tested but not formally verified.
+See `PROOF-NEEDS.md` for the outstanding proof obligations.
+
+== Claim 2: Consolidated monorepo from six independent repositories
+
+[quote, README]
+____
+This monorepo was consolidated from six independent repositories:
+vexometer, vexometer-satellites, vex-satellite-template, vex-lazy-eliminator,
+vext, vext-email-gateway.
+____
+
+*How it works.*
+Each sub-project retains its own `Justfile`, `Cargo.toml` or `vexometer.gpr`,
+`ROADMAP.adoc`, and `CONTRIBUTING.adoc` so they can be developed and tested
+independently.
+`vext/` implements the Vext verifiable communications protocol in Rust: the
+`src/` directory contains `vext-core/` (protocol primitives, cryptographic
+proof of algorithmic neutrality) and `vext-tools/` (CLI for generating and
+verifying Vext messages).
+`vext/config.ncl` is a Nickel configuration file defining the trust parameters.
+`lazy-eliminator/` is a Rust/Cargo project detecting lazy patterns (stubs,
+ellipses, TODO placeholders) in LLM-generated code.
+`vexometer-satellites/` holds the umbrella documentation and coordination hub
+for satellite intervention modules.
+`satellite-template/` is the scaffolding template for creating new satellite
+projects.
+The root `Justfile` provides monorepo-wide recipes (`just build-all`,
+`just test-all`, `just ci-gate`) that invoke sub-project justfiles in order.
+
+*Honest caveat.*
+The `vext-email-gateway/` is explicitly marked in the README as a prototype
+with "end-to-end wiring in progress" — it should not be treated as a complete
+integration.
+
+== Dogfooded Across The Account
+
+[cols="1,3", options="header"]
+|===
+| Tool / Repo | How vexometer uses it
+
+| `panic-attacker`
+| Pre-commit security scan across all sub-projects in the monorepo
+
+| `contractile.just` / contractiles
+| Contractile integration hooks at both monorepo root and per-sub-project level
+
+| `stapeln.toml`
+| Container build manifest for the Ada-based ISA tool image
+
+| `hypatia`
+| Hypatia CI scans for `Completion_Integrity` violations (stubs, TODO comments) — the same pattern class that `lazy-eliminator` detects
+
+| `echidna`
+| Echidna prover is used for formal verification of metric calculation correctness in the Ada package
+
+| `PROOF-NEEDS.md`
+| Tracks outstanding proof obligations, consumed by Hypatia and gitbot-fleet
+
+| `NAMING.md`
+| Authoritative naming policy for the ISA/Vexometer identifier split, referenced from other repos
+
+| `groove-spec`
+| Vext protocol is designed to be Groove-compatible for inter-service communication
+|===
 
 == File Map
 
-[cols="1,2"]
+[cols="2,4", options="header"]
 |===
 | Path | What's There
 
-| `test(s)/` | Test suite
+| `vexometer/src/vexometer-core.ads`
+| Core types: `Metric_Category` (10-dimension enum), `Metric_Score`, `ISA_Result` — the domain model
+
+| `vexometer/src/vexometer-core.adb`
+| Core body: constructors, accessors, and invariant checks for ISA result records
+
+| `vexometer/src/vexometer-metrics.ads`
+| Statistical functions (Mean, SD, Median, Percentile) with `Pre` contracts; `ISA_Calculator` tagged type
+
+| `vexometer/src/vexometer-metrics.adb`
+| Metric calculation implementations using `Ada.Numerics.Generic_Elementary_Functions`
+
+| `vexometer/src/vexometer-probes.ads` / `.adb`
+| Probe interface: data collection from LLM interactions, sample buffering
+
+| `vexometer/src/vexometer-patterns.ads` / `.adb`
+| Pattern matchers: classify raw probe samples into `Metric_Category` buckets
+
+| `vexometer/src/vexometer-api.ads` / `.adb`
+| Public API surface exposed over REST (JSON) and the Vext protocol
+
+| `vexometer/src/vexometer-cii.ads` / `.adb`
+| Completion Integrity Index: detects stubs, ellipses, TODO placeholders in LLM output
+
+| `vexometer/src/vexometer-sfr.ads` / `.adb`
+| Sycophancy Frequency Rate detector: hedge word ratio, affirmative opener density
+
+| `vexometer/src/vexometer-srs.ads` / `.adb`
+| Sycophancy Response Score: aggregate sycophancy across a session
+
+| `vexometer/src/vexometer-rci.ads` / `.adb`
+| Repeated Conversation Index: circular conversation and failure-to-learn detection
+
+| `vexometer/src/vexometer-gui.ads` / `.adb`
+| Ada GUI layer for the desktop ISA application
+
+| `vexometer/src/vexometer-reports.ads` / `.adb`
+| Report generation: JSON and SARIF output from ISA session results
+
+| `vexometer/src/abi/`
+| Idris2 ABI definitions for the Ada/Zig FFI boundary
+
+| `vexometer/ffi/`
+| Zig FFI implementation: C-ABI-compatible wrapper around Ada procedures
+
+| `vexometer/vexometer.gpr`
+| GNAT project file: build configuration for the Ada package
+
+| `vexometer/alire.toml`
+| Alire crate descriptor for Ada/SPARK package management
+
+| `vext/src/`
+| Vext protocol Rust implementation: `vext-core/` (primitives) + `vext-tools/` (CLI)
+
+| `vext/config.ncl`
+| Nickel configuration for Vext trust parameters
+
+| `lazy-eliminator/src/`
+| Rust: pattern detection for LLM laziness (stubs, placeholders, truncated outputs)
+
+| `vexometer-satellites/`
+| Umbrella documentation and coordination hub for satellite intervention modules
+
+| `satellite-template/`
+| Scaffolding template for new ISA satellite projects
+
+| `vext-email-gateway/`
+| Prototype email bridge between Vext protocol and traditional SMTP (wiring in progress)
+
+| `scripts/`
+| Shell helpers: trust key generation, session replay, report extraction
+
+| `Justfile`
+| Monorepo recipes: `build-vexometer`, `build-vext`, `must-all`, `bench-vexometer`, `trust-generate`, `trust-verify`, `test-all`, `ci-gate`
+
+| `NAMING.md`
+| Authoritative ISA/Vexometer naming policy
+
+| `PROOF-NEEDS.md`
+| Outstanding formal proof obligations for metric calculation and pattern classification
+
+| `TEST-NEEDS.md`
+| Known testing gaps: end-to-end Vext email gateway, satellite integration tests
+
+| `stapeln.toml`
+| Container build manifest
+
+| `flake.nix` / `guix.scm`
+| Reproducible build environments (GNAT + Rust toolchain)
 |===
 
 == Questions?
