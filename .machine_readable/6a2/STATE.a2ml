@@ -5,10 +5,22 @@
 [metadata]
 project = "vexometer"
 version = "0.1.0"
-last-updated = "2026-03-15"
+last-updated = "2026-04-04"
 status = "active"
 
 [project-context]
 name = "vexometer"
-completion-percentage = 0
-phase = "In development"
+completion-percentage = 25
+phase = "Testing (lazy-eliminator CRG C complete)"
+
+[crg-status]
+lazy-eliminator = "CRG C: 55 tests (unit+E2E+property+aspect), benchmarks baselined"
+vexometer-ada = "CRG D: 1 test file (Ada), satellite tests needed"
+
+[test-coverage]
+unit-tests = "3 (analyzer.rs)"
+e2e-tests = "16 (full pipeline)"
+property-tests = "16 (proptest)"
+aspect-tests = "20 (security/robustness/concurrency)"
+benchmarks = "1 suite (Criterion)"
+total = "55 tests, 100% pass rate"
