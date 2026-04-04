@@ -26,9 +26,54 @@
 - **Coverage**: detection.rs, analyzer.rs, language.rs, patterns.rs, config.rs fully tested
 - **CRG Grade**: C (comprehensive test coverage, property tests, benchmarks baselined)
 
-## CRG Grade: C — ACHIEVED 2026-04-04
+## CRG Grade: B — ACHIEVED 2026-04-04
 
-Both sub-projects now at CRG Grade C:
+> CRG B achieved 2026-04-04: Ran `vex-lazy-eliminator check` on 6 diverse Rust files from external repos.
+
+## CRG B Evidence — External Targets
+
+| Target Repo | File | What Was Tested | Result |
+|-------------|------|-----------------|--------|
+| protocol-squisher | crates/shape-ir/src/lib.rs | Incompleteness check | PASS: CII=0.0, no patterns |
+| protocol-squisher | crates/cli/src/main.rs | Incompleteness check | 4 placeholders (CII=0.800) |
+| panic-attacker | src/lib.rs | Incompleteness check | PASS: CII=0.0, no patterns |
+| panic-attacker | src/main.rs | Incompleteness check | 4 placeholders (CII=0.800) |
+| boj-server | tools/cartridge-minter/src/main.rs | Incompleteness check | 4 placeholders (CII=0.800) |
+| gossamer | bindings/rust/src/lib.rs | Incompleteness check | 1 placeholder (CII=0.800) |
+
+### Target Details
+
+**1. protocol-squisher shape-ir (Rust library)**
+- Command: `vex-lazy-eliminator check /var/mnt/eclipse/repos/protocol-squisher/crates/shape-ir/src/lib.rs`
+- Key findings: No incompleteness detected (CII: 0.0). Clean library code.
+
+**2. protocol-squisher CLI (Rust binary)**
+- Command: `vex-lazy-eliminator check /var/mnt/eclipse/repos/protocol-squisher/crates/protocol-squisher-cli/src/main.rs`
+- Key findings: 4 placeholder patterns at lines 910, 2213, 2334, 2644. Severity: 0.80 each. CII: 0.800.
+
+**3. panic-attacker lib.rs (Rust library)**
+- Command: `vex-lazy-eliminator check /var/mnt/eclipse/repos/panic-attacker/src/lib.rs`
+- Key findings: No incompleteness detected (CII: 0.0). Clean library exports.
+
+**4. panic-attacker main.rs (Rust binary)**
+- Command: `vex-lazy-eliminator check /var/mnt/eclipse/repos/panic-attacker/src/main.rs`
+- Key findings: 4 placeholder patterns at lines 1928, 1954, 2054, 2056. Severity: 0.80. Large CLI entry point with some TODO-like placeholders.
+
+**5. boj-server cartridge-minter (Rust tool)**
+- Command: `vex-lazy-eliminator check /var/mnt/eclipse/repos/boj-server/tools/cartridge-minter/src/main.rs`
+- Key findings: 4 placeholder patterns at lines 149, 163, 177, 191. Template scaffolding code with expected placeholders.
+
+**6. gossamer Rust bindings (Rust FFI)**
+- Command: `vex-lazy-eliminator check /var/mnt/eclipse/repos/gossamer/bindings/rust/src/lib.rs`
+- Key findings: 1 placeholder pattern at line 585. Severity: 0.80. FFI binding with one incomplete section.
+
+### Observations
+
+- **Language support**: Currently Rust-only. Gleam, Elixir, Zig, ReScript all returned "Unsupported language" errors.
+- **Detection quality**: Correctly distinguishes clean libraries (CII=0.0) from binaries with placeholder/TODO patterns (CII=0.800).
+- **False positive rate**: Low — all detected patterns appear to be genuine placeholders in large files.
+
+Both sub-projects now at CRG Grade B:
 
 | Sub-project | Tests | Status |
 |-------------|-------|--------|
