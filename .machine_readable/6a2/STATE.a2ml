@@ -11,16 +11,27 @@ status = "active"
 [project-context]
 name = "vexometer"
 completion-percentage = 25
-phase = "Testing (lazy-eliminator CRG C complete)"
+phase = "CRG C achieved for both sub-projects (2026-04-04)"
 
 [crg-status]
 lazy-eliminator = "CRG C: 55 tests (unit+E2E+property+aspect), benchmarks baselined"
-vexometer-ada = "CRG D: 1 test file (Ada), satellite tests needed"
+vexometer-ada = "CRG C: 1282 assertions (unit+P2P+E2E+contract+aspect), benchmarks baselined (2026-04-04)"
+overall = "CRG C achieved 2026-04-04"
 
 [test-coverage]
-unit-tests = "3 (analyzer.rs)"
-e2e-tests = "16 (full pipeline)"
-property-tests = "16 (proptest)"
-aspect-tests = "20 (security/robustness/concurrency)"
-benchmarks = "1 suite (Criterion)"
-total = "55 tests, 100% pass rate"
+# Rust (lazy-eliminator)
+rust-unit-tests = "3 (analyzer.rs)"
+rust-e2e-tests = "16 (full pipeline)"
+rust-property-tests = "16 (proptest)"
+rust-aspect-tests = "20 (security/robustness/concurrency)"
+rust-benchmarks = "1 suite (Criterion)"
+rust-total = "55 tests, 100% pass rate"
+
+# Ada (vexometer core)
+ada-unit-tests = "6 (core, CII, patterns, probes, JSON loading)"
+ada-p2p-tests = "420 (4 property loops x 100 iterations each)"
+ada-e2e-tests = "7 (pipeline E2E, CII E2E)"
+ada-contract-tests = "9 (CII bounds, ISA bounds, completeness)"
+ada-aspect-tests = "16 (empty input, long text, saturation, false-positive, probe invariants)"
+ada-benchmarks = "2 suites (10000 iterations each: pattern analysis + CII)"
+ada-total = "1282 assertions, 100% pass rate"

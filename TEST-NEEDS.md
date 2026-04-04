@@ -26,7 +26,16 @@
 - **Coverage**: detection.rs, analyzer.rs, language.rs, patterns.rs, config.rs fully tested
 - **CRG Grade**: C (comprehensive test coverage, property tests, benchmarks baselined)
 
-## Remaining Work (Ada/Idris2 ABI)
+## CRG Grade: C — ACHIEVED 2026-04-04
+
+Both sub-projects now at CRG Grade C:
+
+| Sub-project | Tests | Status |
+|-------------|-------|--------|
+| lazy-eliminator (Rust) | 55 | CRG C complete |
+| vexometer (Ada) | 1282 | CRG C complete 2026-04-04 |
+
+## Remaining Work (Ada/Idris2 ABI - P2 after CRG C)
 
 ### P2P Tests (Ada)
 - [ ] No tests for vexometer <-> satellite communication
