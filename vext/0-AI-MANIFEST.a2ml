@@ -1,0 +1,60 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath)
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ✅ YOU ARE IN THE RIGHT PLACE — IF YOU WANT THE VEXT PROTOCOL
+// ══════════════════════════════════════════════════════════════════════════════
+//
+// This is the canonical home of the Vext protocol specification.
+//
+//  ┌─ YOU ARE HERE ─────────────────────────────────────────────────────────┐
+//  │  Vext — Verifiable, Extensible Communications Protocol                 │
+//  │  The protocol spec, Idris2 formal proofs, and reference implementation.│
+//  │  Cryptographic feed integrity: Merkle trees, digital signatures,       │
+//  │  dependent-type proofs of algorithmic neutrality.                      │
+//  │  Subsystem of: vexometer (Irritation Surface Analyser for LLMs)        │
+//  │                                                                        │
+//  │  Path:   vexometer/vext/                                               │
+//  │  GitHub: part of the vexometer monorepo                                │
+//  └────────────────────────────────────────────────────────────────────────┘
+//
+//  ┌─ RELATED — NOT THE SAME THING ─────────────────────────────────────────┐
+//  │  Burble's Vext integration                                             │
+//  │  Burble (voice/chat platform) implements this protocol for its text    │
+//  │  feeds. That integration lives at:                                     │
+//  │    burble/server/lib/burble/verification/vext.ex                       │
+//  │    burble/server/lib/burble/verification/vext_groove.ex                │
+//  │  It is a consumer of this spec, not the spec itself.                   │
+//  └────────────────────────────────────────────────────────────────────────┘
+//
+//  ┌─ UNRELATED — COMPLETELY DIFFERENT THING ───────────────────────────────┐
+//  │  vcs-ircd (formerly also named "vext" — now renamed)                   │
+//  │  A pooled IRC notification daemon for Git/VCS events. Rust/Tokio.      │
+//  │  Has nothing to do with cryptographic verification or this protocol.   │
+//  │  GitHub: hyperpolymath/vcs-ircd                                        │
+//  │  Path:   developer-ecosystem/satellites/git-tools/vcs-ircd             │
+//  └────────────────────────────────────────────────────────────────────────┘
+//
+// ══════════════════════════════════════════════════════════════════════════════
+
+[identity]
+name     = "vext"
+kind     = "protocol-spec"
+parent   = "vexometer"
+path     = "vexometer/vext"
+
+[purpose]
+summary  = "Verifiable, Extensible Communications Protocol — canonical spec and proofs"
+tech     = "Idris2 (formal proofs), Rust (reference impl), Merkle trees, Ed25519"
+relation = "Protocol spec. Burble implements this. vcs-ircd is unrelated."
+
+[consumers]
+burble   = "burble/server/lib/burble/verification/vext.ex"
+
+[invariants]
+rules = [
+  "This is the protocol HOME. Do not confuse with burble's vext.ex (consumer)",
+  "vcs-ircd is a completely unrelated IRC daemon — ignore any 'vext' references there",
+  "Formal proofs are in Idris2 under src/proofs/ — do not add sorry/Admitted",
+  "a2ml verification layer is the key innovation — preserve its dependent-type guarantees",
+]
