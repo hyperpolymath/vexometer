@@ -2,59 +2,61 @@
 // SPDX-FileCopyrightText: 2024-2026 Jonathan D.A. Jewell (hyperpolymath)
 
 // ══════════════════════════════════════════════════════════════════════════════
-// ✅ YOU ARE IN THE RIGHT PLACE — IF YOU WANT THE VEXT PROTOCOL
+// ⚠️  NAME COINCIDENCE ALERT — READ THIS BEFORE DOING ANYTHING
 // ══════════════════════════════════════════════════════════════════════════════
 //
-// This is the canonical home of the Vext protocol specification.
+// This directory is named "vext" because the author was VEXED by Gemini and
+// Copilot. The name comes from "vexed/irritating" — it is a component of the
+// Vexometer (Irritation Surface Analyser for LLMs). It has NOTHING to do with
+// the cryptographic "Vext" verification protocol.
 //
 //  ┌─ YOU ARE HERE ─────────────────────────────────────────────────────────┐
-//  │  Vext — Verifiable, Extensible Communications Protocol                 │
-//  │  The protocol spec, Idris2 formal proofs, and reference implementation.│
-//  │  Cryptographic feed integrity: Merkle trees, digital signatures,       │
-//  │  dependent-type proofs of algorithmic neutrality.                      │
-//  │  Subsystem of: vexometer (Irritation Surface Analyser for LLMs)        │
+//  │  vexometer/vext — ISA component                                        │
+//  │  Part of: Vexometer (Irritation Surface Analyser for LLMs)             │
+//  │  Named: "vext" as in "vexed" — from irritation at Gemini + Copilot    │
+//  │  Purpose: LLM behaviour analysis tool within the vexometer suite       │
 //  │                                                                        │
-//  │  Path:   vexometer/vext/                                               │
-//  │  GitHub: part of the vexometer monorepo                                │
+//  │  This is a SUBDIRECTORY of the vexometer monorepo.                     │
+//  │  GitHub: hyperpolymath/vexometer (monorepo)                            │
 //  └────────────────────────────────────────────────────────────────────────┘
 //
-//  ┌─ RELATED — NOT THE SAME THING ─────────────────────────────────────────┐
-//  │  Burble's Vext integration                                             │
-//  │  Burble (voice/chat platform) implements this protocol for its text    │
-//  │  feeds. That integration lives at:                                     │
-//  │    burble/server/lib/burble/verification/vext.ex                       │
-//  │    burble/server/lib/burble/verification/vext_groove.ex                │
-//  │  It is a consumer of this spec, not the spec itself.                   │
+//  ┌─ NOT HERE — COMPLETELY DIFFERENT "VEXT" ───────────────────────────────┐
+//  │  Vext — Verifiable, Extensible Communications Protocol                 │
+//  │  BLAKE3 hash-chain feed integrity, Ed25519 signatures, dependent-type  │
+//  │  proofs of algorithmic neutrality. A cryptographic verification tool.  │
+//  │                                                                        │
+//  │  Canonical spec:    hyperpolymath/vext  (top-level repo, NOT this dir) │
+//  │  Burble consumer:   burble/server/lib/burble/verification/vext.ex      │
 //  └────────────────────────────────────────────────────────────────────────┘
 //
-//  ┌─ UNRELATED — COMPLETELY DIFFERENT THING ───────────────────────────────┐
-//  │  vcs-ircd (formerly also named "vext" — now renamed)                   │
+//  ┌─ ALSO NOT HERE — RENAMED ──────────────────────────────────────────────┐
+//  │  vcs-ircd (formerly also named "vext")                                 │
 //  │  A pooled IRC notification daemon for Git/VCS events. Rust/Tokio.      │
-//  │  Has nothing to do with cryptographic verification or this protocol.   │
 //  │  GitHub: hyperpolymath/vcs-ircd                                        │
-//  │  Path:   developer-ecosystem/satellites/git-tools/vcs-ircd             │
 //  └────────────────────────────────────────────────────────────────────────┘
 //
 // ══════════════════════════════════════════════════════════════════════════════
 
 [identity]
 name     = "vext"
-kind     = "protocol-spec"
+kind     = "isa-component"
 parent   = "vexometer"
 path     = "vexometer/vext"
 
 [purpose]
-summary  = "Verifiable, Extensible Communications Protocol — canonical spec and proofs"
-tech     = "Idris2 (formal proofs), Rust (reference impl), Merkle trees, Ed25519"
-relation = "Protocol spec. Burble implements this. vcs-ircd is unrelated."
+summary  = "LLM behaviour analysis component of the Vexometer irritation-surface analyser"
+naming   = "Named 'vext' from 'vexed' — author was vexed by Gemini + Copilot. NOT the cryptographic Vext protocol."
+relation = "ISA component. Part of vexometer monorepo. Unrelated to the Vext verification protocol."
 
-[consumers]
-burble   = "burble/server/lib/burble/verification/vext.ex"
+[disambiguation]
+cryptographic-vext  = "hyperpolymath/vext — the actual Vext protocol spec"
+burble-consumer     = "burble/server/lib/burble/verification/vext.ex"
+irc-daemon          = "hyperpolymath/vcs-ircd (formerly named 'vext')"
 
 [invariants]
 rules = [
-  "This is the protocol HOME. Do not confuse with burble's vext.ex (consumer)",
-  "vcs-ircd is a completely unrelated IRC daemon — ignore any 'vext' references there",
-  "Formal proofs are in Idris2 under src/proofs/ — do not add sorry/Admitted",
-  "a2ml verification layer is the key innovation — preserve its dependent-type guarantees",
+  "This is an ISA component. It is NOT the Vext protocol spec or implementation.",
+  "The name 'vext' here means 'vexed' (annoyed), NOT 'verifiable extensions'.",
+  "Vexometer is the ISA (Irritation Surface Analyser) — vext is a sub-component.",
+  "Do NOT confuse with hyperpolymath/vext (the cryptographic Vext protocol).",
 ]
