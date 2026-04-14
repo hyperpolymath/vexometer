@@ -24,7 +24,7 @@ ed25519-dalek = { version = "2.1", features = ["rand_core"] }     # Ed25519 sign
 sha2 = "0.10"             # SHA-256 (NIST standard)
 blake3 = "1.5"            # BLAKE3 (faster, also secure)
 hex = "0.4"
-rand = "0.8"
+rand = "0.9"
 
 # Serialization (proven)
 serde = { version = "1.0", features = ["derive"] }
