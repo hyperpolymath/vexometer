@@ -86,7 +86,7 @@ def process_data():
     # TODO: implement this
     pass
 "#;
-        let detections = analyzer.analyze(code).unwrap();
+        let detections = analyzer.analyze(code).expect("TODO: handle error");
         assert!(!detections.is_empty());
         assert!(detections.iter().any(|d| matches!(d.kind, crate::detection::IncompletenessKind::TodoComment)));
     }
@@ -99,7 +99,7 @@ fn complex_function() {
     unimplemented!()
 }
 "#;
-        let detections = analyzer.analyze(code).unwrap();
+        let detections = analyzer.analyze(code).expect("TODO: handle error");
         assert!(!detections.is_empty());
         assert!(detections.iter().any(|d| matches!(d.kind, crate::detection::IncompletenessKind::UnimplementedCode)));
     }
@@ -111,6 +111,6 @@ fn complex_function() {
 def add(a, b):
     return a + b
 "#;
-        assert!(analyzer.is_complete(code).unwrap());
+        assert!(analyzer.is_complete(code).expect("TODO: handle error"));
     }
 }

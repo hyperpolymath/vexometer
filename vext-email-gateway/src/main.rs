@@ -248,8 +248,8 @@ impl Gateway {
         );
 
         let email = EmailMessage::builder()
-            .from(format!("Vext <noreply@vext.org>").parse().unwrap())
-            .to(to.parse().unwrap())
+            .from(format!("Vext <noreply@vext.org>").parse().expect("TODO: handle error"))
+            .to(to.parse().expect("TODO: handle error"))
             .subject(msg.title.clone().unwrap_or_else(|| "Vext message".to_string()))
             .header(header::ContentType::TEXT_PLAIN)
             .body(body)
@@ -264,8 +264,8 @@ impl Gateway {
     /// Send simple text email
     async fn send_simple_email(&self, to: &str, subject: &str, body: &str) -> Result<()> {
         let email = EmailMessage::builder()
-            .from("Vext <noreply@vext.org>".parse().unwrap())
-            .to(to.parse().unwrap())
+            .from("Vext <noreply@vext.org>".parse().expect("TODO: handle error"))
+            .to(to.parse().expect("TODO: handle error"))
             .subject(subject)
             .header(header::ContentType::TEXT_PLAIN)
             .body(body.to_string())
@@ -315,7 +315,7 @@ async fn main() -> Result<()> {
         smtp_port: std::env::var("SMTP_PORT")
             .unwrap_or_else(|_| "587".to_string())
             .parse()
-            .unwrap(),
+            .expect("TODO: handle error"),
         smtp_username: std::env::var("SMTP_USERNAME")
             .expect("SMTP_USERNAME required"),
         smtp_password: std::env::var("SMTP_PASSWORD")

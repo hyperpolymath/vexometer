@@ -166,7 +166,7 @@ mod tests {
             "privmsg": "Test commit message"
         }"#;
 
-        let notification: Notification = serde_json::from_str(json).unwrap();
+        let notification: Notification = serde_json::from_str(json).expect("TODO: handle error");
         assert_eq!(notification.to.len(), 1);
         assert_eq!(notification.privmsg, "Test commit message");
     }
@@ -182,7 +182,7 @@ mod tests {
             "author": "dev"
         }"#;
 
-        let notification: Notification = serde_json::from_str(json).unwrap();
+        let notification: Notification = serde_json::from_str(json).expect("TODO: handle error");
         assert_eq!(notification.project, Some("vext".to_string()));
         assert_eq!(notification.branch, Some("main".to_string()));
     }

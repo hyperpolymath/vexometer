@@ -98,14 +98,14 @@ mod tests {
     #[test]
     #[cfg(feature = "i18n")]
     fn test_i18n_basic() {
-        let mut i18n = I18n::new("en-US").unwrap();
+        let mut i18n = I18n::new("en-US").expect("TODO: handle error");
 
         let ftl = r#"
 hello = Hello, World!
 goodbye = Goodbye!
         "#;
 
-        i18n.load_ftl("en-US", ftl).unwrap();
+        i18n.load_ftl("en-US", ftl).expect("TODO: handle error");
 
         assert_eq!(i18n.get("en-US", "hello"), Some("Hello, World!".to_string()));
     }
