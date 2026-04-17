@@ -50,3 +50,11 @@ htmlcov/
 # Vexometer traces (keep examples)
 /vexometer/*.json
 !/vexometer/example-*.json
+target/
+node_modules/
+_build/
+deps/
+.elixir_ls/
+.cache/
+build/
+dist/

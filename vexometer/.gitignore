@@ -83,3 +83,11 @@ htmlcov/
 
 # Repo-local verisim sidecar runtime state
 /.verisim-local/
+target/
+node_modules/
+_build/
+deps/
+.elixir_ls/
+.cache/
+build/
+dist/
