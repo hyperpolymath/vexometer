@@ -52,11 +52,11 @@
 - Key findings: 4 placeholder patterns at lines 910, 2213, 2334, 2644. Severity: 0.80 each. CII: 0.800.
 
 **3. panic-attacker lib.rs (Rust library)**
-- Command: `vex-lazy-eliminator check /var/mnt/eclipse/repos/panic-attacker/src/lib.rs`
+- Command: `vex-lazy-eliminator check /var/mnt/eclipse/repos/games-ecosystem/panic-attacker/src/lib.rs`
 - Key findings: No incompleteness detected (CII: 0.0). Clean library exports.
 
 **4. panic-attacker main.rs (Rust binary)**
-- Command: `vex-lazy-eliminator check /var/mnt/eclipse/repos/panic-attacker/src/main.rs`
+- Command: `vex-lazy-eliminator check /var/mnt/eclipse/repos/games-ecosystem/panic-attacker/src/main.rs`
 - Key findings: 4 placeholder patterns at lines 1928, 1954, 2054, 2056. Severity: 0.80. Large CLI entry point with some TODO-like placeholders.
 
 **5. boj-server cartridge-minter (Rust tool)**
