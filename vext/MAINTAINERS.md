@@ -93,7 +93,7 @@ Active contributors have demonstrated consistent, quality contributions and assi
 
 ### Build & Release
 **Lead**: [Core Developer 2]
-- justfile, Makefile
+- Justfile, Makefile
 - Nix flakes
 - CI/CD pipelines
 - Release process

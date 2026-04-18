@@ -85,7 +85,7 @@ for satellite intervention modules.
 `satellite-template/` is the scaffolding template for creating new satellite
 projects.
 The root `Justfile` provides monorepo-wide recipes (`just build-all`,
-`just test-all`, `just ci-gate`) that invoke sub-project justfiles in order.
+`just test-all`, `just ci-gate`) that invoke sub-project Justfiles in order.
 
 *Honest caveat.*
 The `vext-email-gateway/` is explicitly marked in the README as a prototype

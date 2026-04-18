@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Team attribution (`.well-known/humans.txt`)
 - Automated RSR compliance checker (`tools/rsr_checker.py`)
 - Nix flakes for reproducible builds (`flake.nix`)
-- justfile for build automation
+- Justfile for build automation
 - GitLab CI/CD configuration
 - Comprehensive security policy (SECURITY.md)
 - Code of Conduct with emotional safety framework

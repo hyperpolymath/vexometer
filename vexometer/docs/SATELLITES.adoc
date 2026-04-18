@@ -263,7 +263,7 @@ vex-SATELLITE_NAME/
 ├── alire.toml                # Ada package (if applicable)
 ├── Cargo.toml                # Rust package (if applicable)
 ├── flake.nix
-└── justfile
+└── Justfile
 ----
 
 == Satellite ECOSYSTEM.scm Template
@@ -405,7 +405,7 @@ All satellites must follow:
   orchestration, Haskell for pure logic. Avoid Python.
 * *VCS*: GitLab primary, GitHub mirror acceptable
 * *Containers*: Podman over Docker
-* *Build*: justfile over Makefile
+* *Build*: Justfile over Makefile
 * *Package managers*: Alire (Ada), Cargo (Rust), Mix (Elixir), Cabal (Haskell)
 * *Standard*: RSR (Rhodium Standard Repository) compliance
 * *License*: PMPL-1.0-or-later

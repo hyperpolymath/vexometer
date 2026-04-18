@@ -8,7 +8,7 @@
 === Perimeter 1 (Core)
 Maintainers only. Includes:
 
-* Build system (flake.nix, justfile)
+* Build system (flake.nix, Justfile)
 * Core Ada packages
 * Security-critical code
 

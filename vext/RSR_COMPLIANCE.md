@@ -46,7 +46,7 @@ Bronze level establishes foundational documentation, security policies, build sy
 | 8 | .well-known/security.txt (RFC 9116) | ✅ | `.well-known/security.txt` |
 | 9 | .well-known/ai.txt | ✅ | `.well-known/ai.txt` |
 | 10 | .well-known/humans.txt | ✅ | `.well-known/humans.txt` |
-| 11 | Build system (justfile) | ✅ | `justfile` |
+| 11 | Build system (Justfile) | ✅ | `justfile` |
 | 12 | Nix flakes (flake.nix) | ✅ | `flake.nix` |
 | 13 | CI/CD (.gitlab-ci.yml) | ✅ | `.gitlab-ci.yml` |
 | 14 | TPCF governance documentation | ✅ | `governance/PROJECT_GOVERNANCE.md` |
@@ -76,7 +76,7 @@ Bronze level establishes foundational documentation, security policies, build sy
 - Tri-Perimeter Contribution Framework (TPCF)
 
 **Build Automation**:
-- justfile with 40+ recipes
+- Justfile with 40+ recipes
 - Nix flakes for reproducible builds
 - GitLab CI/CD with multi-stage pipeline
 - Automated testing and linting
@@ -225,7 +225,7 @@ All compliance requirements can be manually verified:
 ls -lh *.md governance/*.md .well-known/
 
 # Check build systems
-ls -lh justfile flake.nix .gitlab-ci.yml
+ls -lh Justfile flake.nix .gitlab-ci.yml
 
 # Check tests
 pytest tests/ -v
@@ -377,7 +377,7 @@ Questions about RSR compliance:
 ✅ .well-known/security.txt
 ✅ .well-known/ai.txt
 ✅ .well-known/humans.txt
-✅ justfile
+✅ Justfile
 ✅ flake.nix
 ✅ .gitlab-ci.yml
 ✅ .gitignore
