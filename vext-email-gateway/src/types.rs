@@ -331,10 +331,11 @@ mod tests {
     use proptest::prelude::*;
 
     fn generate_signing_key() -> SigningKey {
-        use rand::RngCore;
+        use rand::TryRngCore;
         let mut rng = rand::rngs::OsRng;
         let mut sk = [0u8; 32];
-        rng.fill_bytes(&mut sk);
+        rng.try_fill_bytes(&mut sk)
+            .expect("OsRng must succeed for cryptographic key generation");
         SigningKey::from_bytes(&sk)
     }
 
@@ -401,10 +402,11 @@ mod verification {
     use super::*;
 
     fn generate_signing_key() -> SigningKey {
-        use rand::RngCore;
+        use rand::TryRngCore;
         let mut rng = rand::rngs::OsRng;
         let mut sk = [0u8; 32];
-        rng.fill_bytes(&mut sk);
+        rng.try_fill_bytes(&mut sk)
+            .expect("OsRng must succeed for cryptographic key generation");
         SigningKey::from_bytes(&sk)
     }
 
