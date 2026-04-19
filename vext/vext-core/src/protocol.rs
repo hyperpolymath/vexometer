@@ -204,7 +204,7 @@ mod tests {
 
     #[test]
     fn test_parse_irc_url() {
-        let target = IrcTarget::parse("irc://irc.libera.chat/vext").expect("TODO: handle error");
+        let target = IrcTarget::parse("irc://irc.libera.chat/vext").unwrap();
         assert_eq!(target.server, "irc.libera.chat");
         assert_eq!(target.channel, "#vext");
         assert!(!target.tls);
@@ -213,7 +213,7 @@ mod tests {
 
     #[test]
     fn test_parse_ircs_url() {
-        let target = IrcTarget::parse("ircs://irc.libera.chat:6697/vext").expect("TODO: handle error");
+        let target = IrcTarget::parse("ircs://irc.libera.chat:6697/vext").unwrap();
         assert_eq!(target.server, "irc.libera.chat");
         assert_eq!(target.port, Some(6697));
         assert!(target.tls);
@@ -221,7 +221,7 @@ mod tests {
 
     #[test]
     fn test_parse_url_with_key() {
-        let target = IrcTarget::parse("irc://server/secret?key=pass123").expect("TODO: handle error");
+        let target = IrcTarget::parse("irc://server/secret?key=pass123").unwrap();
         assert_eq!(target.channel, "#secret");
         assert_eq!(target.key, Some("pass123".to_string()));
     }

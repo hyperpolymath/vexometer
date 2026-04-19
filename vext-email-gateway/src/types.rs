@@ -342,7 +342,7 @@ mod tests {
     fn test_did_roundtrip() {
         let signing_key = generate_signing_key();
         let did = DID::from_public_key(&signing_key.verifying_key());
-        let recovered = did.to_public_key().expect("TODO: handle error");
+        let recovered = did.to_public_key().unwrap();
         assert_eq!(signing_key.verifying_key(), recovered);
     }
 
@@ -355,9 +355,9 @@ mod tests {
             Some("Test".to_string()),
             vec!["test".to_string()],
         )
-        .expect("TODO: handle error");
+        .unwrap();
 
-        assert!(msg.verify().expect("TODO: handle error"));
+        assert!(msg.verify().unwrap());
     }
 
     #[test]
@@ -369,13 +369,13 @@ mod tests {
             Some("Test".to_string()),
             vec!["test".to_string()],
         )
-        .expect("TODO: handle error");
+        .unwrap();
 
         // Tamper with content
         msg.content = "Tampered content".to_string();
 
         // Verification should fail
-        assert!(!msg.verify().expect("TODO: handle error"));
+        assert!(!msg.verify().unwrap());
     }
 
     // Property-based testing: message creation always produces valid messages
@@ -388,9 +388,9 @@ mod tests {
                 &signing_key,
                 Some(title),
                 vec!["test".to_string()],
-            ).expect("TODO: handle error");
+            ).unwrap();
 
-            prop_assert!(msg.verify().expect("TODO: handle error"));
+            prop_assert!(msg.verify().unwrap());
         }
     }
 }
@@ -412,7 +412,7 @@ mod verification {
     fn verify_did_roundtrip() {
         let signing_key = generate_signing_key();
         let did = DID::from_public_key(&signing_key.verifying_key());
-        let recovered = did.to_public_key().expect("TODO: handle error");
+        let recovered = did.to_public_key().unwrap();
         kani::assert(signing_key.verifying_key() == recovered, "DID roundtrip failed");
     }
 
@@ -421,8 +421,8 @@ mod verification {
         // Different content -> different IDs
         let signing_key = generate_signing_key();
 
-        let msg1 = Message::new("Content 1".to_string(), &signing_key, None, vec![]).expect("TODO: handle error");
-        let msg2 = Message::new("Content 2".to_string(), &signing_key, None, vec![]).expect("TODO: handle error");
+        let msg1 = Message::new("Content 1".to_string(), &signing_key, None, vec![]).unwrap();
+        let msg2 = Message::new("Content 2".to_string(), &signing_key, None, vec![]).unwrap();
 
         kani::assert(msg1.id != msg2.id, "Different content must have different IDs");
     }
