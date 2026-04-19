@@ -247,9 +247,13 @@ impl Gateway {
             msg.id,
         );
 
+        let from_addr = "Vext <noreply@vext.org>".parse()
+            .expect("static literal 'Vext <noreply@vext.org>' is a valid mailbox");
+        let to_addr = to.parse()
+            .map_err(|e: lettre::address::AddressError| VextError::InvalidEmail(e.to_string()))?;
         let email = EmailMessage::builder()
-            .from(format!("Vext <noreply@vext.org>").parse().expect("TODO: handle error"))
-            .to(to.parse().expect("TODO: handle error"))
+            .from(from_addr)
+            .to(to_addr)
             .subject(msg.title.clone().unwrap_or_else(|| "Vext message".to_string()))
             .header(header::ContentType::TEXT_PLAIN)
             .body(body)
@@ -263,9 +267,13 @@ impl Gateway {
 
     /// Send simple text email
     async fn send_simple_email(&self, to: &str, subject: &str, body: &str) -> Result<()> {
+        let from_addr = "Vext <noreply@vext.org>".parse()
+            .expect("static literal 'Vext <noreply@vext.org>' is a valid mailbox");
+        let to_addr = to.parse()
+            .map_err(|e: lettre::address::AddressError| VextError::InvalidEmail(e.to_string()))?;
         let email = EmailMessage::builder()
-            .from("Vext <noreply@vext.org>".parse().expect("TODO: handle error"))
-            .to(to.parse().expect("TODO: handle error"))
+            .from(from_addr)
+            .to(to_addr)
             .subject(subject)
             .header(header::ContentType::TEXT_PLAIN)
             .body(body.to_string())
@@ -315,7 +323,9 @@ async fn main() -> Result<()> {
         smtp_port: std::env::var("SMTP_PORT")
             .unwrap_or_else(|_| "587".to_string())
             .parse()
-            .expect("TODO: handle error"),
+            .map_err(|e: std::num::ParseIntError| {
+                VextError::Validation(format!("SMTP_PORT must be a valid u16: {}", e))
+            })?,
         smtp_username: std::env::var("SMTP_USERNAME")
             .expect("SMTP_USERNAME required"),
         smtp_password: std::env::var("SMTP_PASSWORD")
