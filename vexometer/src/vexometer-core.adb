@@ -2,7 +2,7 @@
 --
 --  Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)
 --  <j.d.a.jewell@open.ac.uk>
---  SPDX-License-Identifier: PMPL-1.0-or-later
+--  SPDX-License-Identifier: MPL-2.0
 --
 --  Provides the fundamental ISA (Irritation Surface Analysis) calculation
 --  engine. All scores are normalised 0-1 per category and weighted to

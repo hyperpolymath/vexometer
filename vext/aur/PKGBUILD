@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT OR PMPL-1.0-or-later
+# SPDX-License-Identifier: MIT OR MPL-2.0
 # Maintainer: hyperpolymath <packages@hyperpolymath.dev>
 # Contributor: Vext Contributors
 
@@ -8,7 +8,7 @@ pkgrel=1
 pkgdesc='High-performance IRC notification daemon for version control systems'
 arch=('x86_64' 'aarch64')
 url='https://github.com/hyperpolymath/vext'
-license=('MIT' 'PMPL-1.0-or-later')
+license=('MIT' 'MPL-2.0')
 depends=('gcc-libs' 'openssl')
 makedepends=('cargo' 'rust')
 provides=('vextd' 'vext-send')

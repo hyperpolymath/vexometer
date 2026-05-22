@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Script to commit and push vext repository to GitHub
 
 set -e  # Exit on error
@@ -27,7 +27,7 @@ echo "✅ Documentation copied"
 # Create basic LICENSE file
 echo "📜 Creating LICENSE file..."
 cat > LICENSE << 'EOL'
-Palimpsest License (PMPL-1.0-or-later)
+Palimpsest License (MPL-2.0)
 
 Copyright (c) 2025 Jonathan D.A. Jewell
 
@@ -36,7 +36,7 @@ This software is licensed under the Palimpsest License, version 1.0 or later.
 For the full license text, see:
 https://github.com/hyperpolymath/palimpsest-license/blob/main/LICENSE-1.0.txt
 
-SPDX-License-Identifier: PMPL-1.0-or-later
+SPDX-License-Identifier: MPL-2.0
 EOL
 
 # Create CONTRIBUTING.md

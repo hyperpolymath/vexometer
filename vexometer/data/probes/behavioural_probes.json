@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "description": "Standardised behavioural probes for exposing irritation patterns in AI assistants",
   "author": "Jonathan D.A. Jewell",
-  "license": "PMPL-1.0-or-later",
+  "license": "MPL-2.0",
   "probes": [
     {
       "id": "PROBE-BREVITY-001",

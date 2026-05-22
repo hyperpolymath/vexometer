@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 = Contributing to vex-lazy-eliminator
 :toc:
 
@@ -57,7 +57,7 @@ just check
 === 3. Code Standards
 
 * **Rust style**: Use `cargo fmt` and `cargo clippy`
-* **SPDX headers**: All files must have `// SPDX-License-Identifier: PMPL-1.0-or-later`
+* **SPDX headers**: All files must have `// SPDX-License-Identifier: MPL-2.0`
 * **Tests**: Add tests for new features
 * **Documentation**: rustdoc comments for public APIs
 
@@ -109,4 +109,4 @@ False positive rate: <1% (tested on 1000 files)
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under PMPL-1.0-or-later.
+By contributing, you agree that your contributions will be licensed under MPL-2.0.

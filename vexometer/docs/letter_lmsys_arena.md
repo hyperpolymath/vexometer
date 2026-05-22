@@ -77,7 +77,7 @@ I am developing an open-source tool, **Vexometer**, that implements ISA measurem
 - **Multiple output formats** including JSON for API integration
 - **Standardised probe suite** with versioned, reproducible tests
 
-The tool will be released under PMPL-1.0-or-later and hosted at `gitlab.com/hyperpolymath/vexometer`.
+The tool will be released under MPL-2.0 and hosted at `gitlab.com/hyperpolymath/vexometer`.
 
 ## Collaboration Proposal
 

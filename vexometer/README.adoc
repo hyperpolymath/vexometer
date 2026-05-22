@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2024-2025 Jonathan D.A. Jewell
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 
 = The Vexometer: Irritation Surface Analyser (ISA) for LLMs and related tools
 
-image:https://img.shields.io/badge/License-PMPL--1.0--or--later-6366f1?style=flat&labelColor=4338ca[PMPL-1.0-or-later,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-PMPL--1.0--or--later-6366f1?style=flat&labelColor=4338ca[MPL-2.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 
 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 v0.1.0
@@ -372,7 +372,7 @@ _Lower ISA = Better user experience_
 * *GUI Toolkit:* GtkAda
 * *Build System:* Alire (Ada package manager)
 * *Package Management:* Guix primary, Nix fallback
-* *License:* PMPL-1.0-or-later
+* *License:* MPL-2.0
 
 === Dependencies (via Alire)
 
@@ -389,7 +389,7 @@ _Lower ISA = Better user experience_
 
 == Contributing
 
-Contributions welcome under PMPL-1.0-or-later. See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc].
+Contributions welcome under MPL-2.0. See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc].
 
 Priority areas:
 
@@ -408,8 +408,8 @@ Priority areas:
 
 == License
 
-image:https://img.shields.io/badge/License-PMPL--1.0--or--later-6366f1?style=flat&labelColor=4338ca[PMPL-1.0-or-later,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-PMPL--1.0--or--later-6366f1?style=flat&labelColor=4338ca[MPL-2.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 
-This project is licensed under PMPL-1.0-or-later (Palimpsest License). See link:LICENSE.txt[LICENSE.txt] for the full license text.
+This project is licensed under MPL-2.0 (Palimpsest License). See link:LICENSE.txt[LICENSE.txt] for the full license text.
 
 This is free software; you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # vext - IRC notification daemon (Rhodium Standard Edition)
 
 [workspace]
@@ -12,7 +12,7 @@ version = "1.0.0"
 edition = "2021"
 rust-version = "1.70"
 authors = ["Vext Contributors"]
-license = "PMPL-1.0-or-later"
+license = "MPL-2.0"
 repository = "https://github.com/Hyperpolymath/vext"
 
 [workspace.dependencies]

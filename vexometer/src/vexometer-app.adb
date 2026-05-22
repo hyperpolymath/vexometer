@@ -2,7 +2,7 @@
 --  Main entry point
 --
 --  Copyright (C) 2024 Jonathan D.A. Jewell
---  SPDX-License-Identifier: PMPL-1.0-or-later
+--  SPDX-License-Identifier: MPL-2.0
 
 pragma Ada_2022;
 
@@ -498,7 +498,7 @@ procedure Vexometer.App is
    begin
       Put_Line ("ISA (formerly Vexometer) " & Vexometer.Version);
       Put_Line ("Copyright (C) 2024 Jonathan D.A. Jewell");
-      Put_Line ("License: PMPL-1.0-or-later");
+      Put_Line ("License: MPL-2.0");
       Put_Line ("This is free software; you are free to change and redistribute it.");
    end Print_Version;
 

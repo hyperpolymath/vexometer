@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 
 = ISA Satellites (formerly Vexometer Satellites)
 :toc: left
@@ -370,7 +370,7 @@ Priority areas:
 
 == License
 
-PMPL-1.0-or-later. See link:LICENSE[LICENSE].
+MPL-2.0. See link:LICENSE[LICENSE].
 
 Individual satellites may use different licenses (check each satellite's LICENSE file).
 

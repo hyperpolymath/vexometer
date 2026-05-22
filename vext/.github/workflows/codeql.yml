@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # CodeQL security scanning for vext
 # Scans: GitHub Actions workflows (Rust not yet supported by CodeQL)
 

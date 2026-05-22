@@ -12,5 +12,5 @@ Rhodium Standard Repository framework
 LMSYS Chatbot Arena (inspiration)
 
 /* SITE */
-Standards: RSR, Ada 2022, PMPL-1.0-or-later
+Standards: RSR, Ada 2022, MPL-2.0
 Software: GtkAda, GNAT, Nix

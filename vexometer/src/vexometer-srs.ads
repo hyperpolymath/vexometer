@@ -3,7 +3,7 @@
 --  Measures resistance to backtracking and sunk-cost behaviour
 --
 --  Copyright (C) 2025 Jonathan D.A. Jewell
---  SPDX-License-Identifier: PMPL-1.0-or-later
+--  SPDX-License-Identifier: MPL-2.0
 
 pragma Ada_2022;
 

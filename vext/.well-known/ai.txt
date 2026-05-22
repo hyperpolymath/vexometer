@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # AI Training Policy for vext
 # See: https://site.spawning.ai/spawning-ai-txt
 
@@ -23,7 +23,7 @@ Prohibited-Use: removing-attribution
 Prohibited-Use: relicensing
 
 # License
-License: PMPL-1.0-or-later
+License: MPL-2.0
 License-URL: https://github.com/hyperpolymath/vext/blob/main/LICENSE
 
 # Contact

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
 = vex-lazy-eliminator
 
@@ -176,7 +176,7 @@ Benchmarked on M1 Mac (1000 Python files, ~100k LOC total):
 
 == License
 
-PMPL-1.0-or-later. See link:LICENSE[LICENSE].
+MPL-2.0. See link:LICENSE[LICENSE].
 
 == Contributing
 

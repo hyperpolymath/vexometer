@@ -1,6 +1,6 @@
 # Changelog
 
-**SPDX-License-Identifier: PMPL-1.0-or-later
+**SPDX-License-Identifier: MPL-2.0
 
 All notable changes to vext will be documented in this file.
 
@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - RSR (Rhodium Standard Repository) compliance framework
 - Comprehensive documentation suite (README, INSTALLATION, USAGE, FEATURES)
-- Palimpsest dual licensing (PMPL-1.0-or-later)
+- Palimpsest dual licensing (MPL-2.0)
 - Tri-Perimeter Contribution Framework (TPCF) governance
 - RFC 9116 compliant `.well-known/security.txt`
 - AI training policy (`.well-known/ai.txt`)
@@ -166,7 +166,7 @@ We avoid breaking changes whenever possible. When necessary, they are:
 
 **1.0.0**:
 - Repository rename: irker → vext
-- License change: BSD-2-Clause → PMPL-1.0-or-later (Palimpsest)
+- License change: BSD-2-Clause → MPL-2.0 (Palimpsest)
   - Note: Both are permissive; users can choose MIT for backward compatibility
 
 ## Contribution Credits

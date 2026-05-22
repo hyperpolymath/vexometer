@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 //
-// Vext V-lang API — High-level client for verifiable communications.
+// Vext zig API — High-level client for verifiable communications.
 // Wraps the Zig FFI which implements the Idris2 ABI.
 module vext
 

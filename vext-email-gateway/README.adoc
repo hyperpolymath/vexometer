@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
 
 = vext-email-gateway
@@ -35,5 +35,5 @@ See link:ROADMAP.adoc[ROADMAP.adoc] for staged completion targets.
 
 == License
 
-PMPL-1.0-or-later. See link:LICENSE[LICENSE].
+MPL-2.0. See link:LICENSE[LICENSE].
 

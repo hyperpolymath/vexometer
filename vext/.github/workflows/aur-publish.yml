@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # Publish to Arch User Repository on release
 name: AUR Publish
 
@@ -57,7 +57,7 @@ jobs:
           	arch = x86_64
           	arch = aarch64
           	license = MIT
-          	license = PMPL-1.0-or-later
+          	license = MPL-2.0
           	makedepends = cargo
           	makedepends = rust
           	depends = gcc-libs

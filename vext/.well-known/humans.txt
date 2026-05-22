@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # humanstxt.org - vext contributors
 # Last updated: 2025-12-30
 
@@ -26,5 +26,5 @@ Standards: RFC 1459 (IRC), RFC 9116 (security.txt)
 Language: Rust, ReScript
 Doctype: AsciiDoc, Markdown
 Components: vextd (daemon), vext-send (CLI), vext-hook (git hook)
-License: PMPL-1.0-or-later
+License: MPL-2.0
 Repository: https://github.com/hyperpolymath/vext

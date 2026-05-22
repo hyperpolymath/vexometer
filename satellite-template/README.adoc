@@ -67,7 +67,7 @@ just check
 
 == License
 
-PMPL-1.0-or-later. See link:LICENSE.txt[LICENSE.txt].
+MPL-2.0. See link:LICENSE.txt[LICENSE.txt].
 
 == Contributing
 

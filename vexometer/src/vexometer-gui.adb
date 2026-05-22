@@ -6,7 +6,7 @@
 --
 --  Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)
 --  <j.d.a.jewell@open.ac.uk>
---  SPDX-License-Identifier: PMPL-1.0-or-later
+--  SPDX-License-Identifier: MPL-2.0
 
 pragma Ada_2022;
 
@@ -928,7 +928,7 @@ package body Vexometer.GUI is
       Dialog.Set_Copyright
          ("Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)");
       Dialog.Set_License_Type (Gtk.About_Dialog.License_Custom);
-      Dialog.Set_License ("PMPL-1.0-or-later");
+      Dialog.Set_License ("MPL-2.0");
       Dialog.Set_Website ("https://github.com/hyperpolymath/vexometer");
       Dialog.Set_Website_Label ("GitHub Repository");
       Dialog.Set_Transient_For (Win.Window);

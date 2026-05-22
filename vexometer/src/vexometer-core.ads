@@ -1,7 +1,7 @@
 --  Vexometer.Core - Core types and data structures
 --
 --  Copyright (C) 2024-2025 Jonathan D.A. Jewell
---  SPDX-License-Identifier: PMPL-1.0-or-later
+--  SPDX-License-Identifier: MPL-2.0
 
 pragma Ada_2022;
 

@@ -1,5 +1,5 @@
 // SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 = Contributing to Vexometer Satellites
 :toc:
 
@@ -41,7 +41,7 @@ This umbrella repository coordinates the vexometer satellite ecosystem. Contribu
 1. **Fork** this repository
 2. **Create a branch**: `git checkout -b improve-docs`
 3. **Make changes**:
-   - Add SPDX headers: `// SPDX-License-Identifier: PMPL-1.0-or-later`
+   - Add SPDX headers: `// SPDX-License-Identifier: MPL-2.0`
    - Use AsciiDoc for documentation
    - Validate JSON schemas if modifying protocols
 4. **Test locally**:

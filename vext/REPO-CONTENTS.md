@@ -11,7 +11,7 @@
 ### Core Documentation
 - ✅ `README.adoc` - Project overview, architecture, quick start
 - ✅ `ROADMAP.md` - 5-phase implementation plan (Q1 2025 - Q4 2026)
-- ✅ `LICENSE` - PMPL-1.0-or-later license text
+- ✅ `LICENSE` - MPL-2.0 license text
 - ✅ `CONTRIBUTING.md` - Contribution guidelines
 - ✅ `SECURITY.md` - Security policy and vulnerability reporting
 
@@ -65,7 +65,7 @@ The script will:
 vext/
 ├── README.adoc                    # Main entry point
 ├── ROADMAP.md                     # Implementation plan
-├── LICENSE                        # PMPL-1.0-or-later
+├── LICENSE                        # MPL-2.0
 ├── CONTRIBUTING.md                # How to contribute
 ├── SECURITY.md                    # Security policy
 ├── COMMIT-AND-PUSH.sh            # Setup script

@@ -2,7 +2,7 @@
 --
 --  Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)
 --  <j.d.a.jewell@open.ac.uk>
---  SPDX-License-Identifier: PMPL-1.0-or-later
+--  SPDX-License-Identifier: MPL-2.0
 --
 --  Implements statistical primitives (mean, standard deviation, median,
 --  percentile), the ISA_Calculator tagged type, normalisation functions,

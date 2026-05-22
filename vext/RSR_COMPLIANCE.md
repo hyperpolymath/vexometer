@@ -1,6 +1,6 @@
 # RSR Compliance Assessment
 
-**SPDX-License-Identifier: PMPL-1.0-or-later
+**SPDX-License-Identifier: MPL-2.0
 
 **Project**: vext (Rhodium Standard Edition of irker)
 **Assessment Date**: 2025-01-01
@@ -104,8 +104,8 @@ Silver level adds automated compliance checking, advanced documentation, dual li
 - Command-line interface with detailed reporting
 
 **Palimpsest Dual Licensing**:
-- PMPL-1.0-or-later
-- Clear SPDX identifier: `SPDX-License-Identifier: PMPL-1.0-or-later`
+- MPL-2.0
+- Clear SPDX identifier: `SPDX-License-Identifier: MPL-2.0`
 - Comprehensive LICENSE file explaining both options
 - Guidance on when to choose each license
 - Patent grants and trademark notices
@@ -392,7 +392,7 @@ Questions about RSR compliance:
 
 All source files include:
 ```
-SPDX-License-Identifier: PMPL-1.0-or-later-or-later
+SPDX-License-Identifier: MPL-2.0-or-later
 ```
 
 ### Appendix C: Compliance Evidence

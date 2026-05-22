@@ -6,7 +6,7 @@
 **Legacy Codename:** Vexometer (retained in technical identifiers)
 **CLI/Package Identifier:** `vexometer`
 **Author:** Jonathan D.A. Jewell
-**License:** PMPL-1.0-or-later
+**License:** MPL-2.0
 **Language:** Ada 2022
 **GUI Toolkit:** GtkAda
 
@@ -248,7 +248,7 @@ alr test
 
 ## Contributing
 
-Contributions welcome under PMPL-1.0-or-later.
+Contributions welcome under MPL-2.0.
 
 Priority areas:
 1. Additional pattern definitions
@@ -260,7 +260,7 @@ Priority areas:
 
 ## Licence
 
-PMPL-1.0-or-later
+MPL-2.0
 
 This is free software; you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
