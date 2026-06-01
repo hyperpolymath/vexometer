@@ -12,6 +12,7 @@ on:
   schedule:
     - cron: '37 13 * * 0'
 
+
 permissions: read-all
 
 jobs:
