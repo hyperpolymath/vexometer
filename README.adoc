@@ -1,7 +1,10 @@
-// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
 
 = The Vexometer: Irritation Surface Analyser (ISA) for LLMs and Related Tools
+image:https://img.shields.io/badge/OpenSSF-Best_Practices-green?logo=openssourcesecurity[OpenSSF Best Practices,link="https://www.bestpractices.dev/en/projects/new?repo_url=https://github.com/hyperpolymath/vexometer"]
+
 :author: Jonathan D.A. Jewell
 :email: j.d.a.jewell@open.ac.uk
 :toc: left
@@ -9,7 +12,7 @@
 :icons: font
 :source-highlighter: rouge
 
-image:https://img.shields.io/badge/License-PMPL--1.0--or--later-6366f1?style=flat&labelColor=4338ca[MPL-2.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[License: MPL-2.0,link="https://opensource.org/licenses/MPL-2.0"]
 image:https://img.shields.io/badge/RSR-compliant-brightgreen[RSR Compliant]
 
 **The Vexometer: Irritation Surface Analyser (ISA) for LLMs and related tools** quantifies irritation across 10 dimensions with standardised, reproducible metrics. This monorepo contains ISA core, its satellite intervention system, the Lazy Eliminator completeness enforcer, and the Vext verifiable communications protocol.
@@ -76,7 +79,9 @@ This monorepo was consolidated from six independent repositories:
 
 == License
 
-MPL-2.0 (Palimpsest License). See link:LICENSE[LICENSE].
+This project is licensed under the Mozilla Public License, v. 2.0. See the `LICENSE` file for details.
+
+SPDX-License-Identifier: MPL-2.0
 
 
 == Architecture
