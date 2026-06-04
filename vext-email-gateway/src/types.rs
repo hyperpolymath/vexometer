@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 // Core types for vext email gateway
 
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};

@@ -17,6 +17,7 @@ jobs:
   publish-aur:
     name: Publish to AUR
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     if: vars.AUR_PUBLISH_ENABLED == 'true'
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -85,6 +86,7 @@ jobs:
   publish-aur-bin:
     name: Publish vext-bin to AUR
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [publish-aur]
     if: vars.AUR_PUBLISH_ENABLED == 'true'
     steps:
