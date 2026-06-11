@@ -41,3 +41,6 @@ bench:
 # Check dependencies for security issues
 audit:
     cargo audit
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

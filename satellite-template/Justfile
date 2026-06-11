@@ -36,3 +36,6 @@ validate before after:
     @echo "Comparing vexometer scores..."
     @echo "Before: {{before}}"
     @echo "After: {{after}}"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

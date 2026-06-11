@@ -289,3 +289,6 @@ nix-shell:
 # Update Nix flake lock
 nix-update:
     nix flake update
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true

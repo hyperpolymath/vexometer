@@ -1,19 +1,16 @@
 # SPDX-License-Identifier: MPL-2.0-or-later
 name: Ada/SPARK CI
 on: [push, pull_request]
-
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      
       - name: Setup GNAT
         run: |
           sudo apt-get update
           sudo apt-get install -y gnat gprbuild
-      
       - name: Build
         run: |
           if [ -f "*.gpr" ]; then
@@ -23,13 +20,11 @@ jobs:
             unzip alr.zip
             ./alr build
           fi
-      
       - name: Run tests
         run: |
           if command -v gnattest &> /dev/null; then
             gnattest --harness-only
           fi
-
   spark:
     runs-on: ubuntu-latest
     timeout-minutes: 15

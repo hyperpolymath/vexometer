@@ -3,18 +3,14 @@
 # Scans: GitHub Actions workflows (Rust not yet supported by CodeQL)
 
 name: "CodeQL"
-
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
     - cron: '37 13 * * 0'
-
-
 permissions: read-all
-
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
@@ -25,27 +21,23 @@ jobs:
       packages: read
       actions: read
       contents: read
-
     strategy:
       fail-fast: false
       matrix:
         include:
-        - language: javascript-typescript
-          build-mode: none
-        # Note: Rust is not yet supported by CodeQL
-        # Python/Go are banned in this repo per RSR language policy
-
+          - language: javascript-typescript
+            build-mode: none
+            # Note: Rust is not yet supported by CodeQL
+            # Python/Go are banned in this repo per RSR language policy
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@662472033e021d55d94146f66f6058822b0b39fd # v3.28.1
-      with:
-        languages: ${{ matrix.language }}
-        build-mode: ${{ matrix.build-mode }}
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@662472033e021d55d94146f66f6058822b0b39fd # v3.28.1
-      with:
-        category: "/language:${{matrix.language}}"
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@662472033e021d55d94146f66f6058822b0b39fd # v3.28.1
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@662472033e021d55d94146f66f6058822b0b39fd # v3.28.1
+        with:
+          category: "/language:${{matrix.language}}"

@@ -2,7 +2,6 @@
 # SPDX-FileCopyrightText: 2025 hyperpolymath
 
 name: Release
-
 on:
   push:
     tags: ['v*']
@@ -11,13 +10,10 @@ on:
       tag:
         description: 'Release tag (e.g., v1.0.0)'
         required: true
-
 permissions: read-all
-
 env:
   CARGO_TERM_COLOR: always
   RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
-
 jobs:
   build-binaries:
     name: Build ${{ matrix.target }}
@@ -47,34 +43,27 @@ jobs:
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             cross: false
-
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@6d9817901c499d6b02debbb57edb38d33daa680b # stable
         with:
           targets: ${{ matrix.target }}
-
       - name: Install cross
         if: matrix.cross
         run: cargo install cross --git https://github.com/cross-rs/cross
-
       - name: Build with cross
         if: matrix.cross
         run: cross build --release --package vext-core --target ${{ matrix.target }}
-
       - name: Build with cargo
         if: ${{ !matrix.cross }}
         run: cargo build --release --package vext-core --target ${{ matrix.target }}
-
       - name: Package (Unix)
         if: runner.os != 'Windows'
         run: |
           cd target/${{ matrix.target }}/release
           tar -czvf vext-${{ env.RELEASE_TAG }}-${{ matrix.target }}.tar.gz vextd vext-send 2>/dev/null || tar -czvf vext-${{ env.RELEASE_TAG }}-${{ matrix.target }}.tar.gz vextd
           sha256sum vext-${{ env.RELEASE_TAG }}-${{ matrix.target }}.tar.gz > vext-${{ env.RELEASE_TAG }}-${{ matrix.target }}.tar.gz.sha256
-
       - name: Package (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -85,14 +74,12 @@ jobs:
             Compress-Archive -Path vextd.exe -DestinationPath vext-${{ env.RELEASE_TAG }}-${{ matrix.target }}.zip
           }
           Get-FileHash vext-${{ env.RELEASE_TAG }}-${{ matrix.target }}.zip -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  vext-${{ env.RELEASE_TAG }}-${{ matrix.target }}.zip" } | Out-File -FilePath vext-${{ env.RELEASE_TAG }}-${{ matrix.target }}.zip.sha256
-
       - name: Upload artifact
         uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4
         with:
           name: vext-${{ matrix.target }}
           path: |
             target/${{ matrix.target }}/release/vext-${{ env.RELEASE_TAG }}-${{ matrix.target }}.*
-
   build-deb:
     name: Build .deb package
     runs-on: ubuntu-latest
@@ -101,22 +88,17 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@6d9817901c499d6b02debbb57edb38d33daa680b # stable
-
       - name: Install cargo-deb
         run: cargo install cargo-deb
-
       - name: Build .deb
         run: cargo deb --package vext-core
-
       - name: Upload .deb
         uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4
         with:
           name: deb-package
           path: target/debian/*.deb
-
   build-rpm:
     name: Build .rpm package
     runs-on: ubuntu-latest
@@ -125,30 +107,23 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@6d9817901c499d6b02debbb57edb38d33daa680b # stable
-
       - name: Install cargo-generate-rpm
         run: cargo install cargo-generate-rpm
-
       - name: Build binary
         run: cargo build --release --package vext-core
-
       - name: Strip binaries
         run: |
           strip target/release/vextd
           strip target/release/vext-send || true
-
       - name: Build .rpm
         run: cargo generate-rpm --package vext-core
-
       - name: Upload .rpm
         uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4
         with:
           name: rpm-package
           path: target/generate-rpm/*.rpm
-
   release:
     name: Create Release
     runs-on: ubuntu-latest
@@ -158,18 +133,15 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
       - name: Download all artifacts
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
         with:
           path: artifacts
-
       - name: Collect release assets
         run: |
           mkdir -p release
           find artifacts -type f \( -name "*.tar.gz" -o -name "*.zip" -o -name "*.sha256" -o -name "*.deb" -o -name "*.rpm" \) -exec cp {} release/ \;
           ls -la release/
-
       - name: Create Release
         uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2
         with:

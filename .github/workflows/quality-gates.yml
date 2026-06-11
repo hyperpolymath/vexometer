@@ -2,13 +2,11 @@
 name: Quality Gates
 permissions:
   contents: read
-
 on:
   pull_request:
   push:
     branches:
       - main
-
 jobs:
   must-gates:
     runs-on: ubuntu-latest
@@ -16,32 +14,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y just gnat gprbuild ripgrep
-
       - name: Run must invariants
         run: ./scripts/run-must-gates.sh
-
       - name: Verify trust manifests
         run: ./scripts/trust/verify-manifest.sh
-
   test-all:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7 # stable
-
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y just gnat gprbuild
-
       - name: Run unified test gate
         run: just test-all
