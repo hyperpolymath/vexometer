@@ -17,37 +17,33 @@ readme = "../README.adoc"
 
 [dependencies]
 # Async runtime
-tokio = { version = "1.35", features = ["full"] }
-
-# IRC protocol
-irc = "0.15"
+tokio = { version = "1.52", features = ["full"] }
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # Configuration
-toml = "0.8"
-dirs = "5.0"
+toml = "1.1"
+dirs = "6.0"
 
 # Logging
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 # CLI
-clap = { version = "4.4", features = ["derive", "env"] }
+clap = { version = "4.6", features = ["derive", "env"] }
 
 # Error handling
-thiserror = "1.0"
+thiserror = "2.0"
 anyhow = "1.0"
 
-# TLS support
-native-tls = "0.2"
-tokio-native-tls = "0.3"
-openssl-sys = "0.9"
+# TLS support (use rustls)
+tokio-rustls = "0.26"
+rustls-native-certs = "0.8"
 
-# DNS resolution (SRV records) — renamed from trust-dns-resolver
-hickory-resolver = "0.24"
+# DNS resolution (SRV records)
+hickory-resolver = "0.26"
 
 # Document processing (optional)
 pandoc = { version = "0.8", optional = true }

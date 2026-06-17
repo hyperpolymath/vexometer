@@ -12,7 +12,8 @@ use tokio::io::{AsyncWrite, AsyncWriteExt};
 use tokio::net::TcpStream;
 use tokio::sync::Mutex;
 use tokio::time::timeout;
-use tokio_native_tls::TlsConnector;
+use tokio_rustls::rustls::{ClientConfig, RootCertStore};
+use tokio_rustls::TlsConnector;
 use tracing::{debug, info};
 
 use crate::config::Config;
@@ -102,12 +103,32 @@ impl IrcConnection {
             .map_err(|e| VextError::Connection(e.to_string()))?;
 
         let writer: Box<dyn AsyncWrite + Send + Unpin> = if tls {
-            let connector = native_tls::TlsConnector::builder()
-                .build()
-                .map_err(|e| VextError::Tls(e.to_string()))?;
-            let connector = TlsConnector::from(connector);
+            let mut root_store = RootCertStore::empty();
+            let result = rustls_native_certs::load_native_certs();
+            for cert in result.certs {
+                root_store
+                    .add(cert)
+                    .map_err(|e| VextError::Tls(format!("Failed to add cert: {}", e)))?;
+            }
+
+            if root_store.is_empty() && !result.errors.is_empty() {
+                return Err(VextError::Tls(format!(
+                    "Failed to load any native certs. First error: {}",
+                    result.errors[0]
+                )));
+            }
+
+            let config = ClientConfig::builder()
+                .with_root_certificates(root_store)
+                .with_no_client_auth();
+            let connector = TlsConnector::from(Arc::new(config));
+            let domain = server
+                .to_string()
+                .try_into()
+                .map_err(|e| VextError::Tls(format!("Invalid DNS name: {}", e)))?;
+
             let tls_stream = connector
-                .connect(server, stream)
+                .connect(domain, stream)
                 .await
                 .map_err(|e| VextError::Tls(e.to_string()))?;
             let (_, writer) = tokio::io::split(tls_stream);
