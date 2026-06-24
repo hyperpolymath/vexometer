@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MPL-2.0
+// SPDX-License-Identifier: CC-BY-SA-4.0
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 // SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
 = Contributing to vex-lazy-eliminator
@@ -58,7 +58,7 @@ just check
 === 3. Code Standards
 
 * **Rust style**: Use `cargo fmt` and `cargo clippy`
-* **SPDX headers**: All files must have `// SPDX-License-Identifier: MPL-2.0`
+* **SPDX headers**: All files must have `// SPDX-License-Identifier: CC-BY-SA-4.0`
 * **Tests**: Add tests for new features
 * **Documentation**: rustdoc comments for public APIs
 

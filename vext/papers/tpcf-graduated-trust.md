@@ -1,10 +1,10 @@
 <!--
-SPDX-License-Identifier: MPL-2.0
+SPDX-License-Identifier: CC-BY-SA-4.0
 Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 -->
 # Tri-Perimeter Contribution Framework: A Graduated Trust Model for Open Source Governance
 
-**SPDX-License-Identifier: MPL-2.0
+**SPDX-License-Identifier: CC-BY-SA-4.0
 
 **Status**: Draft
 **Target Venue**: CHI, CSCW, OpenSym
