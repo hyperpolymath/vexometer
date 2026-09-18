@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= site/ — prebuilt GitHub Pages artifact
+
+Everything in this directory is deployed *verbatim* to
+https://hyperpolymath.github.io/vexometer/ by
+`.github/workflows/casket-pages.yml` on every push to `main`.
+CI performs no build step.
+
+== Why prebuilt
+
+The previous workflow built https://github.com/hyperpolymath/casket-ssg[casket-ssg]
+(Haskell) in CI to render the site. Its dependency closure (pandoc >= 3.0,
+pandoc-types, text-icu, plus a custom `lol` C library) never completed a cold
+build inside the 15-minute job timeout: the workflow failed or was cancelled in
+all ~93 runs (issue
+https://github.com/hyperpolymath/vexometer/issues/74[#74]). Per owner ruling,
+the site artifact is now committed here and CI only deploys it.
+
+== Contract
+
+* `index.html` is *hand-authored* — it is not casket-ssg output and does not
+  claim to be. Edit it directly and commit.
+* `.nojekyll` must remain: it stops GitHub Pages from running Jekyll over the
+  artifact.
+* If a viable casket-ssg toolchain becomes available later, render the site
+  locally and replace the contents of this directory with the rendered output
+  in a normal PR. The workflow needs no change for that.
+* Keep the SPDX header comment on line 1 of every non-empty file here.

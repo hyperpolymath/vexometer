@@ -8,7 +8,7 @@
 :icons: font
 :source-highlighter: rouge
 
-image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: MPL-2.0,link="LICENSE"]
 
 Umbrella documentation hub for the ISA satellite intervention system (core repository: link:https://github.com/hyperpolymath/vexometer[vexometer]).
 
@@ -26,7 +26,6 @@ Naming compatibility note: *ISA* is the canonical product name; `vexometer` rema
 This repository serves as:
 
 * *Central documentation hub* for the satellite ecosystem
-* *Integration protocol specifications* (vexometer-trace-v1, vexometer-efficacy-v1)
 * *Development roadmap* and priorities
 * *Registry* of all satellite repositories
 
@@ -240,7 +239,10 @@ Satellites can include before/after traces that ISA validates (via vexometer com
 }
 ----
 
-See link:docs/trace-format.adoc[trace-format.adoc] for full specification.
+See the Integration Protocol section of
+link:../vexometer/docs/SATELLITES.adoc[SATELLITES.adoc] for the full
+specification (the protocol specs live in the monorepo's `vexometer/docs/`,
+not in this component).
 
 === vexometer-efficacy-v1
 
@@ -266,7 +268,9 @@ Satellites report metric reduction percentages.
 }
 ----
 
-See link:docs/efficacy-format.adoc[efficacy-format.adoc] for full specification.
+See link:../vexometer/docs/EFFICACY-PROTOCOL.adoc[EFFICACY-PROTOCOL.adoc]
+for the full specification, including the `vexometer-efficacy-v2` extension
+and frontier records.
 
 == Development Guide
 
@@ -371,7 +375,7 @@ Priority areas:
 
 == License
 
-MPL-2.0. See link:LICENSE[LICENSE].
+MPL-2.0 for code — see link:LICENSE[LICENSE]. Documentation is CC-BY-SA-4.0.
 
 Individual satellites may use different licenses (check each satellite's LICENSE file).
 

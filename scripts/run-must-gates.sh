@@ -9,6 +9,8 @@ components=(
   "vext-email-gateway"
   "vexometer-satellites"
   "lazy-eliminator"
+  "vexometer-efficacy"
+  "verbosity-compressor"
   "satellite-template"
 )
 
@@ -21,17 +23,17 @@ for component in "${components[@]}"; do
   test -f "$mustfile"
   test -f "$component_dir/README.adoc"
   test -f "$component_dir/ROADMAP.adoc"
-  test -f "$component_dir/SECURITY.md"
+  test -f "$component_dir/SECURITY.adoc"
   test -f "$component_dir/contractiles/trust/Trustfile.a2ml"
   test -f "$manifest"
 
-  rg -n "security@|security/advisories/new" "$component_dir/SECURITY.md" >/dev/null
+  rg -n "security@|security/advisories/new" "$component_dir/SECURITY.adoc" >/dev/null
   (cd "$component_dir" && sha256sum -c .trust/trust-manifest.sha256 >/dev/null)
 
   files=(
     "$component_dir/README.adoc"
     "$component_dir/ROADMAP.adoc"
-    "$component_dir/SECURITY.md"
+    "$component_dir/SECURITY.adoc"
   )
 
   if [[ -f "$component_dir/RSR_OUTLINE.adoc" ]]; then

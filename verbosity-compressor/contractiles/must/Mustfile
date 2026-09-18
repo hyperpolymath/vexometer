@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: MPL-2.0
+# Mustfile - baseline invariants for vexometer components
+# See: https://github.com/hyperpolymath/mustfile
+
+version: 1
+
+metadata:
+  name: verbosity-compressor-invariants
+  spec: v1
+  description: "Baseline invariants for security and documentation integrity."
+
+checks:
+  - name: readme-present
+    description: "README.adoc must exist."
+    run: "test -f README.adoc"
+
+  - name: roadmap-present
+    description: "ROADMAP.adoc must exist."
+    run: "test -f ROADMAP.adoc"
+
+  - name: security-policy-present
+    description: "SECURITY.adoc must exist."
+    run: "test -f SECURITY.adoc"
+
+  - name: trust-verifier-present
+    description: "Trust verifier must be present in contractiles."
+    run: "test -f contractiles/trust/Trustfile.a2ml"
+
+  - name: security-channel-declared
+    description: "SECURITY.adoc must include an advisory URL or security email."
+    run: "bash -uc 'rg -n \"security@|security/advisories/new\" SECURITY.adoc >/dev/null'"
+
+  - name: no-template-drift
+    description: "No unresolved template markers in security-critical docs."
+    run: "bash -uc 'files=\"README.adoc ROADMAP.adoc SECURITY.adoc\"; [ -f RSR_OUTLINE.adoc ] && files=\"$files RSR_OUTLINE.adoc\"; [ -f docs/CITATIONS.adoc ] && files=\"$files docs/CITATIONS.adoc\"; ! rg -n \"rsr-template-repo|\\\\{\\\\{PROJECT\\\\}\\\\}|contents of Trustfile here\" $files'"
+
+  - name: trust-manifest-present
+    description: "Trust manifest must exist."
+    run: "test -f .trust/trust-manifest.sha256"
+
+  - name: trust-manifest-verifies
+    description: "Trust manifest digests must match current trust inputs."
+    run: "bash -uc 'sha256sum -c .trust/trust-manifest.sha256 >/dev/null'"

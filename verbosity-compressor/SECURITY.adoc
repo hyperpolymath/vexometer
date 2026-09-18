@@ -1,0 +1,38 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+== Security Policy
+
+=== Supported Versions
+
+[cols=",",options="header",]
+|===
+|Version |Supported
+|`main` (v0.1 development line) |✅ Yes
+|Anything not on `main` (old checkouts, forks, unreleased branches) |❌ No
+|===
+
+No tagged release exists yet; until one does, only the current `main`
+receives fixes.
+
+=== Reporting a Vulnerability
+
+Please report security vulnerabilities through GitHub private
+vulnerability reporting:
+
+. Go to the *Security* tab
+. Click *Report a vulnerability*
+. Fill out the form
+
+We respond within 48 hours.
+
+=== Security Measures
+
+* Dependabot for dependency updates
+* CodeQL for code scanning
+* Secret scanning and push protection
+
+=== Security Contact
+
+* Advisories:
+https://github.com/hyperpolymath/vexometer/security/advisories/new
+* Email: security@jewell.dev

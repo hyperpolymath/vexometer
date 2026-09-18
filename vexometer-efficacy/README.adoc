@@ -1,0 +1,160 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= vexometer-efficacy
+:toc:
+
+Efficacy evaluator and frontier-record writer for the vexometer ISA
+efficacy protocol. This tool is the executable half of
+link:../vexometer/docs/EFFICACY-PROTOCOL.adoc[EFFICACY-PROTOCOL.adoc]:
+it computes `G_m`, collateral deltas, `D_ISA`, and the capability proxy,
+applies the six-verdict acceptance rule with its precedence order, emits
+`vexometer-efficacy-v2` reports, maintains `vexometer-frontier-v1`
+records under the monotone-frontier invariant, and validates both
+document shapes by recomputing every derived number.
+
+== The ruled semantics (protocol v2.1)
+
+The six normative questions this tool originally refused to guess at
+(https://github.com/hyperpolymath/vexometer/issues/69[issue #69],
+D1a-D1f) were ruled `a1, b1, c1, d1, e2, f1` on 2026-09-01 and are
+implemented here:
+
+[cols="1,4,3",options="header"]
+|===
+|Ruling |When it bites |Behaviour
+
+|a1
+|A declared target metric has baseline `B_m = 0`
+|`G_m := 0`, so the target cannot improve and the verdict is
+`reject_null`; the report lists the metric in a diagnosability warning.
+Zero-baseline *collateral* metrics stay fully protected.
+
+|b1
+|Per-probe results exist in both measurements
+|The per-probe identity gate is normative: at most one baseline-passing
+probe may fail after; newly-passing probes buy nothing back. The
+aggregate pass-rate gate is the degraded fallback when per-probe results
+are absent.
+
+|c1
+|Multiple targets are declared
+|All-targets rule: every declared target must improve, or the verdict is
+`reject_null`.
+
+|d1
+|Frontier references
+|Plural `frontier_records`, one per-metric record per target, in target
+order; a length mismatch is a hard error and the pre-ruling singular
+`frontier_record` key fails validation.
+
+|e2
+|v1→v2 lifting
+|The `lift` subcommand: v1 fields carried verbatim, missing v2 evidence
+as explicit `null`, `lifted_from` marker, `verdict: "unverified"`
+(reserved for lifted reports).
+
+|f1
+|Scenario-set provenance
+|`validate --scenario-registry FILE` checks every scored `scenario_set`
+against the held-out partition registry at
+`../vexometer/data/scenario_sets/registry.json`.
+|===
+
+== The protocol's examples are the test fixtures
+
+The integration tests read `../vexometer/docs/EFFICACY-PROTOCOL.adoc`
+at build time, extract its example JSON blocks, and require that the
+validator accepts them all, that the evaluator reproduces the efficacy
+example value-for-value from raw inputs (including `D_ISA = -2.71`
+under the default category weights in
+link:../vexometer/docs/METRICS.adoc[METRICS.adoc]), and that `lift`
+reproduces the protocol's lifted example from its v1 example. If the
+protocol and this implementation drift apart, `cargo test` fails
+loudly.
+
+== CLI
+
+[source,console]
+----
+$ vexometer-efficacy report --baseline baseline.json --after after.json \
+    --targets LPS,TII --satellite vex-verbosity-compressor \
+    --sample-size 500 --output report.json \
+    [--methodology "A/B testing with vexometer validation"] \
+    [--notes "..."] \
+    [--frontier-records frontier/LPS-....json]... \
+    [--traces-available true|false] [--date YYYY-MM-DD] [--scenario-set SHA]
+
+$ vexometer-efficacy attempt --frontier frontier/LPS-2026-09-01.json \
+    --baseline baseline.json --after after.json --targets LPS --metric LPS \
+    --satellite vex-verbosity-compressor --config config-042 \
+    [--model-profile STR] [--timestamp ISO8601] [--scenario-set SHA] \
+    [--baseline-isa 4.63]   # required when creating a new frontier record
+
+$ vexometer-efficacy lift --input v1-report.json --output lifted.json
+
+$ vexometer-efficacy validate report.json frontier.json ... \
+    [--scenario-registry ../vexometer/data/scenario_sets/registry.json]
+----
+
+Pass `--frontier-records` once per target metric, in target order
+(ruling d1). Bare `validate` arguments are routed by each document's own
+`version` field; `--efficacy FILE` / `--frontier FILE` force a kind when
+a document lacks one, and `--scenario-registry` enforces ruling f1
+against every scored scenario set. The same commands are exposed at the
+monorepo root as `just efficacy-report`, `just efficacy-attempt`,
+`just efficacy-lift`, and `just efficacy-validate`.
+
+Exit codes: `0` success (any verdict, including rejections — a computed
+rejection is a successful evaluation), `1` usage or data error, `3`
+validation failed. (Exit code `2`, the pre-ruling "open D1 question"
+refusal, is retired.)
+
+== Measurement input format
+
+Both `--baseline` and `--after` take a JSON document of one measurement
+pass over one content-addressed scenario set:
+
+[source,json]
+----
+{
+  "scenario_set": "sha256:6b2f...",
+  "metrics": {
+    "LPS": 0.41,
+    "TII": { "score": 0.33, "std_dev": 0.07, "confidence": 0.95, "p_value": 0.004 },
+    "EFR": 0.19, "PQ": 0.28, "TAI": 0.15, "ICS": 0.22,
+    "CII": 0.31, "SRS": 0.26, "SFR": 0.24, "RCI": 0.30
+  },
+  "probes": {
+    "total": 13,
+    "passed": 12,
+    "results": { "PROBE-CAPABILITY-001": true, "...": true }
+  }
+}
+----
+
+* `metrics` must cover exactly the ten ISA metrics. A bare number and a
+  `{score, std_dev, confidence, p_value}` object are both accepted;
+  statistics are carried into the report when present.
+* `probes.results` (per-probe outcomes) is optional; when both
+  measurements carry it, the per-probe identity gate is normative
+  (ruling b1) and the report records any regressed probes in
+  `capability.probes_regressed`.
+* `scenario_set` must match between baseline and after — tuning against
+  a different set than you score on is exactly what the protocol's
+  audit trail exists to catch.
+
+== Building and testing
+
+From this directory (or via the monorepo Justfile):
+
+[source,console]
+----
+$ cargo build --release          # or: just build-efficacy
+$ cargo test                     # or: just test-efficacy
+----
+
+The only dependencies are `serde` and `serde_json`; `Cargo.lock` is
+committed.
+
+== Licence
+
+Code MPL-2.0, documentation CC-BY-SA-4.0, per repository policy.

@@ -299,14 +299,14 @@ impl Gateway {
 
     /// Get or create cryptographic identity for email address
     fn get_or_create_identity(&self, _email: &str) -> Result<ed25519_dalek::SigningKey> {
-        use rand::TryRngCore;
+        use rand::TryRng;
 
         // TODO: Persistent storage of email → keypair mapping
         // For now, generate a new signing key (INSECURE - prototype only).
-        let mut rng = rand::rngs::OsRng;
+        let mut rng = rand::rngs::SysRng;
         let mut sk = [0u8; 32];
         rng.try_fill_bytes(&mut sk)
-            .expect("OsRng must succeed for cryptographic key generation");
+            .expect("SysRng must succeed for cryptographic key generation");
         Ok(ed25519_dalek::SigningKey::from_bytes(&sk))
     }
 }

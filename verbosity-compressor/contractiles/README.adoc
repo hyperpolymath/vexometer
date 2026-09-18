@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= Contractiles: vex-verbosity-compressor
+:toc:
+:sectnums:
+
+Operational, validation, trust, and recovery contracts for this component.
+The monorepo gate runner (`../../scripts/run-must-gates.sh`) checks these
+invariants for every registered component.
+
+== Contents
+
+* `must/Mustfile` - required invariants and validations.
+* `trust/Trustfile.a2ml` - trust metadata and verification inputs.
+* `dust/Dustfile` - rollback and recovery semantics.

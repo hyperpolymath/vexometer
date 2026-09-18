@@ -1,0 +1,53 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+== Security Policy
+
+=== Supported Versions
+
+[cols=",",options="header",]
+|===
+|Version |Supported
+|0.1.x |:white_check_mark:
+|===
+
+=== Reporting a Vulnerability
+
+*Do not report security vulnerabilities through public GitHub issues.*
+
+Report them via email to *security@jewell.dev* or through
+https://github.com/hyperpolymath/vexometer/security/advisories/new[GitHub
+security advisories].
+
+Include: description of the vulnerability, steps to reproduce,
+potential impact, and a suggested fix if you have one. You will receive
+a response within 48 hours.
+
+=== Security Measures
+
+==== Scope
+
+This tool reads local JSON measurement documents and the protocol
+specification, computes verdicts, and writes local JSON reports. It
+performs no network access, executes no measured code, and follows no
+symlinks it creates.
+
+==== Input Validation
+
+* All inputs are parsed with `serde_json` into typed structures;
+  malformed documents are rejected with a data error, never partially
+  processed.
+* Arithmetic invariants (probe counts, metric coverage, frontier
+  monotonicity) are checked before any file is written.
+* The frontier writer refuses to append to a record whose existing
+  content violates its own invariant, rather than compounding the
+  corruption.
+
+==== Dependencies
+
+* `serde` / `serde_json` only — de facto standard, audited.
+* All dependencies pinned via committed `Cargo.lock`.
+* No `unsafe` code in this crate.
+
+=== Disclosure Policy
+
+* Responsible disclosure; 90-day timeline after patch release.
+* Advisories published via GitHub Security Advisories.

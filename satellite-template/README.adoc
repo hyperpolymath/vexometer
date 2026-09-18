@@ -2,13 +2,13 @@
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 == License & Philosophy
 
-This project must declare **MPL-2.0-or-later** for platform/tooling compatibility.
+This project is licensed under **MPL-2.0** (code) and **CC-BY-SA-4.0** (documentation).
 
-Philosophy: **Palimpsest**. The Palimpsest-MPL (PMPL) text is provided in `license/PMPL-1.0.txt`, and the canonical source is the palimpsest-license repository.
+The full MPL-2.0 text is provided in `LICENSE`.
 // SPDX-FileCopyrightText: 2025 Jonathan D.A. Jewell
 = vex-SATELLITE_NAME
 
-image:[Palimpsest-MPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: MPL-2.0,link="LICENSE"]
 :toc: preamble
 :toclevels: 2
 
@@ -67,7 +67,7 @@ just check
 
 == License
 
-MPL-2.0. See link:LICENSE.txt[LICENSE.txt].
+MPL-2.0 for code — see link:LICENSE[LICENSE]. Documentation is CC-BY-SA-4.0.
 
 == Contributing
 

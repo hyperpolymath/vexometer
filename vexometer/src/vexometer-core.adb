@@ -10,6 +10,9 @@
 
 pragma Ada_2022;
 
+with Ada.Numerics.Elementary_Functions;
+with Ada.Containers.Generic_Array_Sort;
+
 package body Vexometer.Core is
 
    ---------------------------------------------------------------------------
@@ -81,7 +84,8 @@ package body Vexometer.Core is
    --  Aggregate_Profile
    --
    --  Combines multiple response analyses into a single model profile,
-   --  computing mean ISA and mean category scores across all analyses.
+   --  computing mean, population standard deviation, and median for the
+   --  ISA score and each category score across all analyses.
    --  The profile inherits model identity from the first analysis.
    ---------------------------------------------------------------------------
 
@@ -90,6 +94,27 @@ package body Vexometer.Core is
        Config   : Analysis_Config := Default_Config) return Model_Profile
    is
       pragma Unreferenced (Config);
+
+      package EF renames Ada.Numerics.Elementary_Functions;
+
+      type Float_Array is array (Positive range <>) of Float;
+
+      procedure Sort is new Ada.Containers.Generic_Array_Sort
+         (Index_Type   => Positive,
+          Element_Type => Float,
+          Array_Type   => Float_Array);
+
+      function Median_Of (Values : Float_Array) return Float is
+         Sorted : Float_Array := Values;
+         Mid    : constant Positive := Sorted'First + Sorted'Length / 2;
+      begin
+         Sort (Sorted);
+         if Sorted'Length mod 2 = 1 then
+            return Sorted (Mid);
+         else
+            return (Sorted (Mid - 1) + Sorted (Mid)) / 2.0;
+         end if;
+      end Median_Of;
 
       Profile : Model_Profile;
       N       : constant Natural := Natural (Analyses.Length);
@@ -114,10 +139,50 @@ package body Vexometer.Core is
          Profile.Category_Means (Cat) := Sums (Cat) / Float (N);
       end loop;
 
+      --  Standard deviations and medians. Two-pass form: sums of squared
+      --  deviations cannot go negative, unlike E[x^2] - E[x]^2.
+      declare
+         ISA_Vals : Float_Array (1 .. N);
+         ISA_SSD  : Float := 0.0;
+         Cat_SSD  : Category_Score_Array := Null_Category_Scores;
+         I        : Positive := 1;
+      begin
+         for A of Analyses loop
+            ISA_Vals (I) := A.Overall_ISA;
+            I := I + 1;
+            ISA_SSD := ISA_SSD + (A.Overall_ISA - Profile.Mean_ISA) ** 2;
+            for Cat in Metric_Category loop
+               Cat_SSD (Cat) := Cat_SSD (Cat)
+                  + (A.Category_Scores (Cat) - Profile.Category_Means (Cat)) ** 2;
+            end loop;
+         end loop;
+
+         Profile.Std_Dev_ISA := EF.Sqrt (ISA_SSD / Float (N));
+         Profile.Median_ISA  := Median_Of (ISA_Vals);
+
+         for Cat in Metric_Category loop
+            Profile.Category_Std_Devs (Cat) := EF.Sqrt (Cat_SSD (Cat) / Float (N));
+         end loop;
+
+         for Cat in Metric_Category loop
+            declare
+               Vals : Float_Array (1 .. N);
+               J    : Positive := 1;
+            begin
+               for A of Analyses loop
+                  Vals (J) := A.Category_Scores (Cat);
+                  J := J + 1;
+               end loop;
+               Profile.Category_Medians (Cat) := Median_Of (Vals);
+            end;
+         end loop;
+      end;
+
       --  Set identity fields from the first analysis element
       Profile.Analysis_Count := N;
       Profile.Model_ID       := Analyses.First_Element.Model_ID;
       Profile.Model_Version  := Analyses.First_Element.Model_Version;
+      Profile.Evaluated_At   := Ada.Calendar.Clock;
 
       return Profile;
    end Aggregate_Profile;

@@ -1,0 +1,331 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= ISA / Vexometer situation report -- 2026-09-01
+:toc:
+:toclevels: 2
+
+== TL;DR
+
+* The *efficacy protocol* (`vexometer-efficacy-v2` + `vexometer-frontier-v1`,
+  link:../vexometer/docs/EFFICACY-PROTOCOL.adoc[EFFICACY-PROTOCOL.adoc]) is on
+  main with its provenance appendix verified against the actual Anthropic paper
+  rather than a screenshot (PR #63).
+* The *CI quality gates had never passed* -- not on any PR, not on any push.
+  Two structural defects (a Justfile recipe collision that killed every `just`
+  invocation at parse time, and `SECURITY.md` references surviving the
+  `.md`->`.adoc` migration plus trust manifests frozen since 2026-02-28) made
+  both jobs unsatisfiable. Repaired in PR #66; the first all-green run of
+  `quality-gates` in this repository's history is dated 2026-09-01.
+* The repaired gates *paid for themselves within hours*: the repository's
+  first-ever CI test runs exposed a latent memory-safety defect (five
+  statistics fields of `Model_Profile` were never assigned -- undefined memory
+  reached every report; fixed in PR #67), and the stricter parse gate pulled
+  in by the pin bump exposed a workflow that had never loaded
+  (`workflow-linter.yml`; fixed in PR #64). Details in the outage section.
+* The *git tangle* left by the previous session (a stalled interactive rebase,
+  three redundant picks, orphaned branches) was resolved losslessly, with SHA
+  evidence recorded below.
+* The *lettre TLS hostname-verification advisory* in vext-email-gateway is
+  patched (PR #65), and the standards workflow pins are current (PR #64).
+* Mechanical documentation contradictions are fixed (this PR and #63); six
+  *normative* protocol questions raised in review are deferred to an owner
+  ruling batch -- see the debt register.
+* The protocol now exceeds the implementation: `just efficacy-report` and the
+  frontier tooling do not exist yet, and no satellite has ever been run through
+  the loop. That is the route forward.
+
+== Component reality map
+
+[cols="2,3,4", options="header"]
+|===
+|Component |Claimed state |Evidenced state (2026-09-01)
+
+|`vexometer/` (Ada core)
+|TOPOLOGY.adoc dashboard ~70%; STATE.a2ml `completion-percentage = 25`
+ (frozen 2026-04-04); CRG C
+|Builds and tests pass locally and now in CI (after PR #67 fixed the
+ uninitialized profile statistics the first CI runs caught). The "1282
+ assertions" figure
+ counts assertion _executions_ (e.g. `ada-p2p-tests = 420` is 4 property loops
+ x 100 iterations + 20), not sites; there are ~55 static assertion sites.
+ Neither 25% nor 70% is a measured value -- see debt D3.
+
+|`lazy-eliminator/`
+|CRG C, "55 tests (unit+E2E+property+aspect)"
+|Test suite green in `just test-all` (16 proptest property tests among them).
+
+|`vext/` (Rust)
+|Working tooling
+|`cargo test` passes (offline-first fallback in the Justfile).
+
+|`vext-email-gateway/`
+|Prototype
+|Explicitly excluded from the `test-all` gate (Justfile says so). lettre
+ advisory patched in PR #65 with the rand `OsRng`->`SysRng` port to match.
+
+|`vexometer-satellites/`
+|"Central documentation hub + integration protocol specifications"
+|Registry and roadmap only. The protocol-specification claim was false (specs
+ live in `vexometer/docs/`) and its `docs/trace-format.adoc` /
+ `docs/efficacy-format.adoc` links pointed at files that do not exist --
+ fixed in this PR. *No satellite implementation exists yet.*
+
+|`satellite-template/`
+|Scaffold for new satellites
+|Present, template-drift-clean under the (now working) must-gates sweep.
+|===
+
+== Branch and repository state
+
+What the previous session left, and what was done with it:
+
+* The main checkout was *mid-interactive-rebase* of a local main (4 commits
+  ahead) onto origin/main. Picks 1-3 re-applied `.claude/CLAUDE.md` policy
+  edits whose end state was already byte-identical on main via PR #61's squash
+  `f2b923c` (verified: `git diff` of the three files between the pick tree and
+  origin/main was empty). Pick 4, the standards pin bump `d054419`, was
+  independently preserved on `chore/bump-standards-pins` (verified:
+  `git diff chore/bump-standards-pins d054419` empty). The rebase was
+  therefore aborted and local main hard-reset to origin/main *losslessly*.
+* Branches deleted after tree-content equivalence against origin/main:
+  `policy/bun-first-deno-removal` (landed via #61), `chore/nix-sweep-138`,
+  `refactor/semantic-port-*`.
+* Branch kept untouched: `refactor/eradicate-rescript` (owner scope, per the
+  ReScript-enclave ruling).
+* PRs cut from the surviving work, plus the two defect fixes CI forced along
+  the way, in landing order:
+
+[cols="1,4,2", options="header"]
+|===
+|PR |Content |State at time of writing
+
+|#66 |`fix(ci)`: gate repair (Justfile collision, `.md`->`.adoc`, manifest
+      regeneration) |Merged 2026-09-01
+|#65 |lettre TLS advisory bump + `SysRng` port |Merged 2026-09-01
+|#67 |`fix(core)`: compute the profile statistics `Aggregate_Profile` never
+      assigned (caught by the first CI test runs) |Merged 2026-09-01
+|#64 |Standards workflow pin bump to current `standards` SHA, plus repair of
+      the unparseable `workflow-linter.yml` its stricter gate suite exposed
+      |Merged 2026-09-01
+|#63 |Efficacy protocol v2 + frontier records + verified provenance appendix
+      + six review consistency fixes |Merged 2026-09-01
+|#68 |This sitrep + remaining mechanical doc fixes |Open (this PR)
+|===
+
+== The quality-gate outage
+
+This deserves its own section because it explains most of the repository's
+apparent confusion: *CI red was noise, not signal, for the entire life of the
+`quality-gates` workflow.*
+
+Defect 1 -- `test-all` never ran a test::
+`import? "contractile.just"` merges recipe namespaces, and `contractile.just`
+defines `trust-verify` (the license/secrets/container aggregate). The root
+Justfile redefined it, so every `just` invocation died at parse time. CI only
+ever saw the parse error. `just test-all` passes cleanly once the root recipe
+is renamed `trust-manifest-verify` -- there were no real test failures
+underneath.
+
+Defect 2 -- `must-gates` was unsatisfiable::
+All six components renamed `SECURITY.md` to `SECURITY.adoc`, but
+`scripts/run-must-gates.sh` still required the old name (x3) and
+`scripts/trust/generate-manifest.sh` still hashed it. Independently, all six
+`.trust/trust-manifest.sha256` files were frozen at
+`generated_at=2026-02-28` with *all 42 entries failing*.
+
+Both defects are estate-pattern diseases (md->adoc migration rot; a gate that
+cannot pass is a defect in the gate). The repair is PR #66.
+
+IMPORTANT: The trust manifests pin content hashes of each component's
+`README.adoc`, `ROADMAP.adoc`, `SECURITY.adoc`, `Mustfile`,
+`Trustfile.a2ml`, `RSR_OUTLINE.adoc` and `docs/CITATIONS.adoc`. *Any PR that
+touches one of those files must run `just trust-generate` in the same PR*, or
+`must-gates` fails on its merge ref. This is now the repository's most likely
+recurring CI failure; debt D7 proposes automating the hint.
+
+=== What the repaired gates caught immediately
+
+Within hours of #66 landing, the newly working CI surfaced two pre-existing
+defects that had been invisible for the workflow's entire life:
+
+Uninitialized profile statistics (fixed, PR #67)::
+`Aggregate_Profile` in `vexometer/src/vexometer-core.adb` returned a
+`Model_Profile` whose `Std_Dev_ISA`, `Median_ISA`, `Category_Std_Devs`,
+`Category_Medians` and `Best_/Worst_Categories` were *never assigned* --
+every report that printed a standard deviation or median was printing
+undefined stack memory. The E2E assertion `Std_Dev_ISA >= 0.0` therefore
+passed or failed *nondeterministically across identical trees* (it passed on
+the #64/#65/#66 runs, failed on #63, then failed on #64's re-run), which is
+itself the fingerprint to remember: a test that flips verdict with no diff
+under it is reading uninitialized memory, not exhibiting flakiness. GNAT had
+flagged it all along ("may be referenced before it has a value"). The fix
+gives the record safe defaults and computes the real statistics (two-pass
+population standard deviation -- summed squared deviations from the mean
+cannot go negative, unlike the E[x^2]-E[x]^2 form -- plus true medians).
+Verified by three consecutive `just test-all` runs, exit 0 each, GNAT
+warning count 0.
+
+Unparseable `workflow-linter.yml` (fixed in PR #64)::
+The file declared scalar `permissions: read-all` with a nested
+`actions: read` under it -- a YAML "mapping values are not allowed here"
+parse death, so the workflow *never loaded* and produced no check run
+(estate pattern: scalar-permissions break; never-valid signature). It was
+identical on main; the pin bump exposed it because the new standards suite
+carries a parse gate over every workflow file, fetched at runtime and thus
+instantly current. Fix: delete the nested line (`read-all` already grants
+`actions: read`); all 63 workflows now parse.
+
+== ISA and the Anthropic results
+
+The efficacy protocol's provenance appendix references *"Automated researchers
+can reliably mitigate alignment failures"* (Anthropic Alignment blog,
+2026-08-28). The paper was fetched and read during this pass; the appendix's
+screenshot-derived claims were corrected against it (PR #63).
+
+What the paper shows, in one paragraph: automated alignment researchers
+(Claude Opus 4.8 agents, five in parallel, up to 48 hours per failure
+category) proposed 1,601 mitigation methods across ten seeded alignment
+failure categories and reliably hill-climbed all ten (Figure 3), under three
+rejection rules -- no benchmark/eval data in training, no distilling from
+stronger models, and a capability gate that rejects any method whose 95%
+confidence interval on *any* capability benchmark falls entirely below the
+base model. Section 6 closes the loop recursively: a Claude Sonnet 5 AAR
+post-trained an early Opus 4.8 checkpoint to near-production alignment with
+roughly 2,400 examples.
+
+What ISA borrows is the *shape of the loop*, not the subject matter:
+
+* propose an intervention -> measure against a baseline -> reject on
+  collateral damage or capability loss -> advance a frontier;
+* machine-readable *frontier records* so that an efficacy claim can be read
+  alongside the search that produced it (their Figure 3 is exactly the plot a
+  `vexometer-frontier-v1` file reproduces);
+* the capability gate, whose ISA analogue is the 13-probe behavioural suite.
+
+The boundary, in the owner's words: *"this is not about that kind of alignment
+strictly as it is used."* ISA measures the irritation surface -- time wasted,
+tics, incompleteness, rigidity, scope drift, recovery competence. Several ISA
+metrics (paternalism, strategic rigidity, recovery) have no safety
+counterpart because they endanger nobody, and ISA measures nothing about
+deception, power-seeking, or jailbreaks. The protocol's own Scope Boundary
+section is normative on this point and must survive future edits.
+
+== Documentation honesty audit
+
+[cols="4,2,3", options="header"]
+|===
+|Claim / defect |Where |Disposition
+
+|Broken cross-links, wrong data-file counts
+|`vexometer/docs/*`
+|Fixed, `2e47e56` (#63)
+
+|Provenance appendix quoted a screenshot ("unverified"), misidentified the
+ figure
+|EFFICACY-PROTOCOL.adoc appendix
+|Verified against the PDF, figure corrected to Figure 3, `89a4c42` (#63)
+
+|Six internal inconsistencies (percentage vs fraction, sum domain, row
+ counts, field naming, `unverified`, superseded command)
+|EFFICACY-PROTOCOL.adoc, SATELLITES.adoc
+|Fixed, `987dde4` (#63)
+
+|Dead `.scm` links; retired-format `ECOSYSTEM.scm` template presented as
+ current
+|`vexometer/docs/SATELLITES.adoc`
+|Fixed in this PR (links repointed to `.machine_readable/6a2/*.a2ml`; NOTE on
+ the template section)
+
+|False claim to hold the protocol specs; links to nonexistent
+ `docs/trace-format.adoc` / `docs/efficacy-format.adoc`
+|`vexometer-satellites/README.adoc`
+|Fixed in this PR (+ same-PR manifest regeneration -- README is
+ manifest-tracked)
+
+|"1282 assertions" reads as assertion sites
+|`TEST-NEEDS.adoc`
+|Annotated in this PR: executions, loop-amplified; recount is part of D3
+
+|`completion-percentage = 25` (2026-04-04) vs TOPOLOGY ~70%
+|`STATE.a2ml` / `TOPOLOGY.adoc`
+|Annotated in this PR; true refresh deferred (D3)
+
+|Gates that cannot pass
+|`Justfile`, `scripts/`
+|Fixed, #66
+
+|`PROOF-NEEDS.adoc` cites `.res` paths and claims Idris files removed that
+ exist in `vext/src/abi/`; omits Ada entirely
+|`PROOF-NEEDS.adoc`
+|Deferred (D2) -- needs regeneration, not a patch
+|===
+
+== Debt register
+
+Each item has a done-condition; none of these is an aspiration.
+
+D1 -- Six normative protocol decisions (from review)::
+(a) `G_m` when the baseline is 0; (b) `capability_ok` = per-probe identity vs
+aggregate pass-rate; (c) the acceptance rule for multi-target satellites;
+(d) `frontier_record` plurality for multi-target satellites; (e) a v1->v2
+lifting spec; (f) a held-out scenario set (the paper's no-eval-data rule
+analogue -- already flagged as future work in the appendix).
+_Done when_: one owner-ruling issue lists all six, and the protocol is
+amended to v2.1 with examples updated.
+
+D2 -- `PROOF-NEEDS.adoc` regeneration::
+_Done when_: every entry names a path that exists on main, `.res` references
+are gone, and the Ada core has a section.
+
+D3 -- `STATE.a2ml` / TOPOLOGY refresh::
+_Done when_: `last-updated` is current, completion figures carry the command
+that measured them, and the assertion count distinguishes sites from
+executions.
+
+D4 -- `actions.lock` absent::
+This repository has no `.github/actions.lock` while the estate requires one.
+_Done when_: generated and validated by the standards canonical process
+(not hand-written -- see the estate's lockfile scar tissue).
+
+D5 -- Efficacy tooling does not exist::
+`just efficacy-report` is documented shape only; nothing emits
+`vexometer-efficacy-v2` or `vexometer-frontier-v1` JSON.
+_Done when_: the recipe exists and its output validates against the
+protocol's own examples.
+
+D6 -- Zero satellites::
+The registry lists repositories that have never produced a trace.
+_Done when_: one satellite (the protocol's worked example is
+`vex-verbosity-compressor`) has before/after traces, a capability block, and
+an assigned verdict on main.
+
+D7 -- Manifest-regen ergonomics::
+The same-PR regeneration contract (see the outage section) is manual.
+_Done when_: a CI step or pre-commit hook detects a stale manifest and prints
+the exact `just trust-generate` invocation in its failure message.
+
+== Route forward (ordered)
+
+1. File the D1 owner-ruling issue (six questions, one issue). -- unblocks
+   protocol v2.1.
+2. Build D5 (`efficacy-report` + frontier writer) against the protocol's JSON
+   examples as fixtures.
+3. Run the first satellite end-to-end (D6) and publish its frontier record.
+4. Stand up the held-out scenario set (D1f) before any satellite tuning
+   begins -- after tuning starts it is too late by definition.
+5. D2 and D3 documentation refreshes.
+6. D7 manifest guard, then D4 `actions.lock`.
+
+== Provenance
+
+Produced by job `22d3a88e` ("vexometer and ISA", 2026-09-01), decoding the
+state left by session `cd30ba86`. Key verifications: rebase-redundancy by
+`git diff 3923309 d054419` scoping; manifest state by `sha256sum -c` on all
+six components; gate repair by end-to-end local runs of
+`scripts/run-must-gates.sh`, `scripts/trust/verify-manifest.sh`,
+`just --evaluate`, and `just test-all` (exit 0 each); the statistics fix by
+three consecutive full test runs (1282/1282 assertions, exit 0, zero GNAT
+warnings); paper claims against
+the PDF at
+https://www-cdn.anthropic.com/7b1c44894e980876479947dcdd40716278aeeffd/automated-alignment-researchers-august-2026.pdf
+(blog: https://alignment.anthropic.com/2026/automated-alignment-researchers/).

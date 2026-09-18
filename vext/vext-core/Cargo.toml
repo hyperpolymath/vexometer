@@ -81,7 +81,7 @@ path = "src/bin/send.rs"
 [package.metadata.deb]
 maintainer = "hyperpolymath <packages@hyperpolymath.dev>"
 copyright = "2025, hyperpolymath"
-license-file = ["../LICENSE.txt", "0"]
+license-file = ["../LICENSE", "0"]
 extended-description = """
 Vext is a high-performance IRC notification daemon for version control systems.
 It monitors git repositories and sends real-time notifications to IRC channels

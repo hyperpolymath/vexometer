@@ -44,6 +44,9 @@ NOTE: This repository was previously named `vex-tools`. The canonical name is no
 | `lazy-eliminator/`
 | **Lazy Eliminator** -- Completeness enforcement for LLM-generated code. Detects and eliminates lazy patterns.
 
+| `verbosity-compressor/`
+| **Verbosity Compressor (vex-verbosity-compressor)** -- Information density optimisation for LLM output. Semantic redundancy detection, filler-phrase stripping. First satellite scaffolded from `satellite-template`.
+
 | `vext/`
 | **Vext** -- Verifiable, Extensible Communications Protocol with cryptographic proof of algorithmic neutrality.
 
@@ -60,7 +63,7 @@ just build-vext
 just must-all
 just bench-vexometer
 just trust-generate
-just trust-verify
+just trust-manifest-verify
 just test-all
 just ci-gate
 just build-all

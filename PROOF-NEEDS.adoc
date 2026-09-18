@@ -1,0 +1,145 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+== Proof Needs — vexometer monorepo
+
+Regenerated 2026-09-01 against main (`e768bf1`); supersedes the
+2026-03-29 revision, whose inventory no longer matched the tree
+(see <<corrections>>). Debt item D2 of `docs/sitrep-2026-09-01.adoc`.
+Every claim here carries the command that measured it (<<verification>>).
+
+=== Current State
+
+* *Languages*: Ada 2022 (ISA analysis core), Rust (vext, lazy-eliminator,
+  vexometer-efficacy), Idris2 (ABI specifications), Zig (FFI shim).
+  ReScript is gone from main — zero `.res` files remain, so the
+  historical `Obj.magic` sites in `vext/vext-tools` no longer exist.
+* *Rust memory safety*: `lazy-eliminator` declares
+  `#![forbid(unsafe_code)]` (lib.rs line 14). `vext` and
+  `vexometer-efficacy` contain no `unsafe` blocks but do NOT yet carry
+  the forbid attribute — adding it is a cheap ratchet (see
+  <<what-needs-proving>>).
+* *Ada contracts*: exactly 4 Pre/Post aspects, all in
+  `vexometer/src/vexometer-metrics.ads`. No `SPARK_Mode` anywhere; the
+  contracts are runtime-checked when assertions are enabled, not
+  statically proven.
+* *Not proofs*: the 1,282 Ada test-assertion executions counted in
+  `.machine_readable/6a2/STATE.a2ml` are test executions, not proof
+  obligations.
+
+=== Formal artifact inventory (10 `.idr` files, three tiers)
+
+*Tier 1 — real domain specifications:*
+
+* `vexometer/src/abi/Types.idr`, `Foreign.idr`, `Layout.idr` — the
+  Ada↔Zig FFI contract for the analysis engine: metric-category
+  encodings matching `Metric_Category` in `vexometer-core.ads`, FFI
+  declarations implemented by `vexometer/ffi/zig/src/main.zig`, and
+  struct layout/alignment statements for the C-convention records.
+* `vext/src/abi/Types.idr` — `%default total`; the length-indexed
+  `Chain : Nat -> Type` makes append-monotonicity hold *by
+  construction* (`appendIncreases : Chain n -> String -> Chain (S n)`).
+  Of the three properties its header claims, only this one is
+  mechanized; attestation-requires-valid-chain and
+  verification-is-constructive are stated intent.
+
+*Tier 2 — template with an unresolved placeholder:*
+
+* `vext/src/abi/Layout.idr` — generic layout-proof module still named
+  `module {{PROJECT}}.ABI.Layout`; it cannot compile as-is and is the
+  last *unresolved* `{{...}}` placeholder in the monorepo
+  (`satellite-template`'s Foreign.idr also mentions `{{project}}`, but
+  only in a TODO comment telling template users to substitute it —
+  that one is by design).
+
+*Tier 3 — self-describing customization stubs* (each carries a NOTE
+saying it awaits per-component content): `Foreign.idr` in `vext`,
+`vext-email-gateway`, `vexometer-satellites`, `lazy-eliminator`, and
+`satellite-template`.
+
+No escape hatches: zero `believe_me` / `assert_total` / `postulate`
+across all ABI modules.
+
+[#what-needs-proving]
+=== What Needs Proving
+
+==== Ada ISA core (vexometer/)
+
+* SPARK-mode the metrics and aggregation packages and discharge the
+  existing 4 Pre/Post contracts statically (`gnatprove`). Motivation is
+  not hypothetical: the 2026-09-01 campaign found `Aggregate_Profile`
+  leaving five `Model_Profile` fields unassigned — undefined memory
+  reaching every report, surfacing as a nondeterministic E2E verdict.
+  SPARK flow analysis rejects exactly this defect class at compile time.
+
+==== Efficacy evaluator (vexometer-efficacy/)
+
+* D_ISA arithmetic, frontier monotonicity, and totality of the
+  acceptance rule (verdict function covers all input regions; the
+  protocol's rounding rules round-trip). The 15 protocol-fixture tests
+  execute examples; they do not establish the properties. Property
+  tests are the pragmatic first step, Idris2/Lean model second.
+* Add `#![forbid(unsafe_code)]` here and in `vext` to turn the current
+  no-unsafe observation into a compiler-enforced invariant.
+
+==== ABI layout agreement (vexometer/src/abi/ ↔ ffi/zig ↔ Ada)
+
+* Prove (or at minimum, CI-check) that the Idris2 layout statements,
+  the Zig `extern struct` definitions, and the Ada C-convention records
+  agree on size/alignment/field order. Today agreement is by
+  discipline, not by check.
+
+==== Lazy Eliminator analysis (lazy-eliminator/)
+
+* `analyzer.rs`, `detection.rs`, `patterns.rs` — prove the analysis
+  identifies lazy-evaluation patterns without false negatives, and that
+  elimination suggestions preserve program semantics. Fuzzing exists
+  (`fuzz/`); formal statements would be stronger.
+
+==== Vext hash chains (vext/)
+
+* Mechanize the two unproven header claims of `Types.idr`
+  (attestation validity, constructive verification) and resolve the
+  Tier-2 `Layout.idr` placeholder or delete the module.
+
+=== Recommended Provers
+
+* *Idris2* for ABI and analysis-correctness specifications (already the
+  spec language in-tree).
+* *SPARK/gnatprove* for the Ada core — contracts already exist as
+  Ada 2022 aspects; SPARK is the natural discharge route.
+
+=== Priority
+
+*MEDIUM* for the efficacy evaluator and the Ada core: the evaluator
+emits accept/reject verdicts (arithmetic errors change decisions), and
+the Ada core has already shipped one undefined-memory defect that
+contracts+flow analysis would have caught. *LOW* for the rest —
+developer tooling where wrong answers are inconveniences.
+
+[#corrections]
+=== Corrections to the 2026-03-29 revision
+
+* It claimed `Obj.magic` sites in `vext/vext-tools` — that code left
+  main with the ReScript eradication.
+* It claimed Types.idr/Layout.idr/Foreign.idr were "removed" as
+  template scaffolding — they exist, and the `vexometer/` and
+  `vext/Types.idr` modules now carry real domain content (only
+  `vext/Layout.idr` still matches the old description).
+* It omitted the Ada core entirely.
+
+[#verification]
+=== Verification commands (run 2026-09-01, main @ e768bf1)
+
+[listing]
+----
+find . -name '*.res' | wc -l                             # 0
+grep -rn 'Obj.magic' --include='*.res' --include='*.rs' . # no matches
+find . -name '*.idr' | sort                              # the 10 files above
+grep -rn 'SPARK_Mode\|Contract_Cases' vexometer/src      # no matches
+grep -c 'with Pre\|with Post\|Pre =>\|Post =>' vexometer/src/vexometer-metrics.ads  # 4
+grep -l 'forbid(unsafe_code)' vext/src/*.rs lazy-eliminator/src/*.rs vexometer-efficacy/src/*.rs
+                                                         # lazy-eliminator/src/lib.rs only
+grep -n 'believe_me\|assert_total\|postulate' */src/abi/*.idr  # no matches
+grep -rln '{{' --include='*.idr' .                       # vext/src/abi/Layout.idr
+                                                         # + satellite-template Foreign.idr
+                                                         #   (TODO comment, by design)
+----

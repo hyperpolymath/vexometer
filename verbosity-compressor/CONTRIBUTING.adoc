@@ -1,0 +1,64 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+== Contributing to vex-verbosity-compressor
+
+This component lives inside the `vexometer` monorepo. Contributions land
+through pull requests against `main` of
+https://github.com/hyperpolymath/vexometer.
+
+=== Setup
+
+[source,bash]
+----
+git clone https://github.com/hyperpolymath/vexometer.git
+cd vexometer/verbosity-compressor
+----
+
+Optionally enter a reproducible environment first:
+
+[source,bash]
+----
+guix shell -m manifest.scm
+----
+
+=== Build and verify
+
+[source,bash]
+----
+just check   # cargo fmt --check + cargo clippy --all-targets -- -D warnings
+just test    # cargo test
+----
+
+Both must pass before a PR is opened; CI runs the same gates.
+
+=== Reporting bugs and suggesting features
+
+Open an issue at
+https://github.com/hyperpolymath/vexometer/issues[the monorepo issue
+tracker] and name the component (`verbosity-compressor`) in the title.
+Include reproduction steps and expected-versus-actual behaviour for bugs;
+include the problem being solved (not only the proposed solution) for
+features. Check link:ROADMAP.adoc[ROADMAP.adoc] first — the item may
+already be planned.
+
+=== Branch naming
+
+* `feat/short-description` — new functionality
+* `fix/short-description` — bug fixes
+* `docs/short-description` — documentation
+* `test/short-description` — test additions
+* `refactor/short-description` — behaviour-preserving improvements
+
+=== Commit messages
+
+We follow https://www.conventionalcommits.org/[Conventional Commits]:
+`type(scope): description`, for example:
+
+----
+fix(compressor): preserve indentation outside removed spans
+----
+
+=== Security issues
+
+Never report vulnerabilities in public issues — see
+link:SECURITY.adoc[SECURITY.adoc] for the private reporting channel.

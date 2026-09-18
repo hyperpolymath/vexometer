@@ -3,7 +3,7 @@
 // SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
 = vex-lazy-eliminator
 
-image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: MPL-2.0,link="LICENSE"]
 :toc: preamble
 :toclevels: 2
 
@@ -177,7 +177,7 @@ Benchmarked on M1 Mac (1000 Python files, ~100k LOC total):
 
 == License
 
-MPL-2.0. See link:LICENSE[LICENSE].
+MPL-2.0 for code — see link:LICENSE[LICENSE]. Documentation is CC-BY-SA-4.0.
 
 == Contributing
 

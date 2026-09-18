@@ -1,0 +1,97 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= vex-verbosity-compressor
+:toc: preamble
+:toclevels: 2
+
+Information density optimisation for LLM output: semantic redundancy
+detection and filler-phrase stripping.
+
+== Overview
+
+`vex-verbosity-compressor` is the first ISA (formerly Vexometer) satellite scaffolded from
+`satellite-template` (owner ruling D6, 2026-09-02). It detects the
+linguistic pathology classes enumerated by the vexometer LPS metric
+(link:../vexometer/docs/METRICS.adoc[METRICS.adoc]) — sycophancy density,
+hedge-word ratio, corporate-speak frequency, unnecessary repetition, and
+emoji/decoration abuse, plus the padding tics from that document's HIGH-LPS
+example — and strips the instances whose removal cannot change meaning.
+
+Detection and stripping are deliberately asymmetric: hedges, repetitions,
+and emoji are scored but never removed (hedges are meaning-bearing; naive
+sentence segmentation or symbol stripping risks deleting content). Corporate
+speak is stripped only where it is a discourse adverbial ("at the end of the
+day"), never where it is sentence grammar ("leverage").
+
+=== Vexometer Integration
+
+This satellite targets the following vexometer metrics:
+
+* *LPS (Linguistic Pathology Score)* — `weighted_sum(pathology_instances) /
+  response_length`. The crate computes a documented *proxy* of this score
+  (the canonical LPS comes from the vexometer Ada core) and reduces it by
+  removing pathology instances.
+* *TII (Temporal Intrusion Index)* — `(intrusion_events /
+  total_interactions) * severity_weight`. Padding costs reader time; the
+  compressor reduces the wall-of-filler intrusion class. Direct TII
+  measurement needs interaction-level traces and is not wired up yet.
+
+Integration with vexometer is *optional*. This tool works standalone.
+
+== Status (v0.1)
+
+Works today: detection of all six pathology classes, meaning-safe stripping
+of three (sycophancy, discourse-adverbial corporate speak, padding), an LPS
+proxy score, and a CLI (`analyse`, `compress`) with JSON output — 15
+integration tests, two of them pinned to the METRICS.adoc example pair.
+
+Not wired up yet (see link:ROADMAP.adoc[ROADMAP.adoc]): vexometer-trace-v1
+emission, TII measurement, duplicate-sentence stripping, recapitalisation
+after sentence-initial strips, and the first efficacy evaluation — which is
+blocked on registering the first scenario partition in the scenario-set
+registry (efficacy protocol ruling f1).
+
+== Installation
+
+[source,bash]
+----
+# From the monorepo
+cd verbosity-compressor
+just build
+
+# Install the binary locally
+cargo install --path .
+----
+
+== Usage
+
+[source,bash]
+----
+# JSON analysis: findings + LPS proxy
+vex-verbosity-compressor analyse response.txt
+
+# Compressed text on stdout ('-' reads stdin)
+vex-verbosity-compressor compress response.txt
+cat response.txt | vex-verbosity-compressor compress -
+
+# JSON report of what was removed and what was retained
+vex-verbosity-compressor compress response.txt --report
+----
+
+== Building
+
+[source,bash]
+----
+just build   # release build
+just test    # run the test suite
+just check   # rustfmt + clippy (-D warnings)
+----
+
+== License
+
+MPL-2.0 for code — see link:LICENSE[LICENSE]. Documentation is
+CC-BY-SA-4.0.
+
+== Contributing
+
+See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc].

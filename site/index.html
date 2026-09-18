@@ -1,0 +1,88 @@
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
+<!--
+  Hand-authored static page, deployed verbatim by .github/workflows/casket-pages.yml.
+  This page is NOT rendered by casket-ssg: building casket-ssg (Haskell; pandoc,
+  text-icu) never completed inside the CI timeout in ~93 runs (issue #74), so the
+  site artifact is committed instead and CI only deploys it. If a viable casket-ssg
+  toolchain appears later, its rendered output can replace this file wholesale —
+  see site/README.adoc for the contract.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Vexometer — Irritation Surface Analyser (ISA)</title>
+  <style>
+    :root {
+      --bg: #faf9f6; --fg: #1c1c1c; --muted: #5a5a5a;
+      --accent: #7a3e9d; --border: #ddd8d0; --card: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #16141a; --fg: #e8e4ee; --muted: #a89fb5;
+        --accent: #c79ae0; --border: #3a3444; --card: #201c28;
+      }
+    }
+    body {
+      margin: 0; background: var(--bg); color: var(--fg);
+      font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    main { max-width: 46rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+    h1 { font-size: 1.7rem; line-height: 1.3; margin: 0 0 .4rem; }
+    h2 { font-size: 1.15rem; margin: 2.2rem 0 .6rem; color: var(--accent); }
+    p.lede { color: var(--muted); margin-top: 0; }
+    a { color: var(--accent); }
+    table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+    th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-weight: 600; }
+    td:first-child { white-space: nowrap; font-family: ui-monospace, monospace; font-size: .85rem; }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .85rem; }
+    .badge { display: inline-block; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: .1rem .5rem; font-size: .8rem; margin-right: .4rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>The Vexometer: Irritation Surface Analyser (ISA)</h1>
+    <p class="lede">Quantifying irritation across 10 dimensions for LLMs and related
+    tools, with standardised, reproducible metrics.</p>
+    <p>
+      <span class="badge">MPL-2.0</span>
+      <span class="badge">RSR-compliant</span>
+    </p>
+
+    <p>This monorepo contains ISA core, its satellite intervention system, the Lazy
+    Eliminator completeness enforcer, and the Vext verifiable communications
+    protocol. ISA is irritation-surface <em>instrumentation</em> — measurement and
+    mitigation of annoying LLM output patterns — not safety-alignment work.</p>
+
+    <h2>Components</h2>
+    <table>
+      <tr><th>Directory</th><th>What it is</th></tr>
+      <tr><td>vexometer/</td><td><strong>The Vexometer (ISA)</strong> — irritation surface analyser core (Ada). 10 dimensions, standardised metrics.</td></tr>
+      <tr><td>vexometer-efficacy/</td><td><strong>Efficacy evaluator</strong> (Rust) — scores satellite interventions against baseline measurements; monotone frontier records.</td></tr>
+      <tr><td>vexometer-satellites/</td><td><strong>ISA Satellites</strong> — umbrella documentation and coordination hub for the satellite intervention system.</td></tr>
+      <tr><td>satellite-template/</td><td><strong>Satellite Template</strong> — scaffolding template for new ISA satellite projects.</td></tr>
+      <tr><td>verbosity-compressor/</td><td><strong>Verbosity Compressor</strong> (Rust) — first satellite: information-density analysis of LLM output; filler, hedges, redundancy, padding.</td></tr>
+      <tr><td>lazy-eliminator/</td><td><strong>Lazy Eliminator</strong> — completeness enforcement for LLM-generated code; detects and eliminates lazy patterns.</td></tr>
+      <tr><td>vext/</td><td><strong>Vext</strong> — verifiable, extensible communications protocol with cryptographic proof of algorithmic neutrality.</td></tr>
+      <tr><td>vext-email-gateway/</td><td><strong>Vext Email Gateway</strong> — email bridge for Vext interoperability (prototype).</td></tr>
+    </table>
+
+    <h2>Start here</h2>
+    <p>
+      <a href="https://github.com/hyperpolymath/vexometer">Source repository</a> ·
+      <a href="https://github.com/hyperpolymath/vexometer/blob/main/README.adoc">README</a> ·
+      <a href="https://github.com/hyperpolymath/vexometer/blob/main/docs/EFFICACY-PROTOCOL.adoc">Efficacy protocol</a> ·
+      <a href="https://github.com/hyperpolymath/vexometer/tree/main/docs">docs/</a>
+    </p>
+
+    <footer>
+      <p>Code MPL-2.0 · documentation CC-BY-SA-4.0 ·
+      © Jonathan D.A. Jewell.<br>
+      Hand-authored static page, committed under <code>site/</code> and deployed
+      verbatim (see issue #74). Last updated 2026-09-02.</p>
+    </footer>
+  </main>
+</body>
+</html>

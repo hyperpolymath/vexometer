@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: MPL-2.0
+
+---
+### [META]
+id: "did:web:hyperpolymath.github.io:vexometer:vexometer-efficacy"
+version: "2026.09"
+context:
+  - "https://a2ml.org/ns/v2"
+  - "https://w3id.org/security/v4"
+meta:
+  generated: "2026-09-01T00:00:00Z"
+  expires: "2027-09-01T00:00:00Z"
+  owner: "Hyper Polymath"
+  project: "Vexometer Efficacy"
+  repository: "https://github.com/hyperpolymath/vexometer/tree/main/vexometer-efficacy"
+  advisory: "https://github.com/hyperpolymath/vexometer/security/advisories/new"
+  contact: "security@jewell.dev"
+
+---
+### [SITE]
+hosting:
+  git_remote: "github.com/hyperpolymath/vexometer"
+  docs_url: "https://github.com/hyperpolymath/vexometer/tree/main/vexometer-efficacy"
+network:
+  transport: ["HTTPS", "SSH"]
+  dns_provider: "Cloudflare"
+  policy_file: "SECURITY.adoc"
+
+---
+### [APPLICATION]
+name: "Vexometer Efficacy"
+component: "vexometer-efficacy"
+component_type: "tooling"
+runtime:
+  trust_inputs:
+    - "README.adoc"
+    - "ROADMAP.adoc"
+    - "SECURITY.adoc"
+    - "contractiles/must/Mustfile"
+    - "contractiles/trust/Trustfile.a2ml"
+  release_integrity:
+    lockfiles_required: true
+    spdx_headers_required: true
+
+---
+### [SECURITY]
+reporting:
+  advisory_url: "https://github.com/hyperpolymath/vexometer/security/advisories/new"
+  email: "security@jewell.dev"
+hardening:
+  branch_protection_required: true
+  signed_tags_required: true
+  dependency_review_required: true
+
+---
+### [INVARIANTS]
+must_gate:
+  source: "contractiles/must/Mustfile"
+  checks:
+    - "readme-present"
+    - "roadmap-present"
+    - "security-policy-present"
+    - "trust-verifier-present"
+    - "security-channel-declared"
+    - "no-template-drift"
+    - "lockfile-committed"
+
+ci_cd:
+  workflow: ".github/workflows/quality-gates.yml"
+  required_commands:
+    - "./scripts/run-must-gates.sh"
+    - "just test-all"

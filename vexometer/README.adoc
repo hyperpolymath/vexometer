@@ -4,7 +4,7 @@
 
 = The Vexometer: Irritation Surface Analyser (ISA) for LLMs and related tools
 
-image:https://img.shields.io/badge/License-PMPL--1.0--or--later-6366f1?style=flat&labelColor=4338ca[MPL-2.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: MPL-2.0,link="LICENSE"]
 
 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 v0.1.0
@@ -20,7 +20,7 @@ A rigorous, reproducible tool for quantifying the irritation surface of LLMs and
 *The Vexometer: Irritation Surface Analyser (ISA) for LLMs and related tools* is the canonical title.
 *ISA* is the canonical short name.
 *Vexometer* is retained as a compatibility codename in technical identifiers such as `vexometer/`, `vexometer.gpr`, the `vexometer` CLI command, and `Vexometer.*` Ada packages.
-The repository-wide naming policy is defined in link:../NAMING.md[NAMING.md].
+The repository-wide naming policy is defined in link:../NAMING.adoc[NAMING.adoc].
 
 == Philosophy
 
@@ -193,10 +193,11 @@ vexometer/
 |   |   +-- behavioural_probes.json
 |   +-- baselines/                 # Known model baselines
 +-- docs/
-|   +-- SPECIFICATION.md           # Full technical specification
+|   +-- SPECIFICATION.adoc         # Full technical specification
 |   +-- METRICS.adoc               # All 10 metrics detailed
 |   +-- SATELLITES.adoc            # Intervention satellite architecture
-|   +-- letter_lmsys_arena.md      # LMSYS Arena proposal
+|   +-- EFFICACY-PROTOCOL.adoc     # Satellite acceptance and frontier records
+|   +-- letter_lmsys_arena.adoc    # LMSYS Arena proposal
 +-- alire.toml                     # Alire package manifest
 +-- vexometer.gpr                  # GNAT project file
 ----
@@ -349,7 +350,7 @@ See link:docs/SATELLITES.adoc[SATELLITES.adoc] for the full satellite architectu
 
 == LMSYS Arena Integration
 
-ISA includes a proposal for integrating ISA metrics into the LMSYS Chatbot Arena evaluation framework. See link:docs/letter_lmsys_arena.md[letter_lmsys_arena.md].
+ISA includes a proposal for integrating ISA metrics into the LMSYS Chatbot Arena evaluation framework. See link:docs/letter_lmsys_arena.adoc[letter_lmsys_arena.adoc].
 
 Preliminary testing shows significant variation in irritation surfaces across models:
 
@@ -402,15 +403,16 @@ Priority areas:
 
 == Documentation
 
-* link:docs/SPECIFICATION.md[SPECIFICATION.md] - Full technical specification
+* link:docs/SPECIFICATION.adoc[SPECIFICATION.adoc] - Full technical specification
 * link:docs/METRICS.adoc[METRICS.adoc] - Detailed metric reference
 * link:docs/SATELLITES.adoc[SATELLITES.adoc] - Satellite architecture
+* link:docs/EFFICACY-PROTOCOL.adoc[EFFICACY-PROTOCOL.adoc] - How satellite efficacy claims are accepted or rejected
 * link:CLAUDE.md[CLAUDE.md] - AI assistant guidance
 
 == License
 
-image:https://img.shields.io/badge/License-PMPL--1.0--or--later-6366f1?style=flat&labelColor=4338ca[MPL-2.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: MPL-2.0,link="LICENSE"]
 
-This project is licensed under MPL-2.0 (Palimpsest License). See link:LICENSE.txt[LICENSE.txt] for the full license text.
+This project is licensed under MPL-2.0 (code) and CC-BY-SA-4.0 (documentation). See link:LICENSE[LICENSE] for the full MPL-2.0 text.
 
 This is free software; you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.

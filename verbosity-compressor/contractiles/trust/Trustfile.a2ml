@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: MPL-2.0
+
+---
+### [META]
+id: "did:web:hyperpolymath.github.io:vexometer:verbosity-compressor"
+version: "2026.09"
+context:
+  - "https://a2ml.org/ns/v2"
+  - "https://w3id.org/security/v4"
+meta:
+  generated: "2026-09-02T00:00:00Z"
+  expires: "2027-09-02T00:00:00Z"
+  owner: "Hyper Polymath"
+  project: "Verbosity Compressor"
+  repository: "https://github.com/hyperpolymath/vexometer/tree/main/verbosity-compressor"
+  advisory: "https://github.com/hyperpolymath/vexometer/security/advisories/new"
+  contact: "security@jewell.dev"
+
+---
+### [SITE]
+hosting:
+  git_remote: "github.com/hyperpolymath/vexometer"
+  docs_url: "https://github.com/hyperpolymath/vexometer/tree/main/verbosity-compressor"
+network:
+  transport: ["HTTPS", "SSH"]
+  dns_provider: "Cloudflare"
+  policy_file: "SECURITY.adoc"
+
+---
+### [APPLICATION]
+name: "Verbosity Compressor"
+component: "verbosity-compressor"
+component_type: "satellite"
+runtime:
+  trust_inputs:
+    - "README.adoc"
+    - "ROADMAP.adoc"
+    - "SECURITY.adoc"
+    - "contractiles/dust/Dustfile"
+    - "contractiles/must/Mustfile"
+    - "contractiles/trust/Trustfile.a2ml"
+  release_integrity:
+    lockfiles_required: true
+    spdx_headers_required: true
+
+---
+### [SECURITY]
+reporting:
+  advisory_url: "https://github.com/hyperpolymath/vexometer/security/advisories/new"
+  email: "security@jewell.dev"
+hardening:
+  branch_protection_required: true
+  signed_tags_required: true
+  dependency_review_required: true
+
+---
+### [INVARIANTS]
+must_gate:
+  source: "contractiles/must/Mustfile"
+  checks:
+    - "readme-present"
+    - "roadmap-present"
+    - "security-policy-present"
+    - "trust-verifier-present"
+    - "security-channel-declared"
+    - "no-template-drift"
+
+ci_cd:
+  workflow: ".github/workflows/quality-gates.yml"
+  required_commands:
+    - "./scripts/run-must-gates.sh"
+    - "just test-all"

@@ -269,6 +269,12 @@ vex-SATELLITE_NAME/
 
 == Satellite ECOSYSTEM.scm Template
 
+NOTE: The `.scm` state-file format shown below is retired — the estate
+migrated machine-readable metadata to A2ML under `.machine_readable/6a2/`
+(see this repository's `ECOSYSTEM.a2ml` / `META.a2ml` / `STATE.a2ml`). The
+template is kept for its *content* shape; a new satellite should emit the
+equivalent A2ML.
+
 [source,scheme]
 ----
 ;; ECOSYSTEM.scm - Satellite Template
@@ -329,6 +335,12 @@ just trace-collect --input responses/ --output after/
 === Step 4: Calculate Efficacy
 
 Compare before and after metrics:
+
+NOTE: `just efficacy-report` is not yet implemented, and this v1
+signature is superseded by the `--frontier` workflow in
+link:EFFICACY-PROTOCOL.adoc[EFFICACY-PROTOCOL.adoc], which records
+collateral metrics and capability. The command below documents the
+intended v1 shape only.
 
 [source,bash]
 ----
@@ -414,5 +426,6 @@ All satellites must follow:
 == See Also
 
 * link:METRICS.adoc[Metrics Reference] - All 10 ISA metrics (vexometer identifiers)
-* link:../ECOSYSTEM.scm[Ecosystem Map] - Satellite relationships
-* link:../META.scm[Project Metadata] - ISA meta-information
+* link:EFFICACY-PROTOCOL.adoc[Efficacy Protocol] - Acceptance rule and frontier records extending vexometer-efficacy-v1
+* link:../../.machine_readable/6a2/ECOSYSTEM.a2ml[Ecosystem Map] - Satellite relationships
+* link:../../.machine_readable/6a2/META.a2ml[Project Metadata] - ISA meta-information

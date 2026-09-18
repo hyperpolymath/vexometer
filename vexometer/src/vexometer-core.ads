@@ -235,17 +235,17 @@ package Vexometer.Core is
       Model_ID          : Unbounded_String;
       Model_Version     : Unbounded_String;
       Provider          : Unbounded_String;  --  e.g., "Anthropic", "OpenAI"
-      Analysis_Count    : Natural;
-      Mean_ISA          : Float;
-      Std_Dev_ISA       : Float;
-      Median_ISA        : Float;
-      Category_Means    : Category_Score_Array;
-      Category_Std_Devs : Category_Score_Array;
-      Category_Medians  : Category_Score_Array;
+      Analysis_Count    : Natural := 0;
+      Mean_ISA          : Float := 0.0;
+      Std_Dev_ISA       : Float := 0.0;
+      Median_ISA        : Float := 0.0;
+      Category_Means    : Category_Score_Array := Null_Category_Scores;
+      Category_Std_Devs : Category_Score_Array := Null_Category_Scores;
+      Category_Medians  : Category_Score_Array := Null_Category_Scores;
       Worst_Patterns    : Finding_Vector;    --  Most frequently triggered
-      Best_Categories   : Metric_Category_Set;  --  Below threshold
-      Worst_Categories  : Metric_Category_Set;  --  Above threshold
-      Comparison_Rank   : Natural;           --  Rank vs other models (1=best)
+      Best_Categories   : Metric_Category_Set := [others => False];  --  Below threshold
+      Worst_Categories  : Metric_Category_Set := [others => False];  --  Above threshold
+      Comparison_Rank   : Natural := 0;      --  Rank vs other models (1=best)
       Evaluated_At      : Ada.Calendar.Time;
    end record;
 

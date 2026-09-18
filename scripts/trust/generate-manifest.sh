@@ -12,6 +12,8 @@ else
     "vext-email-gateway"
     "vexometer-satellites"
     "lazy-eliminator"
+    "vexometer-efficacy"
+    "verbosity-compressor"
     "satellite-template"
   )
 fi
@@ -29,11 +31,14 @@ for component in "${components[@]}"; do
   inputs=(
     "README.adoc"
     "ROADMAP.adoc"
-    "SECURITY.md"
+    "SECURITY.adoc"
     "contractiles/must/Mustfile"
     "contractiles/trust/Trustfile.a2ml"
   )
 
+  if [[ -f "$component_dir/contractiles/dust/Dustfile" ]]; then
+    inputs+=("contractiles/dust/Dustfile")
+  fi
   if [[ -f "$component_dir/RSR_OUTLINE.adoc" ]]; then
     inputs+=("RSR_OUTLINE.adoc")
   fi

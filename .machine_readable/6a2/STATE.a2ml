@@ -5,13 +5,17 @@
 [metadata]
 project = "vexometer"
 version = "0.1.0"
-last-updated = "2026-04-04"
+last-updated = "2026-09-01"
 status = "active"
 
 [project-context]
 name = "vexometer"
-completion-percentage = 25
-phase = "CRG C achieved for both sub-projects (2026-04-04)"
+# NOTE (D3, 2026-09-01): this is an ESTIMATE, not a measurement — no command
+# produces it. Single source is the TOPOLOGY.adoc Completion Dashboard OVERALL
+# row; this field mirrors it so the two files can no longer contradict each
+# other (they previously said 25 vs ~70). Update TOPOLOGY first, then mirror.
+completion-percentage = 70
+phase = "CRG C achieved for both sub-projects (2026-04-04); CI gates first green 2026-09-01"
 
 [crg-status]
 lazy-eliminator = "CRG C: 55 tests (unit+E2E+property+aspect), benchmarks baselined"
@@ -19,13 +23,27 @@ vexometer-ada = "CRG C: 1282 assertions (unit+P2P+E2E+contract+aspect), benchmar
 overall = "CRG C achieved 2026-04-04"
 
 [test-coverage]
-# Rust (lazy-eliminator)
+# Measurement convention (D3, 2026-09-01): every figure below names the
+# command that produced it; figures without a command are labeled estimates.
+# Rust counts = sum of `test result:` lines from `cargo test` in the crate dir.
+
+# Rust (lazy-eliminator) — measured 2026-09-01:
+#   cd lazy-eliminator && cargo test   -> 3+0+20+16+16 = 55 passed
 rust-unit-tests = "3 (analyzer.rs)"
 rust-e2e-tests = "16 (full pipeline)"
 rust-property-tests = "16 (proptest)"
 rust-aspect-tests = "20 (security/robustness/concurrency)"
 rust-benchmarks = "1 suite (Criterion)"
-rust-total = "55 tests, 100% pass rate"
+rust-total = "55 tests, 100% pass rate (lazy-eliminator only)"
+
+# Rust (vext) — measured 2026-09-01:
+#   cd vext && cargo test   -> 14+11+11 = 36 passed
+vext-total = "36 tests, 100% pass rate"
+
+# Rust (vexometer-efficacy) — measured 2026-09-01:
+#   cd vexometer-efficacy && cargo test   -> 15 passed
+#   (protocol JSON examples are the fixtures)
+efficacy-total = "15 tests, 100% pass rate"
 
 # Ada (vexometer core)
 ada-unit-tests = "6 (core, CII, patterns, probes, JSON loading)"
@@ -35,3 +53,8 @@ ada-contract-tests = "9 (CII bounds, ISA bounds, completeness)"
 ada-aspect-tests = "16 (empty input, long text, saturation, false-positive, probe invariants)"
 ada-benchmarks = "2 suites (10000 iterations each: pattern analysis + CII)"
 ada-total = "1282 assertions, 100% pass rate"
+# NOTE: 1282 counts assertion EXECUTIONS at runtime (p2p loops amplify
+# 4 properties x 100 iterations), not static sites. Static sites — measured
+# 2026-09-01: grep -cE '^ *Assert_True *\(' vexometer/tests/test_runner.adb
+# -> 52 (all assertions route through Assert_True in test_runner.adb).
+# See TEST-NEEDS.adoc for the counting-convention discussion.

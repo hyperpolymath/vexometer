@@ -6,7 +6,7 @@
 :toc: left
 :toclevels: 3
 
-image:https://img.shields.io/badge/license-PMPL--1.0--or--later-indigo[License]
+image:https://img.shields.io/badge/license-MPL--2.0-blue[License]
 image:https://img.shields.io/badge/status-research-yellow[Status]
 image:https://img.shields.io/badge/requires-Idris2-blue[Idris2]
 

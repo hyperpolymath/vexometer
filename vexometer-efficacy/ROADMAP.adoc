@@ -1,0 +1,33 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= ROADMAP: vexometer-efficacy
+
+== Now (v0.1)
+
+* [x] `report` — evaluate baseline/after measurements, emit
+  `vexometer-efficacy-v2`
+* [x] `attempt` — append to a `vexometer-frontier-v1` record under the
+  monotone-frontier invariant
+* [x] `validate` — recompute-and-check both document shapes
+* [x] Protocol examples as live test fixtures (drift fails `cargo test`)
+* [x] Explicit refusals on open D1 questions (issue #69)
+
+== The D1 rulings (v0.2, shipped — issue #69 ruled `a1,b1,c1,d1,e2,f1`)
+
+* [x] Replace each D1a–D1d refusal with the ruled semantic (a1 zero
+  baseline, b1 per-probe identity gate, c1 all-targets rule)
+* [x] `frontier_records` plurality per ruling d1
+* [x] v1→v2 lifting: `lift` subcommand per ruling e2
+* [x] Held-out scenario-set registry + `--scenario-registry` per
+  ruling f1
+* [x] Track the protocol's v2.1 text (same PR as the amendment)
+
+== Later
+
+* [ ] Wire into satellite CI now that the first satellite exists (D6
+  ruled 2026-09-02: `verbosity-compressor/`, scaffolded from
+  `satellite-template`; evaluation still blocked on the f1
+  scenario-partition precondition)
+* [ ] Frontier dashboard feed (ten small multiples) from
+  `frontier/*.json`
+* [ ] Statistical hardening: bootstrap CIs on `gap_closed` when
+  `std_dev` is supplied

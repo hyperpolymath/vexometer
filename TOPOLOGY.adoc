@@ -1,0 +1,102 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Last updated: 2026-09-01
+== VEX Toolkit (vexometer) — Project Topology
+
+____
+Naming convention: *The Vexometer: Irritation Surface Analyser (ISA) for
+LLMs and related tools* is the canonical title, and *vexometer* remains
+the compatibility identifier in repo/package/CLI/protocol names.
+____
+
+=== System Architecture
+
+....
+                        ┌─────────────────────────────────────────┐
+                        │              OPERATOR / AI              │
+                        │        (Analysis, Comm, Intervention)   │
+                        └───────────────────┬─────────────────────┘
+                                            │ Signal / Event
+                                            ▼
+                        ┌─────────────────────────────────────────┐
+                        │           VEX TOOLKIT HUB               │
+                        │                                         │
+                        │  ┌───────────┐  ┌───────────────────┐  │
+                        │  │ ISA       │  │  Lazy             │  │
+                        │  │ (Metrics) │  │  Eliminator       │  │
+                        │  └─────┬─────┘  └────────┬──────────┘  │
+                        │        │                 │              │
+                        │  ┌─────▼─────┐  ┌────────▼──────────┐  │
+                        │  │ Vext      │  │  Satellite        │  │
+                        │  │ (Protocol)│  │  Intervention     │  │
+                        │  └─────┬─────┘  └────────┬──────────┘  │
+                        └────────│─────────────────│──────────────┘
+                                 │                 │
+                                 ▼                 ▼
+                        ┌─────────────────────────────────────────┐
+                        │           EXTERNAL INTERFACES           │
+                        │  ┌───────────┐  ┌───────────────────┐  │
+                        │  │ Traditional│ │  Verified         │  │
+                        │  │ Email     │  │  Endpoints        │  │
+                        │  └───────────┘  └───────────────────┘  │
+                        └─────────────────────────────────────────┘
+
+                        ┌─────────────────────────────────────────┐
+                        │          REPO INFRASTRUCTURE            │
+                        │  Justfile Automation  .machine_readable/ │
+                        │  Docs + Roadmaps      Monorepo Hygiene   │
+                        └─────────────────────────────────────────┘
+....
+
+=== Completion Dashboard
+
+NOTE: Percentages are maintainer *estimates* — no command measures them
+(D3, `docs/sitrep-2026-09-01.adoc`). Measured figures (test counts,
+assertion sites) live in `.machine_readable/6a2/STATE.a2ml`, each with
+the command that produced it. `STATE.a2ml`'s `completion-percentage`
+mirrors the OVERALL row below; update this dashboard first.
+
+....
+COMPONENT                          STATUS              NOTES
+─────────────────────────────────  ──────────────────  ─────────────────────────────────
+ISA & INTERVENTION
+  ISA (vexometer analyser)          ████████░░  80%    Core metrics, JSON loaders, and CLI/report wiring implemented
+  ISA Satellites                    █████░░░░░  45%    Protocol/docs exist; most satellites still planned
+  Efficacy Evaluator                ██████░░░░  60%    Evaluator/validator + 15 fixture tests shipped (PR #70); D1 rulings pending (#69); no satellite runs yet
+  Lazy Eliminator                   ████████░░  75%    Core analyzer tested; polish/integration pending
+  Satellite Template                █████████░  90%    Template structure stable by design
+
+VEXT PROTOCOL
+  Vext (Core Protocol)              ████████░░  85%    Core Rust tests passing
+  Vext Email Gateway                ███░░░░░░░  30%    Prototype; not production-wired yet
+  Neutrality Proofs                 ██░░░░░░░░  25%    Proof direction defined; implementation in progress
+
+REPO INFRASTRUCTURE
+  Justfile Automation               █████████░  90%    Main flows and trust-manifest gates wired
+  .machine_readable/                █████████░  90%    Metadata aligned to current monorepo
+  Consolidation (2026)              ██████████ 100%    6 repos successfully merged
+
+─────────────────────────────────────────────────────────────────────────────
+OVERALL:                            ███████░░░  70%    Estimate; core operational, ecosystem integration still maturing
+....
+
+=== Key Dependencies
+
+....
+Lazy Patterns ───► Eliminator Engine ──► ISA Score ───► Intervention
+     │                   │                   │                    │
+     ▼                   ▼                   ▼                    ▼
+Comm Event ──────► Vext Protocol ──────► Email Gateway ──────► Recipient
+....
+
+=== Update Protocol
+
+This file is maintained by both humans and AI agents. When updating:
+
+[arabic]
+. *After completing a component*: Change its bar and percentage
+. *After adding a component*: Add a new row in the appropriate section
+. *After architectural changes*: Update the ASCII diagram
+. *Date*: Update the `+Last updated+` comment at the top of this file
+
+Progress bars use: `+█+` (filled) and `+░+` (empty), 10 characters wide.
+Percentages: 0%, 10%, 20%, … 100% (in 10% increments).

@@ -1,0 +1,45 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= vex-verbosity-compressor Roadmap
+
+== Purpose
+
+Reduce the vexometer LPS and TII metrics by detecting linguistic pathologies
+and stripping the semantically-null ones. Checked items are shipped and
+tested; unchecked items are not built yet — this file does not claim
+completion it cannot evidence.
+
+== v0.1 — scaffold + real core (shipped 2026-09-02)
+
+* [x] Detection of the five METRICS.adoc LPS pathology classes plus padding
+* [x] Per-pattern strippability (meaning-safe removal only)
+* [x] LPS proxy score (`weighted_sum / word_count`, documented as a proxy)
+* [x] CLI: `analyse` (JSON), `compress` (text or `--report` JSON), stdin via `-`
+* [x] 15 integration tests, pinned to the METRICS.adoc HIGH/LOW example pair
+* [x] `#![forbid(unsafe_code)]`
+
+== v0.2 — measurement wiring
+
+* [ ] Emit `vexometer-trace-v1` before/after traces (see
+  `../vexometer/docs/SATELLITES.adoc`)
+* [ ] Duplicate-sentence stripping behind a flag (needs a real segmenter;
+  detection-only today)
+* [ ] Recapitalise after stripping a sentence-initial filler
+* [ ] Pattern-table review: corpus-driven additions, false-positive audit
+* [ ] Benchmarks and fuzzing (lazy-eliminator precedent)
+
+== v0.3 — efficacy
+
+* [ ] First efficacy evaluation under
+  `../vexometer/docs/EFFICACY-PROTOCOL.adoc` (v2.1). *Precondition (ruling
+  f1)*: register the first scenario partition in
+  `../vexometer/data/scenario_sets/registry.json` — the registry ships empty
+  and no evaluation corpus exists yet.
+* [ ] Populate `vexometer/EFFICACY.adoc` with measured before/after results
+* [ ] Zig ABI/FFI proof per the estate's Zig-first convention
+
+== Definition of Done for v0.2
+
+* [ ] Trace emission validates against the vexometer trace schema
+* [ ] Stripping remains meaning-safe under the expanded pattern table
+* [ ] CI runs the full suite via the monorepo `just test-all` gate

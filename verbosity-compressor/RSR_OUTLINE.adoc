@@ -1,0 +1,25 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= vex-verbosity-compressor - RSR Outline
+:toc:
+:sectnums:
+
+== Status
+
+This directory is an active project inside the `vexometer` monorepo: the
+first ISA (formerly Vexometer) satellite scaffolded from `satellite-template` (owner ruling D6,
+2026-09-02). Template boilerplate has been replaced for this project.
+
+== Source Of Truth
+
+* Repository overview: link:../README.adoc[../README.adoc]
+* Project readme: link:README.adoc[README.adoc]
+* Project roadmap: link:ROADMAP.adoc[ROADMAP.adoc]
+* Machine-readable state: use `../.machine_readable/`.
+
+== Working Rules
+
+1. Use this directory's `Justfile` and documented commands as authoritative.
+2. Keep status language honest: mark unfinished features as "not wired up yet".
+3. Keep ISA naming consistent in human docs: "ISA (formerly Vexometer)" on first mention.
+4. Update roadmap and machine-readable state when scope or delivery status changes.

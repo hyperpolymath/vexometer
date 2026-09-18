@@ -29,7 +29,7 @@ Development roadmap for ISA (Irritation Surface Analyser, formerly Vexometer).
 |Implemented (built-ins)
 
 |*Probe System*
-|Behavioural probe framework, 14 standardised probes, probe suite runner
+|Behavioural probe framework, 13 of 14 standardised probes, probe suite runner
 |Implemented (built-ins)
 
 |*API Clients*
@@ -59,17 +59,26 @@ Development roadmap for ISA (Irritation Surface Analyser, formerly Vexometer).
 |===
 |Data File |Items |Categories
 
-|`linguistic_pathology.json` |16 patterns |Sycophancy, identity, hedge, corporate
+|`linguistic_pathology.json` |15 patterns |Sycophancy, identity, hedge, corporate
 |`paternalism.json` |12 patterns |Warning, lecture, competence, refusal
-|`behavioural_probes.json` |14 probes |Brevity, competence, sycophancy, constraint, uncertainty, direct
+|`behavioural_probes.json` |13 probes |Brevity, competence, sycophancy, correction, constraint, uncertainty, direct
 |===
+
+NOTE: The probe suite is designed as seven categories of two probes (14).
+`PROBE-CORRECTION-002` is not yet present, so the shipped suite holds 13.
+`Probe_Count` is computed from the loaded suite, so nothing depends on the
+literal count; but the capability proxy in
+link:docs/EFFICACY-PROTOCOL.adoc[EFFICACY-PROTOCOL.adoc] is expressed as a
+pass-rate over the suite, and adding the missing probe will shift baselines
+recorded before it lands.
 
 === Documentation
 
-* link:docs/SPECIFICATION.md[SPECIFICATION.md] - Full technical specification
+* link:docs/SPECIFICATION.adoc[SPECIFICATION.adoc] - Full technical specification
 * link:docs/METRICS.adoc[METRICS.adoc] - All 10 metrics with calculation details
 * link:docs/SATELLITES.adoc[SATELLITES.adoc] - Satellite architecture and integration protocol
-* link:docs/letter_lmsys_arena.md[letter_lmsys_arena.md] - LMSYS Arena proposal letter
+* link:docs/EFFICACY-PROTOCOL.adoc[EFFICACY-PROTOCOL.adoc] - Satellite acceptance rule and frontier records
+* link:docs/letter_lmsys_arena.adoc[letter_lmsys_arena.adoc] - LMSYS Arena proposal letter
 
 == Phase 1: Core Implementation
 
@@ -383,6 +392,7 @@ Contributions welcome in all areas. See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc
 == See Also
 
 * link:README.adoc[README.adoc] - Project overview
-* link:docs/SPECIFICATION.md[SPECIFICATION.md] - Technical specification
+* link:docs/SPECIFICATION.adoc[SPECIFICATION.adoc] - Technical specification
 * link:docs/METRICS.adoc[METRICS.adoc] - Metric definitions
 * link:docs/SATELLITES.adoc[SATELLITES.adoc] - Satellite architecture
+* link:docs/EFFICACY-PROTOCOL.adoc[EFFICACY-PROTOCOL.adoc] - Efficacy acceptance rule

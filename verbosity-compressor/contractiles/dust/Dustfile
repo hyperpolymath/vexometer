@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: MPL-2.0
+# Dustfile - recovery and rollback semantics for vex-verbosity-compressor
+#
+# The compressor is a stateless CLI: it holds no databases, daemons, or
+# deployments, so recovery reduces to source-control rollback and to the
+# reversibility of its own output.
+
+version: 1
+
+recovery:
+  source:
+    - name: bad-release
+      rollback: "git revert <offending-commit>"
+      notes: "Stateless binary; reverting the source and rebuilding is a full recovery."
+
+  output:
+    - name: over-stripped-text
+      reversible: false
+      notes: >
+        Compression is lossy by design. Callers who may need the original
+        must keep it; `compress --report` records exactly which spans were
+        removed so a removal can be audited after the fact.

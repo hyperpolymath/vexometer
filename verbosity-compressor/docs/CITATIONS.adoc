@@ -1,0 +1,37 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= vex-verbosity-compressor - Citation Guide
+:toc:
+
+== BibTeX
+
+[source,bibtex]
+----
+@software{vex_verbosity_compressor_2026,
+  author = {Polymath, Hyper},
+  title = {vex-verbosity-compressor},
+  year = {2026},
+  url = {https://github.com/hyperpolymath/vexometer/tree/main/verbosity-compressor},
+  license = {MPL-2.0}
+}
+----
+
+== Harvard Style
+
+Polymath, H. (2026) _vex-verbosity-compressor_ [Computer software]. Available at: https://github.com/hyperpolymath/vexometer/tree/main/verbosity-compressor
+
+== OSCOLA
+
+Hyper Polymath, 'vex-verbosity-compressor' (2026) <https://github.com/hyperpolymath/vexometer/tree/main/verbosity-compressor>
+
+== MLA
+
+Polymath, Hyper. "vex-verbosity-compressor." 2026, github.com/hyperpolymath/vexometer/tree/main/verbosity-compressor.
+
+== APA 7
+
+Polymath, H. (2026). _vex-verbosity-compressor_ [Computer software]. GitHub. https://github.com/hyperpolymath/vexometer/tree/main/verbosity-compressor
+
+== Notes
+
+This component currently publishes citation metadata in this guide.

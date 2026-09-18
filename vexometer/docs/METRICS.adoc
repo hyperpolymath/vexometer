@@ -487,4 +487,5 @@ ISA = sum(category_score * category_weight) / sum(category_weight) * 100
 == See Also
 
 * link:SATELLITES.adoc[Satellite Architecture] - Intervention tools that reduce metrics
-* link:SPECIFICATION.md[Full Specification] - Technical specification document
+* link:EFFICACY-PROTOCOL.adoc[Efficacy Protocol] - Cross-metric acceptance rule using the category weights above
+* link:SPECIFICATION.adoc[Full Specification] - Technical specification document

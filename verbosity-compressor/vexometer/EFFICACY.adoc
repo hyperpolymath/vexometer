@@ -1,0 +1,70 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= Efficacy Report: vex-verbosity-compressor
+:toc:
+
+== Summary
+
+This document tracks the measured effectiveness of vex-verbosity-compressor
+in reducing its target vexometer metrics. *No evaluation has been run yet*:
+this file carries no numbers until one has, per the efficacy protocol
+(`../../vexometer/docs/EFFICACY-PROTOCOL.adoc`, v2.1) — a claim without a
+trace is not evidence.
+
+== Target Metrics
+
+[cols="1,2,1"]
+|===
+| Metric | Description | Target Reduction
+
+| LPS
+| Linguistic Pathology Score: `weighted_sum(pathology_instances) /
+  response_length` — verbal tics, padding, sycophancy, filler
+| Not yet set — established after the first baseline evaluation
+
+| TII
+| Temporal Intrusion Index: `(intrusion_events / total_interactions) *
+  severity_weight` — reader time consumed by padding
+| Not yet set — requires interaction-level traces (not wired up)
+|===
+
+== Methodology
+
+=== Test Corpus
+
+*None exists yet.* Ruling f1 of the efficacy protocol makes registering the
+first scenario partition in `../../vexometer/data/scenario_sets/registry.json`
+a precondition for the first satellite evaluation; that registry ships empty
+as of 2026-09-02. Building the corpus and registering the partition is the
+v0.3 roadmap item.
+
+=== Measurement Process (planned)
+
+Both traces MUST be generated over the same registered scenario partition
+(ruling f1) with identical scenario IDs — a before/after pair drawn from
+different scenario sets measures the sets, not the compressor.
+
+1. Generate a vexometer trace for the original content (`before/`)
+2. Apply vex-verbosity-compressor
+3. Generate a vexometer trace for the modified content (`after/`)
+4. Evaluate with `just efficacy-report` (vexometer-efficacy, protocol v2.1)
+
+== Results
+
+None. This section stays empty until the first evaluation runs under the
+protocol with a registered scenario partition.
+
+== Limitations
+
+* The crate's LPS score is a documented proxy (word-denominated); the
+  canonical LPS comes from the vexometer Ada core.
+* Stripping is deliberately conservative: hedges, repetitions, and emoji are
+  detected but never removed, so measured LPS reduction will understate
+  detection coverage.
+* Pattern-table detection cannot see paraphrased or novel filler.
+
+== Future Work
+
+* Register the first scenario partition (ruling f1) and run the baseline
+* Wire vexometer-trace-v1 emission so before/after traces are first-class
+* Interaction-level traces for a real TII measurement
