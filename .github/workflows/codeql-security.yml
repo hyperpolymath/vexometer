@@ -1,6 +1,6 @@
 # This workflow is managed by gh actions-lock.
 # SPDX-License-Identifier: MPL-2.0
-name: CodeQL
+name: CodeQL (migrated)
 
 on:
   push:
