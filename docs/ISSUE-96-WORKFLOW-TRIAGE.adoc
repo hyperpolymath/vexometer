@@ -1,0 +1,74 @@
+// SPDX-License-Identifier: MPL-2.0
+= Issue 96: workflow-check repair
+:revdate: 2026-09-28
+
+== Determination and default-branch evidence
+
+Both occurrences of `lint-workflows` in
+https://github.com/hyperpolymath/vexometer/issues/96[issue 96]
+refer to the same job, not separate implementations.
+The determination for both is *repair*, not retirement or exemption.
+The determination for `governance / Workflow security linter` is also *repair*.
+These determinations describe the chosen remedy, not a claim that default-branch
+acceptance has already been met.
+
+At default-branch commit `467e41b3a62f5a5ba78530a9f5c19ee12083bc3c`:
+
+* https://github.com/hyperpolymath/vexometer/actions/runs/36439803908[job lint-workflows]
+  failed at `Check SPDX headers`.
+* https://github.com/hyperpolymath/vexometer/actions/runs/36439809171/job/108987051280[governance / Workflow security linter]
+  failed at `Check SPDX headers + permissions`.
+
+The GitHub job/step API confirms these failures; downloading the archived logs
+failed in the development environment. Local reproduction established the causes
+below. These are pre-existing failures on main, not defects introduced by PR 95.
+
+== Repairs
+
+* Restore first-line SPDX headers ahead of the actions-lock management comment.
+* Replace action tags with the immutable commits already recorded in the lockfile.
+  Keep Rust's `stable` toolchain input independent of the action pin.
+* Replace the local warning-only pin scan with a failing checker covering both
+  step actions and reusable-workflow calls. Regression tests exercise missing
+  headers, missing permissions, tag pins with misleading comments, quoted refs,
+  local actions, `.yaml` files, and empty directories.
+* Upgrade governance from `81dbf2dd854b1444fd6236fa2352474383b2c2b9` to
+  `6e98f4bf810afb9b03d363b4c2c0c0adc1ac4953` (the observed upstream main).
+  The old pin recursively greps `actions.lock` and falsely reports its nested
+  `uses:` lists as unpinned actions. The updated workflow separates lockfile
+  verification, duplicate-key detection and upstream pin resolution.
+* Synchronize the lockfile including the upgraded governance dependencies.
+  Preserve the existing CodeQL workflow commit and correct its stale lock record
+  and inaccurate version comment (the commit is v4.38.2, not v4.38.0).
+* Remove the duplicate `with:` key in Quality Gates, which otherwise prevents
+  GitHub from parsing that workflow.
+
+No required-check settings were changed, no affected job was removed, and no
+failure was demoted or bypassed. The new governance revision also carries other
+upstream policy updates; any newly exposed failures should be triaged separately.
+
+== Validation and closure
+
+Local checks:
+
+[source,shell]
+----
+bash tests/workflow-security.sh
+bash scripts/check-workflow-security.sh
+bash -n scripts/check-workflow-security.sh tests/workflow-security.sh
+git diff --check
+----
+
+The upgraded governance's pinned duplicate-key and action-resolution helpers were
+also executed locally: 15 workflow files clean, all 12 unique action pins resolve.
+A separate strict YAML parse and structural lockfile audit checked workflow
+coverage, exact per-workflow refs, and transitive dependency closure.
+
+The repository's GNU-awk lock-sync script could not run locally because gawk is
+unavailable and Debian package downloads failed. Its GitHub run remains the
+canonical validation; local structural validation is not a substitute for it.
+
+Leave issue 96 open until the repaired checks are green on the PR head and,
+after merging, on a run of the default branch. Record those run URLs in the
+issue. Do not treat a successful local test or a PR-only run as satisfying the
+issue's default-branch acceptance criterion.
