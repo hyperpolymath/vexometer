@@ -1,5 +1,5 @@
-# This workflow is managed by gh actions-lock.
 # SPDX-License-Identifier: MPL-2.0
+# This workflow is managed by gh actions-lock.
 name: Quality Gates
 permissions:
   actions: read
@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -29,15 +29,10 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install Rust toolchain
-        # v1 tag, not a SHA: dtolnay force-moves toolchain branches, so no
-        # symbolic ref contains the old pin and lockfile generation refuses it.
-        # The actions.lock records the resolved SHA; the toolchain must be an
-        # explicit input because the ref no longer selects it.
-        uses: dtolnay/rust-toolchain@v1
-        with:
-          toolchain: v1
+        # Pin the action independently of the requested Rust toolchain.
+        uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # v1
         with:
           toolchain: stable
       - name: Install system dependencies
