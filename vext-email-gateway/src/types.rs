@@ -54,7 +54,10 @@ pub struct DID(String);
 impl DID {
     /// Create DID from Ed25519 public key
     pub fn from_public_key(public_key: &VerifyingKey) -> Self {
-        DID(format!("did:key:z6Mk{}", hex::encode(public_key.as_bytes())))
+        DID(format!(
+            "did:key:z6Mk{}",
+            hex::encode(public_key.as_bytes())
+        ))
     }
 
     /// Extract public key from DID
@@ -71,8 +74,7 @@ impl DID {
 
         let mut key_bytes = [0u8; 32];
         key_bytes.copy_from_slice(&bytes);
-        VerifyingKey::from_bytes(&key_bytes)
-            .map_err(|_| VextError::InvalidDID(self.0.clone()))
+        VerifyingKey::from_bytes(&key_bytes).map_err(|_| VextError::InvalidDID(self.0.clone()))
     }
 
     pub fn as_str(&self) -> &str {
@@ -332,11 +334,11 @@ mod tests {
     use proptest::prelude::*;
 
     fn generate_signing_key() -> SigningKey {
-        use rand::TryRngCore;
-        let mut rng = rand::rngs::OsRng;
+        use rand::TryRng;
+        let mut rng = rand::rngs::SysRng;
         let mut sk = [0u8; 32];
         rng.try_fill_bytes(&mut sk)
-            .expect("OsRng must succeed for cryptographic key generation");
+            .expect("SysRng must succeed for cryptographic key generation");
         SigningKey::from_bytes(&sk)
     }
 
@@ -416,7 +418,10 @@ mod verification {
         let signing_key = generate_signing_key();
         let did = DID::from_public_key(&signing_key.verifying_key());
         let recovered = did.to_public_key().unwrap();
-        kani::assert(signing_key.verifying_key() == recovered, "DID roundtrip failed");
+        kani::assert(
+            signing_key.verifying_key() == recovered,
+            "DID roundtrip failed",
+        );
     }
 
     #[kani::proof]
@@ -427,6 +432,9 @@ mod verification {
         let msg1 = Message::new("Content 1".to_string(), &signing_key, None, vec![]).unwrap();
         let msg2 = Message::new("Content 2".to_string(), &signing_key, None, vec![]).unwrap();
 
-        kani::assert(msg1.id != msg2.id, "Different content must have different IDs");
+        kani::assert(
+            msg1.id != msg2.id,
+            "Different content must have different IDs",
+        );
     }
 }
