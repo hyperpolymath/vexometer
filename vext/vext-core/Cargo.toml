@@ -42,9 +42,6 @@ anyhow = "1.0"
 tokio-rustls = "0.26"
 rustls-native-certs = "0.8"
 
-# DNS resolution (SRV records)
-hickory-resolver = "0.26"
-
 # Document processing (optional)
 pandoc = { version = "0.8", optional = true }
 
