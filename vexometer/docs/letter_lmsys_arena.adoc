@@ -174,15 +174,18 @@ Based on preliminary testing with the Vexometer prototype:
 [cols=",,,,,,,",options="header",]
 |===
 |Model |ISA |TII |LPS |EFR |PQ |TAI |ICS
-|OLMo 2 |23 |2.1 |3.2 |5.1 |4.2 |0.0 |3.8
-|Falcon 3 |28 |2.4 |4.1 |5.8 |4.9 |0.0 |4.2
-|Qwen 2.5 |35 |3.2 |5.8 |6.2 |5.5 |0.0 |5.1
-|GPT-4o |42 |4.1 |7.2 |5.5 |6.8 |8.5 |4.8
-|Claude 3.5 |38 |2.8 |6.5 |4.2 |7.1 |6.2 |3.9
-|Phi-4 |52 |3.5 |8.1 |7.2 |8.5 |9.0 |5.8
+|OLMo 2 |33.6 |0.21 |0.32 |0.51 |0.42 |0.00 |0.38
+|Falcon 3 |38.9 |0.24 |0.41 |0.58 |0.49 |0.00 |0.42
+|Qwen 2.5 |46.6 |0.32 |0.58 |0.62 |0.55 |0.00 |0.51
+|GPT-4o |60.2 |0.41 |0.72 |0.55 |0.68 |0.85 |0.48
+|Claude 3.5 |50.3 |0.28 |0.65 |0.42 |0.71 |0.62 |0.39
+|Phi-4 |69.7 |0.35 |0.81 |0.72 |0.85 |0.90 |0.58
 |===
 
 _Lower ISA = Better user experience_
 
-Note: These are illustrative scores from early testing. Final
-methodology will require validation with larger datasets.
+Note: These rows illustrate the documented formula, not a measurement.
+Category columns are on the 0-1 scale in METRICS.adoc. The ISA column is
+`sum(score * weight) / sum(weight) * 100` with the weights for these six
+categories (TII 1.0, LPS 1.2, EFR 1.5, PQ 1.1, TAI 0.8, ICS 1.3). A
+measured comparison needs a dated run, with repeats and intervals.
