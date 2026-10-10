@@ -269,8 +269,8 @@ package body Vexometer.RCI is
    function Classify_Recovery
       (Current_Attempt   : Attempt_Fingerprint;
        Previous_Attempts : Attempt_Array;
-       Content           : String;
-       Error_Severity    : Severity_Level) return Recovery_Behaviour
+       Content           : String := "";
+       Error_Severity    : Severity_Level := Medium) return Recovery_Behaviour
    is
       use Attempt_Vectors;
       Prev_Count : constant Natural := Natural (Length (Previous_Attempts));
