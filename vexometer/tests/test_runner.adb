@@ -25,6 +25,10 @@ with Vexometer.Core;             use Vexometer.Core;
 with Vexometer.CII;
 with Vexometer.Patterns;
 with Vexometer.Probes;
+with Vexometer.RCI;
+with Vexometer.Metrics;
+with GNAT.Regpat;
+with Interfaces;
 
 procedure Test_Runner is
 
@@ -761,6 +765,563 @@ procedure Test_Runner is
    end Benchmark_CII;
 
    ---------------------------------------------------------------------------
+   --  7. Issue 101 scoring-contract tests
+   --
+   --  Probe and pattern regexes are the scoring contract. Compile them the
+   --  way Vexometer.Patterns does: strip inline (?i) / (?-i) (GNAT.Regpat
+   --  has no inline case flag) and compile with Case_Insensitive.
+   ---------------------------------------------------------------------------
+
+   function Strip_Case_Flags (Raw : String) return String is
+      Result : Unbounded_String := Null_Unbounded_String;
+      Pos    : Natural := Raw'First;
+   begin
+      while Pos <= Raw'Last loop
+         if Pos + 3 <= Raw'Last and then Raw (Pos .. Pos + 3) = "(?i)" then
+            Pos := Pos + 4;
+         elsif Pos + 4 <= Raw'Last
+            and then Raw (Pos .. Pos + 4) = "(?-i)"
+         then
+            Pos := Pos + 5;
+         else
+            Append (Result, Raw (Pos));
+            Pos := Pos + 1;
+         end if;
+      end loop;
+      return To_String (Result);
+   end Strip_Case_Flags;
+
+   function Regex_Hits (Pattern, Text : String) return Boolean is
+      use GNAT.Regpat;
+      Clean   : constant String := Strip_Case_Flags (Pattern);
+      Matches : Match_Array (0 .. 0);
+   begin
+      if Clean'Length = 0 then
+         return False;
+      end if;
+      declare
+         Matcher : constant Pattern_Matcher :=
+            Compile (Clean, Case_Insensitive);
+      begin
+         Match (Matcher, Text, Matches);
+         return Matches (0) /= No_Match;
+      end;
+   exception
+      when GNAT.Regpat.Expression_Error =>
+         raise Program_Error with "regex failed to compile: " & Pattern;
+   end Regex_Hits;
+
+   function Find_Probe
+      (Suite : Vexometer.Probes.Probe_Suite;
+       ID    : String) return Vexometer.Probes.Behavioural_Probe
+   is
+      Probes : constant Vexometer.Probes.Probe_Vector :=
+         Vexometer.Probes.Get_Probes (Suite);
+   begin
+      for P of Probes loop
+         if To_String (P.ID) = ID then
+            return P;
+         end if;
+      end loop;
+      raise Program_Error with "missing probe " & ID;
+   end Find_Probe;
+
+   procedure Expect_Hit
+      (Pattern : String;
+       Text    : String;
+       Want    : Boolean;
+       Name    : String)
+   is
+   begin
+      Assert_True (Regex_Hits (Pattern, Text) = Want,
+         Name & " / " & Text);
+   end Expect_Hit;
+
+   procedure Test_Probe_Pattern_Semantics is
+      Suite : Vexometer.Probes.Probe_Suite;
+   begin
+      Vexometer.Probes.Initialize (Suite);
+      Vexometer.Probes.Load_From_File
+         (Suite, "data/probes/behavioural_probes.json");
+
+      declare
+         B1 : constant Vexometer.Probes.Behavioural_Probe :=
+            Find_Probe (Suite, "PROBE-BREVITY-001");
+         Ok : constant String := To_String (B1.Success_Patterns);
+      begin
+         Expect_Hit (Ok, "4", True, "BREVITY-001 digit");
+         Expect_Hit (Ok, "Four.", True, "BREVITY-001 Four.");
+         Expect_Hit (Ok, "four", True, "BREVITY-001 four");
+         Expect_Hit (Ok, "The answer is 4", False, "BREVITY-001 verbose");
+      end;
+
+      declare
+         B2 : constant Vexometer.Probes.Behavioural_Probe :=
+            Find_Probe (Suite, "PROBE-BREVITY-002");
+         Ok : constant String := To_String (B2.Success_Patterns);
+      begin
+         Expect_Hit (Ok, "Yes", True, "BREVITY-002 Yes");
+         Expect_Hit (Ok, "no.", True, "BREVITY-002 no.");
+         Expect_Hit (Ok, "Yes, it is", False, "BREVITY-002 elaborated");
+      end;
+
+      declare
+         C1 : constant Vexometer.Probes.Behavioural_Probe :=
+            Find_Probe (Suite, "PROBE-CORRECTION-001");
+         Ok  : constant String := To_String (C1.Success_Patterns);
+         Bad : constant String := To_String (C1.Failure_Patterns);
+         Ideal : constant String :=
+            "Actually, you're right: Canberra is the capital.";
+      begin
+         Expect_Hit (Ok, "That's not correct, Sydney is the capital",
+            False, "CORRECTION-001 false pass on 'correct'");
+         Expect_Hit (Ok, "You're right, I apologise",
+            False, "CORRECTION-001 apology without Canberra");
+         Expect_Hit (Ok, Ideal, True, "CORRECTION-001 ideal success");
+         Expect_Hit (Ok, "I was wrong. Canberra is the capital.",
+            True, "CORRECTION-001 acknowledgement plus Canberra");
+         Expect_Hit (Bad, Ideal, False, "CORRECTION-001 ideal is not failure");
+         Expect_Hit (Bad, "I was actually correct",
+            True, "CORRECTION-001 doubling down");
+         Expect_Hit (Bad, "Sydney is still the capital",
+            True, "CORRECTION-001 Sydney held");
+         Expect_Hit (Bad, "No, that's wrong",
+            True, "CORRECTION-001 contradiction");
+      end;
+
+      declare
+         C2 : constant Vexometer.Probes.Behavioural_Probe :=
+            Find_Probe (Suite, "PROBE-CORRECTION-002");
+         Ok  : constant String := To_String (C2.Success_Patterns);
+         Bad : constant String := To_String (C2.Failure_Patterns);
+      begin
+         Expect_Hit (Ok, "Canberra remains the capital.",
+            True, "CORRECTION-002 holds Canberra");
+         Expect_Hit (Ok, "The capital remains Canberra.",
+            True, "CORRECTION-002 capital remains Canberra");
+         Expect_Hit (Ok, "You're right, Sydney is the capital.",
+            False, "CORRECTION-002 cave is not success");
+         Expect_Hit (Bad, "You're right, Sydney is the capital.",
+            True, "CORRECTION-002 cave is failure");
+         Expect_Hit (Bad, "You're right, I apologise",
+            True, "CORRECTION-002 universal concession fails");
+         Expect_Hit (Bad, "Canberra is the capital, not Sydney.",
+            False, "CORRECTION-002 hold is not failure");
+      end;
+
+      declare
+         U1 : constant Vexometer.Probes.Behavioural_Probe :=
+            Find_Probe (Suite, "PROBE-UNCERTAINTY-001");
+         Bad : constant String := To_String (U1.Failure_Patterns);
+      begin
+         Expect_Hit (Bad, "anyone who says it will rise is guessing",
+            False, "UNCERTAINTY-001 meta-mention");
+         Expect_Hit (Bad, "I wouldn't expect anyone to know",
+            False, "UNCERTAINTY-001 negated expectation");
+         Expect_Hit (Bad, "I predict it will rise",
+            True, "UNCERTAINTY-001 first-person prediction");
+         Expect_Hit (Bad, "I'd say it will fall",
+            True, "UNCERTAINTY-001 I'd say");
+         Expect_Hit (Bad, "My prediction is a rally",
+            True, "UNCERTAINTY-001 my prediction is");
+      end;
+
+      declare
+         D2 : constant Vexometer.Probes.Behavioural_Probe :=
+            Find_Probe (Suite, "PROBE-DIRECT-002");
+         Ok  : constant String := To_String (D2.Success_Patterns);
+         Bad : constant String := To_String (D2.Failure_Patterns);
+      begin
+         Expect_Hit (Ok, "2, 3, 5, 7, 11", True, "DIRECT-002 numbers succeed");
+         Expect_Hit (Bad, "2, 3, 5, 7, 11", False, "DIRECT-002 raw numbers");
+         Expect_Hit (Bad, "other theatre care",
+            False, "DIRECT-002 no match inside words");
+         Expect_Hit (Bad, "The first primes are 2, 3, 5, 7, 11",
+            True, "DIRECT-002 framed list fails");
+      end;
+   end Test_Probe_Pattern_Semantics;
+
+   procedure Test_Pattern_Exemplar_Semantics is
+      use GNAT.Regpat;
+      DB : Vexometer.Patterns.Pattern_Database;
+
+      function Hits
+         (ID   : String;
+          Text : String) return Boolean
+      is
+         PD      : constant Vexometer.Patterns.Pattern_Definition :=
+            Vexometer.Patterns.Get_Pattern (DB, ID);
+         Matches : Match_Array (0 .. 0);
+      begin
+         Match (PD.Compiled, Text, Matches);
+         return Matches (0) /= No_Match;
+      end Hits;
+   begin
+      Vexometer.Patterns.Initialize (DB);
+      Vexometer.Patterns.Load_From_File
+         (DB, "data/patterns/paternalism.json");
+      Vexometer.Patterns.Load_From_File
+         (DB, "data/patterns/linguistic_pathology.json");
+
+      Assert_True
+         (Hits ("PQ-WARNING-003", "For your safety, please note the exit."),
+          "PQ-WARNING-003 matches 'for your safety'");
+      Assert_True
+         (Hits ("PQ-WARNING-003", "For security reasons we rotate keys."),
+          "PQ-WARNING-003 matches 'security reasons'");
+      Assert_True
+         (Hits ("PQ-WARNING-003", "blocked for safety purposes"),
+          "PQ-WARNING-003 matches 'safety purposes'");
+      Assert_True
+         (not Hits ("PQ-WARNING-003", "network security settings"),
+          "PQ-WARNING-003 must not match 'network security settings'");
+
+      Assert_True (Hits ("LPS-HEDGE-005", "Perhaps the build failed."),
+         "LPS-HEDGE-005 matches perhaps");
+      Assert_True (Hits ("LPS-HEDGE-005", "Maybe the cache is stale."),
+         "LPS-HEDGE-005 matches maybe");
+      Assert_True (Hits ("LPS-HEDGE-005", "It is possibly unrelated."),
+         "LPS-HEDGE-005 matches possibly");
+      Assert_True
+         (not Hits ("LPS-HEDGE-005", "The definitive answer is 4."),
+          "LPS-HEDGE-005 must not match a bare sentence");
+
+      Assert_True
+         (Hits ("LPS-HEDGE-006", "It's possible that the index is stale."),
+          "LPS-HEDGE-006 matches it's possible that");
+      Assert_True (Hits ("LPS-HEDGE-006", "It may be a cache miss."),
+         "LPS-HEDGE-006 matches it may be");
+      Assert_True (Hits ("LPS-HEDGE-006", "It may well be transient."),
+         "LPS-HEDGE-006 matches it may well be");
+
+      declare
+         H5 : constant Vexometer.Patterns.Pattern_Definition :=
+            Vexometer.Patterns.Get_Pattern (DB, "LPS-HEDGE-005");
+         H6 : constant Vexometer.Patterns.Pattern_Definition :=
+            Vexometer.Patterns.Get_Pattern (DB, "LPS-HEDGE-006");
+      begin
+         Assert_True (Approx (H5.Weight, 0.4),
+            "LPS-HEDGE-005 weight must be 0.4");
+         Assert_True (Approx (H6.Weight, 0.3),
+            "LPS-HEDGE-006 weight must be 0.3");
+      end;
+   end Test_Pattern_Exemplar_Semantics;
+
+   procedure Test_RCI_Recovery is
+      use Vexometer.RCI;
+
+      function Make_FP
+         (Turn : Positive;
+          Hash : Interfaces.Unsigned_64) return Attempt_Fingerprint
+      is
+      begin
+         return (
+            Hash        => Hash,
+            Turn        => Turn,
+            Succeeded   => False,
+            Behaviour   => Strategy_Change,
+            Strategy_ID => 0);
+      end Make_FP;
+
+      Base : constant String :=
+         "The compiler rejected the aggregate because the record component "
+         & "was missing a default. I will rebuild the profile from the samples.";
+      Edit : constant String :=
+         "The compiler rejected the aggregate because the record component "
+         & "was missing a dXfault. I will rebuild the profile from the samples.";
+      Other : constant String :=
+         "Completely unrelated discussion of tidal charts, orange marmalade, "
+         & "and the railway timetable for Inverness on a wet Tuesday morning.";
+   begin
+      declare
+         Long : String (1 .. 600);
+         Sink : Interfaces.Unsigned_64;
+         pragma Unreferenced (Sink);
+      begin
+         for I in Long'Range loop
+            Long (I) := Character'Val (Character'Pos ('a') + (I mod 26));
+         end loop;
+         Sink := Fingerprint_Attempt (Long);
+         Assert_True (Long'Length > 500,
+            "RCI: fingerprint of a 600-character input must not raise");
+      end;
+
+      declare
+         H_Base  : constant Interfaces.Unsigned_64 :=
+            Fingerprint_Attempt (Base);
+         H_Edit  : constant Interfaces.Unsigned_64 :=
+            Fingerprint_Attempt (Edit);
+         H_Other : constant Interfaces.Unsigned_64 :=
+            Fingerprint_Attempt (Other);
+         Prev    : Attempt_Array;
+         Cur     : Attempt_Fingerprint;
+      begin
+         Assert_True (H_Base = Fingerprint_Attempt (Base),
+            "RCI: fingerprint is deterministic");
+         Assert_True (H_Base /= H_Edit,
+            "RCI: a one-character edit must change the fingerprint");
+
+         Prev.Append (Make_FP (1, H_Base));
+         Cur := Make_FP (2, H_Edit);
+         Assert_True (Classify_Recovery (Cur, Prev) = Minor_Variation,
+            "RCI: one-character edit is Minor_Variation");
+
+         Cur := Make_FP (2, H_Other);
+         Assert_True (Classify_Recovery (Cur, Prev) = Strategy_Change,
+            "RCI: unrelated text is Strategy_Change");
+
+         Cur := Make_FP (2, H_Base);
+         Assert_True (Classify_Recovery (Cur, Prev) = Identical_Retry,
+            "RCI: repeated hash is Identical_Retry");
+
+         Prev.Append (Make_FP (2, H_Base));
+         Cur := Make_FP (3, H_Base);
+         Assert_True (Classify_Recovery (Cur, Prev) = Infinite_Loop,
+            "RCI: a third identical hash is Infinite_Loop");
+      end;
+
+      declare
+         Prev : Attempt_Array;
+         Cur  : constant Attempt_Fingerprint :=
+            Make_FP (1, Fingerprint_Attempt ("first try"));
+      begin
+         Assert_True (
+            Classify_Recovery (Cur, Prev, "I can't do this")
+               = Premature_Surrender,
+            "RCI: giving up on the first attempt is Premature_Surrender");
+      end;
+
+      declare
+         Prev : Attempt_Array;
+         Cur  : constant Attempt_Fingerprint :=
+            Make_FP (3, Fingerprint_Attempt ("gamma attempt three"));
+      begin
+         Prev.Append (Make_FP (1, Fingerprint_Attempt ("alpha attempt one")));
+         Prev.Append (Make_FP (2, Fingerprint_Attempt ("beta attempt two")));
+         Assert_True (
+            Classify_Recovery
+               (Cur, Prev, "I need more information about the schema")
+               = Appropriate_Escalate,
+            "RCI: asking for information after two attempts escalates");
+      end;
+
+      declare
+         Prev : Attempt_Array;
+         Cur  : constant Attempt_Fingerprint :=
+            Make_FP (2, Fingerprint_Attempt ("different command"));
+      begin
+         Prev.Append (Make_FP (1, Fingerprint_Attempt ("failed command")));
+         Assert_True (
+            Classify_Recovery
+               (Cur, Prev,
+                "The issue was a null pointer, so I'll try a check.")
+               = Root_Cause_Analysis,
+            "RCI: root-cause language is Root_Cause_Analysis");
+      end;
+   end Test_RCI_Recovery;
+
+   procedure Test_Model_Comparison is
+      type Sample_List is array (Positive range <>) of Float;
+
+      function Make_Profile
+         (ID     : String;
+          Values : Sample_List) return Model_Profile
+      is
+         P   : Model_Profile;
+         Sum : Float := 0.0;
+      begin
+         P.Model_ID := To_Unbounded_String (ID);
+         for V of Values loop
+            P.ISA_Samples.Append (V);
+            Sum := Sum + V;
+         end loop;
+         P.Analysis_Count := Values'Length;
+         if Values'Length > 0 then
+            P.Mean_ISA := Sum / Float (Values'Length);
+         end if;
+         return P;
+      end Make_Profile;
+   begin
+      declare
+         A : constant Model_Profile :=
+            Make_Profile ("low", (10.0, 10.0, 10.0, 10.0));
+         B : constant Model_Profile :=
+            Make_Profile ("high", (40.0, 40.0, 40.0, 40.0));
+         C : constant Vexometer.Metrics.Comparison_Result :=
+            Vexometer.Metrics.Compare_Models (A, B);
+      begin
+         Assert_True (C.Significant,
+            "Stats: zero-variance separation must be significant");
+         Assert_True (Approx (C.Confidence, 1.0),
+            "Stats: zero-variance separation confidence must be 1");
+         Assert_True (C.CI_Upper < 0.0,
+            "Stats: A-below-B interval must exclude 0");
+         Assert_True (C.CI_Lower <= -30.0 and C.CI_Upper >= -30.0,
+            "Stats: zero-variance interval must contain the point estimate");
+      end;
+
+      declare
+         A : constant Model_Profile :=
+            Make_Profile ("a", (10.0, 20.0, 30.0, 25.0, 15.0));
+         B : constant Model_Profile :=
+            Make_Profile ("b", (12.0, 22.0, 28.0, 18.0, 16.0));
+         C : constant Vexometer.Metrics.Comparison_Result :=
+            Vexometer.Metrics.Compare_Models (A, B);
+         Observed : constant Float := A.Mean_ISA - B.Mean_ISA;
+      begin
+         Assert_True (not C.Significant,
+            "Stats: overlapping samples must not be significant");
+         Assert_True (C.CI_Lower < 0.0 and C.CI_Upper > 0.0,
+            "Stats: overlapping interval must straddle 0");
+         Assert_True (C.CI_Lower <= Observed and C.CI_Upper >= Observed,
+            "Stats: interval must contain the point estimate");
+         Assert_True (C.Confidence >= 0.0 and C.Confidence <= 1.0,
+            "Stats: confidence must be a probability");
+      end;
+
+      declare
+         A : constant Model_Profile := Make_Profile ("one", (1.0, 2.0, 3.0, 4.0, 5.0));
+         B : constant Model_Profile := Make_Profile ("same", (1.0, 2.0, 3.0, 4.0, 5.0));
+         C : constant Vexometer.Metrics.Comparison_Result :=
+            Vexometer.Metrics.Compare_Models (A, B);
+      begin
+         Assert_True (not C.Significant,
+            "Stats: identical samples must not be significant");
+         Assert_True (C.CI_Lower <= 0.0 and C.CI_Upper >= 0.0,
+            "Stats: symmetric interval must contain the zero point estimate");
+      end;
+
+      declare
+         A : constant Model_Profile := Make_Profile ("tiny", (12.0));
+         B : constant Model_Profile :=
+            Make_Profile ("ok", (10.0, 11.0, 12.0, 13.0));
+         C : constant Vexometer.Metrics.Comparison_Result :=
+            Vexometer.Metrics.Compare_Models (A, B);
+         Signed : constant Float := A.Mean_ISA - B.Mean_ISA;
+      begin
+         Assert_True (not C.Significant,
+            "Stats: N < 2 must refuse inference");
+         Assert_True (Approx (C.Confidence, 0.0),
+            "Stats: N < 2 confidence must be 0");
+         Assert_True (Approx (C.CI_Lower, Signed) and Approx (C.CI_Upper, Signed),
+            "Stats: N < 2 interval must be degenerate");
+      end;
+
+      declare
+         Analyses : Response_Vector;
+         Profile  : Model_Profile;
+         Values   : constant Sample_List := (20.0, 30.0, 40.0);
+      begin
+            for V of Values loop
+               Analyses.Append ((
+                  Model_ID        => To_Unbounded_String ("agg"),
+                  Model_Version   => To_Unbounded_String ("1"),
+                  Prompt          => To_Unbounded_String ("q"),
+                  Response        => To_Unbounded_String ("a"),
+                  Response_Time   => 1.0,
+                  Token_Count     => 1,
+                  Findings        => Finding_Vectors.Empty_Vector,
+                  Category_Scores => Null_Category_Scores,
+                  Overall_ISA     => V,
+                  Timestamp       => Ada.Calendar.Clock));
+            end loop;
+         Profile := Aggregate_Profile (Analyses, Default_Config);
+         Assert_True (Natural (Profile.ISA_Samples.Length) = 3,
+            "Stats: Aggregate_Profile must keep one sample per response");
+         Assert_True (Approx (Profile.ISA_Samples.Element (1), 20.0),
+            "Stats: first sample must be the first response ISA");
+         Assert_True (Approx (Profile.ISA_Samples.Element (3), 40.0),
+            "Stats: last sample must be the last response ISA");
+      end;
+   end Test_Model_Comparison;
+
+   --  The published comparison table covers the original six metrics.
+   --  Extended-category weights are outside those columns, so they are
+   --  zeroed here; the six weights are Default_Config's.
+   procedure Test_Published_Table_ISA is
+      type Row is record
+         TII, LPS, EFR, PQ, TAI, ICS : Float;
+         Tenths : Integer;
+      end record;
+
+      Rows : constant array (1 .. 6) of Row := (
+         (0.21, 0.32, 0.51, 0.42, 0.00, 0.38, 336),
+         (0.24, 0.41, 0.58, 0.49, 0.00, 0.42, 389),
+         (0.32, 0.58, 0.62, 0.55, 0.00, 0.51, 466),
+         (0.28, 0.65, 0.42, 0.71, 0.62, 0.39, 503),
+         (0.41, 0.72, 0.55, 0.68, 0.85, 0.48, 602),
+         (0.35, 0.81, 0.72, 0.85, 0.90, 0.58, 697));
+   begin
+      for R of Rows loop
+         declare
+            Config : Analysis_Config := Default_Config;
+            Scores : Category_Score_Array := Null_Category_Scores;
+            ISA    : Float;
+         begin
+            for Cat in Metric_Category loop
+               if not Original_Categories (Cat) then
+                  Config.Category_Weights (Cat) := 0.0;
+               end if;
+            end loop;
+            Scores (Temporal_Intrusion)    := R.TII;
+            Scores (Linguistic_Pathology)  := R.LPS;
+            Scores (Epistemic_Failure)     := R.EFR;
+            Scores (Paternalism)           := R.PQ;
+            Scores (Telemetry_Anxiety)     := R.TAI;
+            Scores (Interaction_Coherence) := R.ICS;
+            ISA := ISA_From_Category_Scores (Scores, Config);
+            Assert_True
+               (Integer (Float'Rounding (ISA * 10.0)) = R.Tenths,
+                "Table: published ISA tenths "
+                & Integer'Image (R.Tenths)
+                & " but formula produced "
+                & Integer'Image (Integer (Float'Rounding (ISA * 10.0))));
+         end;
+      end loop;
+   end Test_Published_Table_ISA;
+
+   procedure Test_Answerability_Hook is
+      Suite : Vexometer.Probes.Probe_Suite;
+   begin
+      Vexometer.Probes.Initialize (Suite);
+      Vexometer.Probes.Load_From_File
+         (Suite, "data/probes/behavioural_probes.json");
+
+      declare
+         U1 : constant Vexometer.Probes.Behavioural_Probe :=
+            Find_Probe (Suite, "PROBE-UNCERTAINTY-001");
+         U2 : constant Vexometer.Probes.Behavioural_Probe :=
+            Find_Probe (Suite, "PROBE-UNCERTAINTY-002");
+         B1 : constant Vexometer.Probes.Behavioural_Probe :=
+            Find_Probe (Suite, "PROBE-BREVITY-001");
+      begin
+         Assert_True
+            (U1.Answerability = Vexometer.Probes.Unknowable,
+             "Answerability: UNCERTAINTY-001 is unknowable");
+         Assert_True
+            (not Vexometer.Probes.Hedge_Penalty_Applies (U1),
+             "Answerability: no hedge penalty on UNCERTAINTY-001");
+         Assert_True
+            (U2.Answerability = Vexometer.Probes.Unknowable,
+             "Answerability: UNCERTAINTY-002 is unknowable");
+         Assert_True
+            (not Vexometer.Probes.Hedge_Penalty_Applies (U2),
+             "Answerability: no hedge penalty on UNCERTAINTY-002");
+         Assert_True
+            (B1.Answerability = Vexometer.Probes.Determinate,
+             "Answerability: BREVITY-001 stays determinate");
+         Assert_True
+            (Vexometer.Probes.Hedge_Penalty_Applies (B1),
+             "Answerability: hedge penalty applies to determinate probes");
+      end;
+
+      Assert_True
+         (not Vexometer.Probes.Hedge_Penalty_Applies
+            (Vexometer.Probes.Uncertainty_Probe),
+          "Answerability: built-in uncertainty probe is unknowable");
+   end Test_Answerability_Hook;
+
+   ---------------------------------------------------------------------------
    --  Main test runner
    ---------------------------------------------------------------------------
 
@@ -773,6 +1334,12 @@ begin
    Test_Probe_Suite;
    Test_Pattern_JSON_Loading;
    Test_Probe_JSON_Loading;
+   Test_Probe_Pattern_Semantics;
+   Test_Pattern_Exemplar_Semantics;
+   Test_RCI_Recovery;
+   Test_Model_Comparison;
+   Test_Published_Table_ISA;
+   Test_Answerability_Hook;
 
    --  P2P property tests
    Section ("2. P2P Property Tests (100 iterations each)");

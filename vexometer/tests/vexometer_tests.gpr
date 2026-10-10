@@ -13,7 +13,11 @@ project Vexometer_Tests is
       "vexometer-patterns.ads",
       "vexometer-patterns.adb",
       "vexometer-probes.ads",
-      "vexometer-probes.adb"
+      "vexometer-probes.adb",
+      "vexometer-rci.ads",
+      "vexometer-rci.adb",
+      "vexometer-metrics.ads",
+      "vexometer-metrics.adb"
    );
    for Object_Dir use "../obj/tests";
    for Exec_Dir use "../bin";
