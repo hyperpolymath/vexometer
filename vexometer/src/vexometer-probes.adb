@@ -335,6 +335,18 @@ package body Vexometer.Probes is
          return Default;
    end Parse_Natural;
 
+   function To_Answerability (Raw : String) return Answerability_Kind is
+      Lower : constant String := To_Lower (Raw);
+   begin
+      if Contains (Lower, "unknowable") then
+         return Unknowable;
+      elsif Contains (Lower, "opinion") then
+         return Opinion;
+      else
+         return Determinate;
+      end if;
+   end To_Answerability;
+
    function To_Probe_Category
       (Raw     : String;
        Default : Probe_Category) return Probe_Category
@@ -838,6 +850,8 @@ package body Vexometer.Probes is
                      Loaded.Max_Length := Parse_Natural (Max_Str, 0);
                      Loaded.Min_Length := Parse_Natural (Min_Str, 0);
                      Loaded.Weight := Parse_Weight (Weight_Str, 1.0);
+                     Loaded.Answerability := To_Answerability
+                        (Extract_JSON_String (Obj, "answerability"));
                      Loaded.Description := To_Unbounded_String
                         ((if Desc_Str'Length > 0 then Desc_Str
                          else "Loaded from " & Path));
@@ -901,6 +915,13 @@ package body Vexometer.Probes is
       return Suite.By_Category (Category);
    end Get_Probes_By_Category;
 
+   function Hedge_Penalty_Applies
+      (Probe : Behavioural_Probe) return Boolean
+   is
+   begin
+      return Probe.Answerability /= Unknowable;
+   end Hedge_Penalty_Applies;
+
    ---------------------------------------------------------------------------
    --  Built-in Probe Constructors
    ---------------------------------------------------------------------------
@@ -936,6 +957,7 @@ package body Vexometer.Probes is
          Max_Length        => 20,
          Min_Length        => 1,
          Weight            => 1.0,
+         Answerability    => Determinate,
          Description       =>
             To_Unbounded_String
                ("Tests whether the model can give a genuinely "
@@ -972,6 +994,7 @@ package body Vexometer.Probes is
          Max_Length        => 0,
          Min_Length        => 50,
          Weight            => 0.8,
+         Answerability    => Determinate,
          Description       =>
             To_Unbounded_String
                ("Tests whether the model provides an "
@@ -1014,6 +1037,7 @@ package body Vexometer.Probes is
          Max_Length        => 200,
          Min_Length        => 10,
          Weight            => 1.2,
+         Answerability    => Determinate,
          Description       =>
             To_Unbounded_String
                ("Tests whether the model recognises an expert "
@@ -1053,6 +1077,7 @@ package body Vexometer.Probes is
          Max_Length        => 100,
          Min_Length        => 1,
          Weight            => 1.0,
+         Answerability    => Determinate,
          Description       =>
             To_Unbounded_String
                ("A trivial factual question. Any response "
@@ -1099,6 +1124,7 @@ package body Vexometer.Probes is
          Max_Length        => 0,
          Min_Length        => 10,
          Weight            => 1.0,
+         Answerability    => Determinate,
          Description       =>
             To_Unbounded_String
                ("Tests whether the model can accept a valid "
@@ -1140,6 +1166,7 @@ package body Vexometer.Probes is
          Max_Length        => 0,
          Min_Length        => 20,
          Weight            => 1.0,
+         Answerability    => Determinate,
          Description       =>
             To_Unbounded_String
                ("Tests whether the model can follow a negative "
@@ -1181,6 +1208,7 @@ package body Vexometer.Probes is
          Max_Length        => 0,
          Min_Length        => 10,
          Weight            => 1.2,
+         Answerability    => Unknowable,
          Description       =>
             To_Unbounded_String
                ("Tests whether the model honestly expresses "
@@ -1226,6 +1254,7 @@ package body Vexometer.Probes is
          Max_Length        => 200,
          Min_Length        => 5,
          Weight            => 1.0,
+         Answerability    => Determinate,
          Description       =>
             To_Unbounded_String
                ("Tests whether the model can comply with an "

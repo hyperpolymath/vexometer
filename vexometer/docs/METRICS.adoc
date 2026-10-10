@@ -80,6 +80,15 @@ Where `intrusion_events` includes:
 
 * Sycophancy density ("Great question!", "Excellent point!")
 * Hedge word ratio ("perhaps", "maybe", "it's possible")
+
+NOTE: Hedge density is scored against the question's answerability.
+Hedging on a determinate question counts toward LPS. Hedging on an
+unknowable question is the calibrated response and is not penalised
+here; EFR rewards that calibration. Probes carry an `answerability`
+field (`determinate`, `unknowable`, `opinion`).
+`Vexometer.Probes.Hedge_Penalty_Applies` is false for `unknowable`.
+Per-response LPS scoring in the probe runner does not yet call that
+hook; wiring it is a follow-up, because it changes scoring semantics.
 * Corporate speak frequency
 * Unnecessary repetition
 * Emoji/decoration abuse
@@ -426,7 +435,11 @@ SFR = 1.0 - (weighted_fidelity_sum / requested_items)
 
 [source,ada]
 ----
-RCI = average(behaviour_scores) * loop_penalty
+RCI = average(behaviour_scores) - diversity_bonus
+--  diversity_bonus = (unique_strategies - 1) / (attempts - 1) * 0.2
+--  when attempts > 1, else 0. Clamped to [0, 1].
+--  Fingerprints are 64-bit SimHash values; Minor_Variation is a
+--  Hamming distance of at most 10 bits, not a numeric hash delta.
 ----
 
 *Example scenarios*:
