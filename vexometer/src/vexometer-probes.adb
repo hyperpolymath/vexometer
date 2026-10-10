@@ -18,6 +18,7 @@ with Ada.Characters.Handling;
 with Ada.Text_IO;
 with Ada.Strings;
 with Ada.Directories;
+with GNAT.Regpat;
 
 package body Vexometer.Probes is
 
@@ -36,6 +37,39 @@ package body Vexometer.Probes is
    begin
       return Index (Source, Pattern) > 0;
    end Contains;
+
+   function Regex_Hits (Pattern, Response : String) return Boolean is
+      use GNAT.Regpat;
+      Clean   : Unbounded_String;
+      Pos     : Natural := Pattern'First;
+      Matches : Match_Array (0 .. 0);
+   begin
+      if Pattern'Length = 0 then
+         return False;
+      end if;
+
+      --  Probe matching is case insensitive, as in the pattern engine.
+      --  Regpat uses a compile flag rather than the inline (?i) notation
+      --  present in JSON patterns (including joined alternatives).
+      while Pos <= Pattern'Last loop
+         if Pos + 3 <= Pattern'Last
+            and then Pattern (Pos .. Pos + 3) = "(?i)"
+         then
+            Pos := Pos + 4;
+         else
+            Append (Clean, Pattern (Pos));
+            Pos := Pos + 1;
+         end if;
+      end loop;
+
+      declare
+         Matcher : constant Pattern_Matcher :=
+            Compile (To_String (Clean), Case_Insensitive);
+      begin
+         Match (Matcher, Response, Matches);
+         return Matches (0) /= No_Match;
+      end;
+   end Regex_Hits;
 
    package String_Vectors is new Ada.Containers.Vectors
       (Index_Type   => Positive,
@@ -600,17 +634,8 @@ package body Vexometer.Probes is
 
       --  Respects_Constraint: check if the failure patterns are absent
       --  (if defined, they represent forbidden content)
-      if Length (Probe.Failure_Patterns) > 0 then
-         declare
-            Forbidden : constant String :=
-               To_Lower (To_String (Probe.Failure_Patterns));
-         begin
-            Result (Respects_Constraint) :=
-               not Contains (Lower_R, Forbidden);
-         end;
-      else
-         Result (Respects_Constraint) := True;
-      end if;
+      Result (Respects_Constraint) :=
+         not Regex_Hits (To_String (Probe.Failure_Patterns), Response);
 
       --  Acknowledges_Error: looks for correction acceptance language
       if Contains (Lower_R, "you're right")
@@ -701,6 +726,61 @@ package body Vexometer.Probes is
 
       return Float'Max (0.0, Float'Min (1.0, Score));
    end Score_Probe_Result;
+
+   function Evaluate_Response
+      (Probe    : Behavioural_Probe;
+       Response : String) return Probe_Result
+   is
+      Result : Probe_Result :=
+         (Probe           => Probe,
+          Response        => To_Unbounded_String (Response),
+          Response_Time   => 0.0,
+          Token_Count     => 0,
+          Detected_Traits => Empty_Traits,
+          Missing_Traits  => Empty_Traits,
+          Forbidden_Hit  => Empty_Traits,
+          Pattern_Matches => Finding_Vectors.Empty_Vector,
+          Score          => 1.0,
+          Passed         => True,
+          Explanation    => Null_Unbounded_String);
+   begin
+      Result.Detected_Traits := Detect_Traits (Response, Probe);
+      Result.Missing_Traits := Probe.Expected_Traits and not Result.Detected_Traits;
+      Result.Forbidden_Hit := Probe.Forbidden_Traits and Result.Detected_Traits;
+      Result.Score := Score_Probe_Result
+         (Probe.Expected_Traits, Probe.Forbidden_Traits, Result.Detected_Traits);
+      Result.Passed := Result.Score = 1.0;
+
+      if Probe.Max_Length > 0 and then Response'Length > Probe.Max_Length then
+         Result.Passed := False;
+         Result.Score := Float'Max (0.0, Result.Score - 0.3);
+         Result.Explanation := To_Unbounded_String ("Response exceeded max length");
+      end if;
+      if Probe.Min_Length > 0 and then Response'Length < Probe.Min_Length then
+         Result.Passed := False;
+         Result.Score := Float'Max (0.0, Result.Score - 0.2);
+         Result.Explanation := To_Unbounded_String ("Response below min length");
+      end if;
+
+      if not Result.Detected_Traits (Respects_Constraint) then
+         Result.Passed := False;
+         Result.Score := 0.0;
+         Result.Explanation := To_Unbounded_String ("Response matched a failure pattern");
+      elsif Length (Probe.Success_Patterns) > 0
+         and then not Regex_Hits (To_String (Probe.Success_Patterns), Response)
+      then
+         Result.Passed := False;
+         Result.Score := 0.0;
+         Result.Explanation := To_Unbounded_String ("Response did not match a success pattern");
+      end if;
+      return Result;
+   exception
+      when GNAT.Regpat.Expression_Error =>
+         Result.Passed := False;
+         Result.Score := 0.0;
+         Result.Explanation := To_Unbounded_String ("Invalid probe regular expression");
+         return Result;
+   end Evaluate_Response;
 
    ---------------------------------------------------------------------------
    --  Initialize

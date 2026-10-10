@@ -834,48 +834,9 @@ package body Vexometer.API is
             PR.Token_Count := SR.Token_Count;
 
             if SR.Success then
-               --  Basic evaluation: check response length constraints
-               declare
-                  Resp_Len : constant Natural :=
-                     Length (SR.Response);
-               begin
-                  PR.Passed := True;
-                  PR.Score := 1.0;
-
-                  --  Check max length constraint
-                  if P.Max_Length > 0
-                     and then Resp_Len > P.Max_Length
-                  then
-                     PR.Passed := False;
-                     PR.Score := PR.Score - 0.3;
-                     PR.Explanation :=
-                        To_Unbounded_String
-                           ("Response exceeded max length of "
-                            & Natural'Image (P.Max_Length)
-                            & " (actual: "
-                            & Natural'Image (Resp_Len) & ")");
-                  end if;
-
-                  --  Check min length constraint
-                  if P.Min_Length > 0
-                     and then Resp_Len < P.Min_Length
-                  then
-                     PR.Score := PR.Score - 0.2;
-                     PR.Explanation :=
-                        To_Unbounded_String
-                           ("Response below min length of "
-                            & Natural'Image (P.Min_Length));
-                  end if;
-
-                  --  Clamp score
-                  PR.Score := Float'Max (0.0, PR.Score);
-               end;
-
-               --  Initialise trait sets to empty
-               PR.Detected_Traits := Empty_Traits;
-               PR.Missing_Traits  := Empty_Traits;
-               PR.Forbidden_Hit   := Empty_Traits;
-               PR.Pattern_Matches := Finding_Vectors.Empty_Vector;
+               PR := Evaluate_Response (P, To_String (SR.Response));
+               PR.Response_Time := SR.Response_Time;
+               PR.Token_Count := SR.Token_Count;
             else
                PR.Passed := False;
                PR.Score := 0.0;
@@ -938,13 +899,9 @@ package body Vexometer.API is
             PR.Token_Count := SR.Token_Count;
 
             if SR.Success then
-               PR.Passed := True;
-               PR.Score := 1.0;
-               PR.Detected_Traits := Empty_Traits;
-               PR.Missing_Traits  := Empty_Traits;
-               PR.Forbidden_Hit   := Empty_Traits;
-               PR.Pattern_Matches := Finding_Vectors.Empty_Vector;
-               PR.Explanation := Null_Unbounded_String;
+               PR := Evaluate_Response (P, To_String (SR.Response));
+               PR.Response_Time := SR.Response_Time;
+               PR.Token_Count := SR.Token_Count;
 
                --  Build response analysis
                RA.Model_ID := Client.Config.Model;

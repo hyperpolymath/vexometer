@@ -137,6 +137,13 @@ package Vexometer.Probes is
 
    subtype Result_Vector is Result_Vectors.Vector;
 
+   function Evaluate_Response
+      (Probe    : Behavioural_Probe;
+       Response : String) return Probe_Result;
+   --  Evaluate traits, length limits and case-insensitive regular expressions.
+   --  Any failure match or missing required success match fails the probe.
+   --  Invalid expressions fail with an explanation; timing and tokens are zero.
+
    ---------------------------------------------------------------------------
    --  Probe Suite
    ---------------------------------------------------------------------------
