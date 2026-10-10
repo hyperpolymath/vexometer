@@ -1192,7 +1192,7 @@ procedure Test_Runner is
       end;
 
       declare
-         A : constant Model_Profile := Make_Profile ("tiny", (12.0));
+         A : constant Model_Profile := Make_Profile ("tiny", [12.0]);
          B : constant Model_Profile :=
             Make_Profile ("ok", (10.0, 11.0, 12.0, 13.0));
          C : constant Vexometer.Metrics.Comparison_Result :=
