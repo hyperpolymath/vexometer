@@ -67,6 +67,7 @@ test:
     @echo "Running Ada package tests (Core, CII, Patterns, Probes)..."
     gprbuild -p -P tests/vexometer_tests.gpr
     ./bin/test_runner
+    ./bin/test_probe_evaluation
 
 # Run core performance benchmarks and generate display artifacts
 bench:

@@ -78,15 +78,28 @@ package Vexometer.Metrics is
    type Comparison_Result is record
       Better_Model  : Model_Profile;
       Worse_Model   : Model_Profile;
-      ISA_Delta     : Float;           --  Difference in ISA scores
+      ISA_Delta     : Float;           --  abs difference of profile means
       Category_Wins : Metric_Category_Set;  --  Categories where better wins
-      Significant   : Boolean;         --  Statistically significant?
-      Confidence    : Float;           --  Confidence in comparison
+      --  Significant is true only when a 95% bootstrap percentile interval
+      --  on (mean of A's samples - mean of B's samples) excludes 0.
+      --  Confidence is the share of those resamples whose sign matches the
+      --  observed sample-mean difference (a probability, not a ratio of
+      --  standard deviations). CI_Lower / CI_Upper are that interval.
+      --  If either profile has fewer than 2 samples, no inference is
+      --  possible: Significant is false, Confidence is 0, and the interval
+      --  degenerates to the profile-mean difference.
+      Significant   : Boolean;
+      Confidence    : Float;
+      CI_Lower      : Float := 0.0;
+      CI_Upper      : Float := 0.0;
    end record;
 
    function Compare_Models
       (Model_A : Model_Profile;
        Model_B : Model_Profile) return Comparison_Result;
+   --  Sample-size-aware comparison. Uses the raw ISA_Samples carried on
+   --  each profile (Welch standard error for the zero-variance case, and
+   --  a fixed-seed bootstrap percentile interval otherwise).
 
    procedure Rank_Models
       (Profiles : in out Profile_Vector);

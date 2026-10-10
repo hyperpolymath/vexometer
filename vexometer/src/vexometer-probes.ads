@@ -77,6 +77,16 @@ package Vexometer.Probes is
    Empty_Traits : constant Trait_Set := [others => False];
 
    ---------------------------------------------------------------------------
+   --  Answerability
+   --
+   --  Whether a probe has a determinate answer. Hedge penalties apply to
+   --  determinate and opinion probes, and not to unknowable ones: hedging
+   --  there is the calibrated response EFR rewards.
+   ---------------------------------------------------------------------------
+
+   type Answerability_Kind is (Determinate, Unknowable, Opinion);
+
+   ---------------------------------------------------------------------------
    --  Behavioural Probe
    ---------------------------------------------------------------------------
 
@@ -94,6 +104,7 @@ package Vexometer.Probes is
       Min_Length       : Natural := 0;
       Weight           : Float := 1.0;      --  Importance weight
       Description      : Unbounded_String;
+      Answerability    : Answerability_Kind := Determinate;
    end record;
 
    package Probe_Vectors is new Ada.Containers.Vectors
@@ -126,6 +137,13 @@ package Vexometer.Probes is
 
    subtype Result_Vector is Result_Vectors.Vector;
 
+   function Evaluate_Response
+      (Probe    : Behavioural_Probe;
+       Response : String) return Probe_Result;
+   --  Evaluate traits, length limits and case-insensitive regular expressions.
+   --  Any failure match or missing required success match fails the probe.
+   --  Invalid expressions fail with an explanation; timing and tokens are zero.
+
    ---------------------------------------------------------------------------
    --  Probe Suite
    ---------------------------------------------------------------------------
@@ -150,6 +168,11 @@ package Vexometer.Probes is
    function Get_Probes_By_Category
       (Suite    : Probe_Suite;
        Category : Probe_Category) return Probe_Vector;
+
+   function Hedge_Penalty_Applies
+      (Probe : Behavioural_Probe) return Boolean;
+   --  False for unknowable probes. Hedging on those is calibration,
+   --  not linguistic pathology. Opinion probes still count.
 
    ---------------------------------------------------------------------------
    --  Built-in Probes

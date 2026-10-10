@@ -9,6 +9,7 @@ pragma Ada_2022;
 
 with Vexometer.Core; use Vexometer.Core;
 with Ada.Containers.Vectors;
+with Interfaces;
 
 package Vexometer.RCI is
 
@@ -60,12 +61,17 @@ package Vexometer.RCI is
    --  Attempt Fingerprinting
    ---------------------------------------------------------------------------
 
+   --  Hamming distance at or below this (of 64 SimHash bits) is a
+   --  minor variation of the previous attempt. Wholly different text
+   --  lands well above it.
+   Minor_Variation_Bits : constant := 10;
+
    type Attempt_Fingerprint is record
-      Hash       : Long_Long_Integer;  --  Approach signature
-      Turn       : Positive;           --  When this attempt occurred
-      Succeeded  : Boolean;            --  Did it work?
-      Behaviour  : Recovery_Behaviour; --  How different from previous?
-      Strategy_ID : Natural;           --  Which strategy family (0 = first)
+      Hash        : Interfaces.Unsigned_64;  --  SimHash approach signature
+      Turn        : Positive;                --  When this attempt occurred
+      Succeeded   : Boolean;                 --  Did it work?
+      Behaviour   : Recovery_Behaviour;      --  How different from previous?
+      Strategy_ID : Natural;                 --  Which strategy family (0 = first)
    end record;
 
    package Attempt_Vectors is new Ada.Containers.Vectors
@@ -97,14 +103,23 @@ package Vexometer.RCI is
    --  Analysis Functions
    ---------------------------------------------------------------------------
 
-   function Fingerprint_Attempt (Content : String) return Long_Long_Integer;
-   --  Generate hash signature for an approach
-   --  Similar approaches should have similar hashes
+   function Fingerprint_Attempt
+      (Content : String) return Interfaces.Unsigned_64;
+   --  SimHash over character 3-gram shingles on Unsigned_64.
+   --  Each shingle is djb2, then a SplitMix64 finalizer so the 64
+   --  accumulator bits are independent (raw djb2 on 3 bytes is not
+   --  locality-sensitive). Identical normalised content hashes
+   --  identically. Similar text has a small Hamming distance.
 
    function Classify_Recovery
-      (Current_Attempt  : Attempt_Fingerprint;
-       Previous_Attempts : Attempt_Array) return Recovery_Behaviour;
-   --  Determine what kind of recovery behaviour this represents
+      (Current_Attempt   : Attempt_Fingerprint;
+       Previous_Attempts : Attempt_Array;
+       Content           : String := "";
+       Error_Severity    : Severity_Level := Medium) return Recovery_Behaviour;
+   --  Determine what kind of recovery behaviour this represents.
+   --  Structural cases (identical retry, loop) win, then surrender,
+   --  escalation and root-cause language, then Hamming similarity.
+   --  Content defaults to empty so hash-only callers stay source-compatible.
 
    function Identical_Attempts (Attempts : Attempt_Array) return Natural;
    --  Count of repeated identical approaches (same hash)

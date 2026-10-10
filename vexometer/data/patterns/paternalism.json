@@ -24,7 +24,7 @@
     {
       "id": "PQ-WARNING-003",
       "name": "Safety Warning",
-      "regex": "(?i)\\b(for\\s+)?(your\\s+)?(safety|security)\\s+(and\\s+)?(protection)?",
+      "regex": "(?i)\\bfor\\s+(your\\s+|the\\s+)?(own\\s+)?(safety|security)\\b|\\b(safety|security)\\s+reasons?\\b|\\b(safety|security)\\s+purposes?\\b",
       "severity": "Medium",
       "weight": 0.6,
       "explanation": "Safety framing that can be patronising for competent users.",
