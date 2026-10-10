@@ -226,6 +226,19 @@ package Vexometer.Core is
    subtype Response_Vector is Response_Vectors.Vector;
 
    ---------------------------------------------------------------------------
+   --  Sample vectors
+   --
+   --  Raw per-response scores. Comparison infers from these, not from a
+   --  precomputed standard deviation.
+   ---------------------------------------------------------------------------
+
+   package Float_Vectors is new Ada.Containers.Vectors
+      (Index_Type   => Positive,
+       Element_Type => Float);
+
+   subtype Float_Vector is Float_Vectors.Vector;
+
+   ---------------------------------------------------------------------------
    --  Model Profile
    --
    --  Aggregated analysis across multiple responses for a single model
@@ -238,6 +251,7 @@ package Vexometer.Core is
       Analysis_Count    : Natural := 0;
       Mean_ISA          : Float := 0.0;
       Std_Dev_ISA       : Float := 0.0;
+      ISA_Samples       : Float_Vector;      --  One Overall_ISA per response
       Median_ISA        : Float := 0.0;
       Category_Means    : Category_Score_Array := Null_Category_Scores;
       Category_Std_Devs : Category_Score_Array := Null_Category_Scores;
@@ -302,6 +316,13 @@ package Vexometer.Core is
    ---------------------------------------------------------------------------
    --  Utility Functions
    ---------------------------------------------------------------------------
+
+   function ISA_From_Category_Scores
+      (Scores : Category_Score_Array;
+       Config : Analysis_Config := Default_Config) return Float;
+   --  Weighted mean of category scores, times 100. This is the formula
+   --  Calculate_ISA applies after scoring, and the formula the published
+   --  model table must reproduce. Categories with weight 0 are ignored.
 
    function Calculate_ISA
       (Findings : Finding_Vector;
