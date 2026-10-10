@@ -10,6 +10,7 @@ pragma Ada_2022;
 
 with Ada.Strings.Fixed;       use Ada.Strings.Fixed;
 with Ada.Characters.Handling; use Ada.Characters.Handling;
+with Interfaces;              use Interfaces;
 
 package body Vexometer.RCI is
 
@@ -72,16 +73,91 @@ package body Vexometer.RCI is
       return Index (Upper_Src, Upper_Pat, From);
    end CI_Index;
 
-   --  Simple_Hash produces a DJB2-variant hash for fingerprinting.
-   --  Normalises to lowercase for stability.
-   function Hash_String (S : String) return Long_Long_Integer is
-      H : Long_Long_Integer := 5381;
+   --  Build a 64-bit constant from 16-bit halves. The formals are
+   --  Integer so every literal fits a 32-bit signed static expression
+   --  (several halves exceed Short_Integer, which some GNAT builds
+   --  reject when the expected type is Unsigned_16).
+   function U64_From_16 (A, B, C, D : Integer) return Unsigned_64 is
+      function U32 (Hi, Lo : Integer) return Unsigned_32 is
+      begin
+         return Shift_Left (Unsigned_32 (Hi), 16) or Unsigned_32 (Lo);
+      end U32;
+   begin
+      return Shift_Left (Unsigned_64 (U32 (A, B)), 32)
+         or Unsigned_64 (U32 (C, D));
+   end U64_From_16;
+
+   --  SplitMix64 finalizer. djb2 of a 3-byte shingle does not use the
+   --  high bits independently; without this mix, Hamming distance
+   --  collapses and unrelated English looks like a minor variation.
+   --  Constants are 9E3779B97F4A7C15, BF58476D1CE4E5B9, 94D049BB133111EB.
+   function Mix64 (X : Unsigned_64) return Unsigned_64 is
+      Z : Unsigned_64 :=
+         X + U64_From_16 (16#9E37#, 16#79B9#, 16#7F4A#, 16#7C15#);
+   begin
+      Z := (Z xor Shift_Right (Z, 30))
+         * U64_From_16 (16#BF58#, 16#476D#, 16#1CE4#, 16#E5B9#);
+      Z := (Z xor Shift_Right (Z, 27))
+         * U64_From_16 (16#94D0#, 16#49BB#, 16#1331#, 16#11EB#);
+      return Z xor Shift_Right (Z, 31);
+   end Mix64;
+
+   function Hash_Shingle (S : String) return Unsigned_64 is
+      H : Unsigned_64 := 5381;
    begin
       for C of S loop
-         H := H * 33 + Long_Long_Integer (Character'Pos (To_Lower (C)));
+         H := H * 33 + Unsigned_64 (Character'Pos (To_Lower (C)));
       end loop;
-      return H;
-   end Hash_String;
+      return Mix64 (H);
+   end Hash_Shingle;
+
+   function Hamming_Distance
+      (Left, Right : Unsigned_64) return Natural
+   is
+      Count : Natural := 0;
+   begin
+      for Bit in 0 .. 63 loop
+         if (Shift_Right (Left xor Right, Bit) and 1) = 1 then
+            Count := Count + 1;
+         end if;
+      end loop;
+      return Count;
+   end Hamming_Distance;
+
+   --  SimHash: per-bit majority vote over character 3-gram shingles.
+   --  Unsigned_64 arithmetic wraps, so no Constraint_Error is possible.
+   function SimHash (S : String) return Unsigned_64 is
+      Acc : array (0 .. 63) of Integer := [others => 0];
+      FP  : Unsigned_64 := 0;
+
+      procedure Accumulate (H : Unsigned_64) is
+      begin
+         for Bit in 0 .. 63 loop
+            if (Shift_Right (H, Bit) and 1) = 1 then
+               Acc (Bit) := Acc (Bit) + 1;
+            else
+               Acc (Bit) := Acc (Bit) - 1;
+            end if;
+         end loop;
+      end Accumulate;
+   begin
+      if S'Length = 0 then
+         return 0;
+      elsif S'Length < 3 then
+         Accumulate (Hash_Shingle (S));
+      else
+         for I in S'First .. S'Last - 2 loop
+            Accumulate (Hash_Shingle (S (I .. I + 2)));
+         end loop;
+      end if;
+
+      for Bit in 0 .. 63 loop
+         if Acc (Bit) > 0 then
+            FP := FP or Shift_Left (Unsigned_64'(1), Bit);
+         end if;
+      end loop;
+      return FP;
+   end SimHash;
 
    --  Contains_RCA_Language checks for root-cause analysis phrases.
    function Contains_RCA_Language (Content : String) return Boolean is
@@ -135,7 +211,7 @@ package body Vexometer.RCI is
    --  Count occurrences of a given hash in an attempt array.
    function Count_Hash
       (Attempts : Attempt_Array;
-       Target   : Long_Long_Integer) return Natural
+       Target   : Unsigned_64) return Natural
    is
       Count : Natural := 0;
    begin
@@ -151,7 +227,7 @@ package body Vexometer.RCI is
    --  Fingerprint_Attempt
    ---------------------------------------------------------------------------
 
-   function Fingerprint_Attempt (Content : String) return Long_Long_Integer
+   function Fingerprint_Attempt (Content : String) return Unsigned_64
    is
       --  Normalise content before hashing: lowercase and collapse
       --  whitespace to produce stable fingerprints for similar content.
@@ -183,7 +259,7 @@ package body Vexometer.RCI is
          return 0;
       end if;
 
-      return Hash_String (Normalised (1 .. Out_Idx));
+      return SimHash (Normalised (1 .. Out_Idx));
    end Fingerprint_Attempt;
 
    ---------------------------------------------------------------------------
@@ -192,57 +268,59 @@ package body Vexometer.RCI is
 
    function Classify_Recovery
       (Current_Attempt   : Attempt_Fingerprint;
-       Previous_Attempts : Attempt_Array) return Recovery_Behaviour
+       Previous_Attempts : Attempt_Array;
+       Content           : String := "";
+       Error_Severity    : Severity_Level := Medium) return Recovery_Behaviour
    is
       use Attempt_Vectors;
       Prev_Count : constant Natural := Natural (Length (Previous_Attempts));
    begin
-      --  No previous attempts: this is a first try, classify as
-      --  Strategy_Change (neutral baseline).
+      --  Structural cases first: identical content is never a variation,
+      --  even when the prose also contains recovery language.
+      if Prev_Count > 0 then
+         declare
+            Identical_Count : constant Natural :=
+               Count_Hash (Previous_Attempts, Current_Attempt.Hash);
+         begin
+            if Identical_Count >= 2 then
+               return Infinite_Loop;
+            elsif Identical_Count >= 1 then
+               return Identical_Retry;
+            end if;
+         end;
+      end if;
+
+      if Is_Premature_Surrender (Content, Prev_Count) then
+         return Premature_Surrender;
+      end if;
+
+      if Is_Appropriate_Escalation
+         (Content, Prev_Count, Error_Severity)
+      then
+         return Appropriate_Escalate;
+      end if;
+
+      if Contains_RCA_Language (Content) then
+         return Root_Cause_Analysis;
+      end if;
+
+      --  First attempt with no recovery language: neutral baseline.
       if Prev_Count = 0 then
          return Strategy_Change;
       end if;
 
-      --  Check for identical retry: same hash as any previous attempt
-      declare
-         Identical_Count : constant Natural :=
-            Count_Hash (Previous_Attempts, Current_Attempt.Hash);
-      begin
-         --  3+ identical hashes = infinite loop
-         if Identical_Count >= 2 then
-            return Infinite_Loop;
-         end if;
-
-         --  Exact duplicate of a previous attempt
-         if Identical_Count >= 1 then
-            return Identical_Retry;
-         end if;
-      end;
-
-      --  Check the most recent previous attempt for comparison
       declare
          Last : constant Attempt_Fingerprint :=
-            Element (Previous_Attempts,
-                     Natural (Length (Previous_Attempts)));
-         Hash_Diff : constant Long_Long_Integer :=
-            abs (Current_Attempt.Hash - Last.Hash);
+            Element (Previous_Attempts, Last_Index (Previous_Attempts));
+         Dist : constant Natural :=
+            Hamming_Distance (Current_Attempt.Hash, Last.Hash);
       begin
-         --  If hash difference is very small, it is a minor variation.
-         --  We use a heuristic threshold based on the magnitude of the
-         --  hash values.
-         if Hash_Diff < abs (Last.Hash / 100) then
+         if Dist <= Minor_Variation_Bits then
             return Minor_Variation;
-         end if;
-
-         --  Different strategy family indicates a strategy change
-         if Current_Attempt.Strategy_ID /= Last.Strategy_ID then
+         else
             return Strategy_Change;
          end if;
       end;
-
-      --  Default: minor variation if same strategy family but
-      --  different hash
-      return Minor_Variation;
    end Classify_Recovery;
 
    ---------------------------------------------------------------------------
@@ -255,7 +333,7 @@ package body Vexometer.RCI is
    begin
       for I in First_Index (Attempts) .. Last_Index (Attempts) loop
          declare
-            Current_Hash : constant Long_Long_Integer :=
+            Current_Hash : constant Unsigned_64 :=
                Element (Attempts, I).Hash;
             Count : Natural := 0;
          begin
@@ -394,9 +472,9 @@ package body Vexometer.RCI is
             --  Check if the very last attempt broke the loop
             --  (different hash from the repeated one)
             declare
-               Last_Hash : constant Long_Long_Integer :=
+               Last_Hash : constant Unsigned_64 :=
                   Element (Attempts, Count).Hash;
-               Second_Last_Hash : constant Long_Long_Integer :=
+               Second_Last_Hash : constant Unsigned_64 :=
                   Element (Attempts, Count - 1).Hash;
             begin
                if Last_Hash /= Second_Last_Hash then

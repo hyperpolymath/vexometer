@@ -220,7 +220,10 @@ most likely and must always be reported explicitly.
 
 |vex-confidence-calibrator |EFR
 |↑ LPS -- calibrated uncertainty language *is* hedge-word density, an
-explicit LPS component
+explicit LPS component. Hedge penalties do not apply to probes marked
+`unknowable` (METRICS.adoc LPS note;
+`Vexometer.Probes.Hedge_Penalty_Applies`). Full per-response wiring of
+that hook is a follow-up.
 
 |vex-specification-anchor |SFR, ICS
 |↑ SRS -- an immutable spec ledger rewards defending the original approach

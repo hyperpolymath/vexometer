@@ -112,6 +112,24 @@
       "examples": ["However, it's important to remember...", "However, it's also worth noting..."]
     },
     {
+      "id": "LPS-HEDGE-005",
+      "name": "Tentative Adverbs",
+      "regex": "(?i)\\b(perhaps|maybe|possibly|presumably)\\b",
+      "severity": "Low",
+      "weight": 0.4,
+      "explanation": "Tentative adverbs named by METRICS.adoc as hedge-word density. Common in calibrated answers; weight stays low so a single occurrence is not a high-severity finding.",
+      "examples": ["Perhaps the index is stale.", "Maybe the cache expired.", "It is possibly unrelated."]
+    },
+    {
+      "id": "LPS-HEDGE-006",
+      "name": "Possibility Hedging",
+      "regex": "(?i)it'?s possible (that|this)|\\bit may (well )?be\\b",
+      "severity": "Low",
+      "weight": 0.3,
+      "explanation": "Possibility framing METRICS.adoc lists as 'it's possible'. Matches that phrase and 'it may be' without treating every modal as a hedge.",
+      "examples": ["It's possible that the build failed.", "It may be a cache miss.", "It may well be transient."]
+    },
+    {
       "id": "LPS-CORPORATE-001",
       "name": "Leverage",
       "regex": "(?i)\\bleverage\\b(?!\\s+ratio)",

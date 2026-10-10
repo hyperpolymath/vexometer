@@ -11,6 +11,7 @@
 pragma Ada_2022;
 
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
+with Interfaces;
 
 package body Vexometer.Metrics is
 
@@ -250,18 +251,70 @@ package body Vexometer.Metrics is
    --  Compare_Models
    --
    --  Produces a structured comparison between two model profiles.
-   --  The model with lower Mean_ISA is deemed "better". Category wins
-   --  are determined per-category. Statistical significance is estimated
-   --  using a simple effect-size heuristic (ISA delta > combined std dev).
+   --  The model with lower Mean_ISA is deemed "better". Significance is
+   --  a 95% bootstrap percentile interval on the sample-mean difference
+   --  (B = 2000, fixed-seed LCG). Welch SE is the zero-variance short
+   --  circuit: when it is 0 every resample reproduces the observed delta.
+   --  Fewer than 2 samples on either side refuses inference.
    ---------------------------------------------------------------------------
+
+   --  Fixed-seed bootstrap. B and the LCG constants are part of the
+   --  contract: tests depend on the interval, not on a fresh draw.
+   Bootstrap_Draws : constant := 2_000;
+   LCG_Multiplier  : constant Interfaces.Unsigned_64 := 6364136223846793005;
+   LCG_Increment   : constant Interfaces.Unsigned_64 := 1442695040888963407;
+   LCG_Seed        : constant Interfaces.Unsigned_64 := 16#A11CE5EED#;
 
    function Compare_Models
       (Model_A : Model_Profile;
        Model_B : Model_Profile) return Comparison_Result
    is
-      Result          : Comparison_Result;
-      A_Better        : constant Boolean := Model_A.Mean_ISA <= Model_B.Mean_ISA;
-      Combined_StdDev : Float;
+      Result   : Comparison_Result;
+      A_Better : constant Boolean :=
+         Model_A.Mean_ISA <= Model_B.Mean_ISA;
+
+      function Sample_Count (P : Model_Profile) return Natural is
+      begin
+         return Natural (P.ISA_Samples.Length);
+      end Sample_Count;
+
+      function To_Array (P : Model_Profile) return Float_Array is
+         N : constant Positive := Positive (P.ISA_Samples.Length);
+         A : Float_Array (1 .. N);
+         I : Positive := 1;
+      begin
+         for V of P.ISA_Samples loop
+            A (I) := V;
+            I := I + 1;
+         end loop;
+         return A;
+      end To_Array;
+
+      function Mean_Of (Values : Float_Array) return Float is
+         Sum : Float := 0.0;
+      begin
+         for V of Values loop
+            Sum := Sum + V;
+         end loop;
+         return Sum / Float (Values'Length);
+      end Mean_Of;
+
+      --  Sample standard deviation (n - 1), not the population SD stored
+      --  on the profile.
+      function Sample_SD (Values : Float_Array) return Float is
+         N   : constant Float := Float (Values'Length);
+         Avg : Float;
+         SSD : Float := 0.0;
+      begin
+         if Values'Length < 2 then
+            return 0.0;
+         end if;
+         Avg := Mean_Of (Values);
+         for V of Values loop
+            SSD := SSD + (V - Avg) ** 2;
+         end loop;
+         return Float_Math.Sqrt (SSD / (N - 1.0));
+      end Sample_SD;
    begin
       if A_Better then
          Result.Better_Model := Model_A;
@@ -273,7 +326,6 @@ package body Vexometer.Metrics is
 
       Result.ISA_Delta := abs (Model_A.Mean_ISA - Model_B.Mean_ISA);
 
-      --  Determine per-category wins for the better model
       for Cat in Metric_Category loop
          if A_Better then
             Result.Category_Wins (Cat) :=
@@ -284,19 +336,114 @@ package body Vexometer.Metrics is
          end if;
       end loop;
 
-      --  Estimate statistical significance via effect-size heuristic:
-      --  significant if the ISA delta exceeds the combined standard
-      --  deviations (a rough proxy when sample sizes may vary)
-      Combined_StdDev := Model_A.Std_Dev_ISA + Model_B.Std_Dev_ISA;
-      if Combined_StdDev > 0.0 then
-         Result.Significant := Result.ISA_Delta > Combined_StdDev;
-         Result.Confidence  :=
-            Float'Min (1.0, Result.ISA_Delta / Combined_StdDev);
-      else
-         --  Zero variance in both models: any nonzero delta is significant
-         Result.Significant := Result.ISA_Delta > 0.0;
-         Result.Confidence  := (if Result.ISA_Delta > 0.0 then 1.0 else 0.0);
+      --  Fewer than two samples on either side: refuse to infer.
+      if Sample_Count (Model_A) < 2 or else Sample_Count (Model_B) < 2 then
+         declare
+            Signed : constant Float :=
+               Model_A.Mean_ISA - Model_B.Mean_ISA;
+         begin
+            Result.CI_Lower    := Signed;
+            Result.CI_Upper    := Signed;
+            Result.Significant := False;
+            Result.Confidence  := 0.0;
+         end;
+         return Result;
       end if;
+
+      declare
+         use Interfaces;
+         A_Vals   : constant Float_Array := To_Array (Model_A);
+         B_Vals   : constant Float_Array := To_Array (Model_B);
+         NA       : constant Positive := A_Vals'Length;
+         NB       : constant Positive := B_Vals'Length;
+         Observed : constant Float := Mean_Of (A_Vals) - Mean_Of (B_Vals);
+         SA       : constant Float := Sample_SD (A_Vals);
+         SB       : constant Float := Sample_SD (B_Vals);
+         SE       : constant Float := Float_Math.Sqrt
+            (SA * SA / Float (NA) + SB * SB / Float (NB));
+      begin
+         --  Zero Welch SE: every resample reproduces the observed delta.
+         if SE = 0.0 then
+            Result.CI_Lower := Observed;
+            Result.CI_Upper := Observed;
+            Result.Significant := Observed /= 0.0;
+            Result.Confidence := (if Observed /= 0.0 then 1.0 else 0.0);
+            return Result;
+         end if;
+
+         declare
+            State  : Unsigned_64 := LCG_Seed;
+            Deltas : Float_Array (1 .. Bootstrap_Draws);
+            Agree  : Natural := 0;
+
+            function Draw (N : Positive) return Positive is
+            begin
+               State := State * LCG_Multiplier + LCG_Increment;
+               --  High 32 bits: the low bits of this LCG have a short period
+               --  when reduced modulo a power of two.
+               return Positive
+                  (Shift_Right (State, 32) mod Unsigned_64 (N)) + 1;
+            end Draw;
+
+            function Percentile_Of (Sorted : Float_Array; P : Float)
+               return Float
+            is
+               Rank  : constant Float :=
+                  (P / 100.0) * Float (Bootstrap_Draws - 1);
+               Lower : constant Natural := Natural (Float'Floor (Rank));
+               Upper : constant Natural := Natural (Float'Ceiling (Rank));
+               Frac  : constant Float := Rank - Float'Floor (Rank);
+            begin
+               return Sorted (Sorted'First + Lower)
+                  + Frac * (Sorted (Sorted'First + Upper)
+                     - Sorted (Sorted'First + Lower));
+            end Percentile_Of;
+         begin
+            for B in Deltas'Range loop
+               declare
+                  Sum_A : Float := 0.0;
+                  Sum_B : Float := 0.0;
+               begin
+                  for K in 1 .. NA loop
+                     Sum_A := Sum_A + A_Vals (Draw (NA));
+                  end loop;
+                  for K in 1 .. NB loop
+                     Sum_B := Sum_B + B_Vals (Draw (NB));
+                  end loop;
+                  Deltas (B) := Sum_A / Float (NA) - Sum_B / Float (NB);
+               end;
+            end loop;
+
+            if Observed > 0.0 then
+               for D of Deltas loop
+                  if D > 0.0 then
+                     Agree := Agree + 1;
+                  end if;
+               end loop;
+            elsif Observed < 0.0 then
+               for D of Deltas loop
+                  if D < 0.0 then
+                     Agree := Agree + 1;
+                  end if;
+               end loop;
+            else
+               for D of Deltas loop
+                  if D = 0.0 then
+                     Agree := Agree + 1;
+                  end if;
+               end loop;
+            end if;
+
+            Sort (Deltas);
+            Result.CI_Lower := Percentile_Of (Deltas, 2.5);
+            Result.CI_Upper := Percentile_Of (Deltas, 97.5);
+            Result.Significant :=
+               not (Result.CI_Lower <= 0.0
+                  and then Result.CI_Upper >= 0.0);
+            Result.Confidence :=
+               Float (Agree) / Float (Bootstrap_Draws);
+         end;
+      end;
 
       return Result;
    end Compare_Models;

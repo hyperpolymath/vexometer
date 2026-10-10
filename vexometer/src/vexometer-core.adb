@@ -58,18 +58,16 @@ package body Vexometer.Core is
    --  yielding a value in [0, 100]. Lower is better.
    ---------------------------------------------------------------------------
 
-   function Calculate_ISA
-      (Findings : Finding_Vector;
-       Config   : Analysis_Config := Default_Config) return Float
+   function ISA_From_Category_Scores
+      (Scores : Category_Score_Array;
+       Config : Analysis_Config := Default_Config) return Float
    is
       Weighted_Sum : Float := 0.0;
       Total_Weight : Float := 0.0;
-      Cat_Scores   : constant Category_Score_Array :=
-         Calculate_Category_Scores (Findings, Config);
    begin
       for Cat in Metric_Category loop
          Weighted_Sum := Weighted_Sum +
-            Cat_Scores (Cat) * Config.Category_Weights (Cat);
+            Scores (Cat) * Config.Category_Weights (Cat);
          Total_Weight := Total_Weight + Config.Category_Weights (Cat);
       end loop;
 
@@ -78,6 +76,15 @@ package body Vexometer.Core is
       else
          return 0.0;
       end if;
+   end ISA_From_Category_Scores;
+
+   function Calculate_ISA
+      (Findings : Finding_Vector;
+       Config   : Analysis_Config := Default_Config) return Float
+   is
+   begin
+      return ISA_From_Category_Scores
+         (Calculate_Category_Scores (Findings, Config), Config);
    end Calculate_ISA;
 
    ---------------------------------------------------------------------------
@@ -125,9 +132,11 @@ package body Vexometer.Core is
          return Profile;
       end if;
 
-      --  Accumulate sums for mean computation
+      --  Accumulate sums for mean computation and keep the raw sample
+      --  so later comparison can resample rather than trust a summary.
       for A of Analyses loop
          ISA_Sum := ISA_Sum + A.Overall_ISA;
+         Profile.ISA_Samples.Append (A.Overall_ISA);
          for Cat in Metric_Category loop
             Sums (Cat) := Sums (Cat) + A.Category_Scores (Cat);
          end loop;
