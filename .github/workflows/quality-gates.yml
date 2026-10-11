@@ -42,22 +42,29 @@ jobs:
       - name: Run unified test gate
         # Failures are re-emitted as ::error:: annotations so they are visible
         # through the Checks annotations API (the only channel some environments
-        # can read) and in the PR UI — not buried in a log blob. Every annotation
-        # is self-describing (L<n>/<total>) so truncation or reordering by the
-        # API cannot hide the shape of the log.
+        # can read) and in the PR UI — not buried in a log blob. The API caps
+        # annotations per check at ~10, so lines are chunked several-per-message
+        # with %0A separators; each chunk is self-describing (CHUNK i/N with
+        # L<n> line numbers).
         run: |
           set -o pipefail
           just test-all 2>&1 | tee test-all.log || {
             status=$?
             total=$(grep -c '' test-all.log)
             echo "::error::just test-all exited ${status} — log has ${total} lines"
-            i=0
-            while IFS= read -r line; do
-              i=$((i+1))
-              [ -z "${line// /}" ] && continue
-              line="${line//'%'/'%25'}"
-              line="${line//$'\r'/'%0D'}"
-              printf '::error::L%04d/%04d| %s\n' "$i" "$total" "$line"
-            done < test-all.log
+            mapfile -t lines < <(grep -n '' test-all.log | sed 's/\r$//')
+            n=${#lines[@]}
+            chunk=5
+            chunks=$(( (n + chunk - 1) / chunk ))
+            c=0
+            while [ $((c * chunk)) -lt "$n" ]; do
+              c=$((c + 1))
+              msg=""
+              for line in "${lines[@]:c*chunk-chunk:chunk}"; do
+                line="${line//'%'/'%25'}"
+                if [ -z "$msg" ]; then msg="$line"; else msg="${msg}%0A${line}"; fi
+              done
+              printf '::error::CHUNK %d/%d| %s\n' "$c" "$chunks" "$msg"
+            done
             exit "${status}"
           }
