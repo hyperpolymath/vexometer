@@ -30,6 +30,9 @@ with Vexometer.Metrics;
 with GNAT.Regpat;
 with Interfaces;
 
+use type Interfaces.Unsigned_64;
+use type Vexometer.Probes.Answerability_Kind;
+
 procedure Test_Runner is
 
    ---------------------------------------------------------------------------
@@ -1213,7 +1216,10 @@ procedure Test_Runner is
          Values   : constant Sample_List := (20.0, 30.0, 40.0);
       begin
             for V of Values loop
-               Analyses.Append ((
+               --  Qualified aggregate: Ada cannot resolve an unqualified
+               --  aggregate when two Append overloads (Element_Type and
+               --  Vector, a-convec.ads) are both visible.
+               Analyses.Append (Response_Analysis'(
                   Model_ID        => To_Unbounded_String ("agg"),
                   Model_Version   => To_Unbounded_String ("1"),
                   Prompt          => To_Unbounded_String ("q"),

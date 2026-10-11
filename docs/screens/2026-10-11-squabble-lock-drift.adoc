@@ -1,0 +1,109 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
+= Squabble report — actions.lock drift cure (WS-0.1)
+:revdate: 2026-10-11
+:toc:
+
+Evidence for WS-0.1 of `docs/V1-ULTRAPLAN.adoc` (tracked as issue #110; the
+verification matrix names this report and the PR check log).
+
+== Gate state before
+
+[cols="1,3", options="header"]
+|===
+| Surface | State (2026-10-11 morning)
+
+| `Governance / Actions lockfile verify` | ✗ — the only failing Governance job
+| `Lock Sync Gate` | ✗
+| `Quality Gates` | `startup_failure` — the lock rejected the workflow before
+  any step ran (zero jobs)
+|===
+
+One root cause: `actions.lock` had drifted from the workflow YAML pins
+(Dependabot-era bumps):
+
+....
+quality-gates.yml     dtolnay/rust-toolchain@02cb101e…  vs YAML e2a55d2f… (= tag v1)
+push-email-notify.yml smtp-notify-action@22e7bdb3…      vs YAML c1c9fa07… (= tag v0.5.0)
+....
+
+== Gate state after (PR #118)
+
+*31/31 checks pass* — including all three surfaces above, green *by the checks
+actually running and passing*. No admin overrides; no dropped required
+contexts. (squabble ≠ bypass.)
+
+== Reconciliation method (honest)
+
+The `gh actions-lock` generator (`github/gh-actions-lock`) is a Go gh-extension
+whose release binaries are unreachable from the authoring sandbox (egress
+allowlist blocks `release-assets.githubusercontent.com`, and no Go toolchain or
+module proxy is available to build from source). The lock was therefore
+reconciled by hand *to generator format*, with every metadata field
+API-verified:
+
+* `dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f` — verified
+  commit; lightweight tag `refs/tags/v1` points at it (matches the YAML comment)
+* `hyperpolymath/smtp-notify-action@c1c9fa07992a02c1fd3d67a0dc1b08cccb852aef` —
+  verified commit; annotated tag `v0.5.0` resolves to it (matches the YAML
+  comment)
+* superseded pin entries removed; reusable-workflow closure entries (e.g.
+  `dtolnay/rust-toolchain@6c977a6…` via `hyperpolymath/standards`) untouched
+* local scripted check: every `uses:` pin in `.github/workflows/*.yml` is in
+  the lock, and every workflows-section pin has a dependency entry
+
+The gates themselves are the machine proof.
+
+== What the dead CI was hiding
+
+Quality Gates had not run since 2026-10-01 (17 `startup_failure` runs
+2026-10-02 → 2026-10-10). PR #109's Ada therefore merged *without ever being
+compiled*. To surface the compiler's verdict through the one channel reachable
+from the authoring sandbox, `quality-gates.yml` now re-emits `just test-all`
+failures as check annotations (chunked tail-first: the annotations API keeps
+roughly the first ten created). Four defects were found and fixed:
+
+[cols="1,3,2", options="header"]
+|===
+| # | Defect | Fix
+
+| 1
+| `Float_Array` declared in `vexometer-metrics.ads`'s *private* part, after
+  the public functions that use it (`Float_Array is undefined` at the first
+  signature)
+| Type moved to the visible part before `function Mean`
+
+| 2
+| Operator visibility in `test_runner.adb`: `=`/`/=` on
+  `Interfaces.Unsigned_64` and `=` on `Answerability_Kind` "not directly
+  visible"
+| `use type` clauses; same class preempted in `vexometer-metrics.adb`
+  (`use Interfaces` for the LCG arithmetic)
+
+| 3
+| Ambiguous `Append` call with an unqualified aggregate
+  (`a-convec.ads:471` Vector overload vs `:483` Element_Type overload — Ada
+  cannot resolve an aggregate when both candidates are visible)
+| Qualified `Response_Analysis'(...)` aggregate
+
+| 4
+| *Logic bug* in the bootstrap `Draw` of `Compare_Models`:
+  `Positive (x mod N) + 1` applied the conversion *before* `+ 1`, so any zero
+  draw raised `CONSTRAINT_ERROR : range check failed`. With
+  `Bootstrap_Draws = 2000` a crash was immediate.
+| `+ 1` moved inside the conversion; comment updated
+|===
+
+Defect 4 is exactly the class of bug the dead gate existed to catch: the
+scoring-correctness work of #109 shipped a comparison function that crashed on
+its first real run.
+
+== Final state
+
+`just test-all` runs green end-to-end on the PR: Ada (1,282 assertion
+executions), vext, lazy-eliminator, vexometer-efficacy, verbosity-compressor.
+All 31 PR checks pass.
+
+Follow-ups remaining in #110: WS-0.2 (panic-attack + pons-asinorum baselines),
+WS-0.3 (measured state snapshot).

@@ -1,0 +1,786 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell
+= V1 Ultraplan — irritation-surface.dev: the LM-Arena for LLM UX & cognitive ergonomics, with a Social Blade layer
+:revdate: 2026-10-11
+:toc: left
+:toclevels: 3
+:icons: font
+
+[cols="1,4"]
+|===
+| Status | *Ratified 2026-10-11 — D-1…D-7 ruled (see <<Owner decisions>>); execution begins at P0*
+| Scope | Product v1 + repository levelling + deployment on Verpex OpenLiteSpeed/Varnish
+| Supersedes | nothing (extends `docs/ISSUE-101-ULTRAPLAN.adoc`, which landed as PR #109)
+| Out of scope | Everything listed in <<Explicitly out of scope>>
+|===
+
+== The ask, restated
+
+Make this repository the premier online destination for *LLM user-experience and
+cognitive/information-ergonomics measurement* — an LM-Arena-style arena with a
+Social Blade-style public statistics layer — served under *irritation-surface.dev*,
+delivered *strictly* on the estate's own machinery: `rsr-template-repo` +
+`standards` compliance, the proven tests/benches discipline, `cicd-squabbler`
+for CI legitimacy, `panic-attack` and `pons-asinorum` as standing screens, full
+community health (issues, security/quality, rulesets, policies), and a
+deployment target of Verpex OpenLiteSpeed + Varnish with the estate's
+HTTP capability gateway and a consent-aware web posture.
+
+This document is the recon receipt and the plan to get there. Every claim about
+the current tree carries the file or command that produced it. Every claim about
+the future carries an acceptance test.
+
+== Deep recon — what is actually here (measured 2026-10-11)
+
+=== The asset: a working measurement instrument, not a website yet
+
+[cols="1,2,2", options="header"]
+|===
+| Component | What it is | Measured state
+
+| `vexometer/` (Ada 2022 + Idris2 ABI + Zig FFI)
+| *The ISA core.* 10-dimension metric model (`Metric_Category` in
+  `vexometer/src/vexometer-core.ads`: TII, LPS, EFR, PQ, TAI, ICS + CII, SRS,
+  SFR, RCI; 0–1 scale, lower is better per `docs/METRICS.adoc`), pattern engine
+  (GNAT.Regpat), behavioural probes, statistics (`vexometer-metrics.ads` with
+  `Pre` contracts; post-#101 `Compare_Models` carries Welch SE + bootstrap CI +
+  `CI_Lower`/`CI_Upper`), reports (JSON + SARIF), REST/JSON API surface
+  (`vexometer-api.ads`), CLI (`analyse`, `probe`, `compare`, `report`),
+  local-first provider list (Ollama, LM Studio, llama.cpp, LocalAI, Koboldcpp…).
+| 15,577 lines of `.ads/.adb/.idr/.zig`. 14 probes (CORRECTION-002 twin landed
+  in #109; `answerability` + `Hedge_Penalty_Applies` hook present in
+  `vexometer-probes.ads:172`), 29 patterns (17 LPS + 12 PQ across
+  `data/patterns/*.json`), scenario-set registry at
+  `vexometer/data/scenario_sets/registry.json`. Ada suite: 1,282 assertion
+  executions (52 static `Assert_True` sites per `grep -cE '^ *Assert_True'`),
+  2 benchmark suites.
+
+| `vexometer-efficacy/` (Rust)
+| The *executable half of EFFICACY-PROTOCOL.adoc* (protocol v2.1): `G_m`,
+  collateral deltas, `D_ISA`, capability proxy, six-verdict acceptance rule
+  (rulings a1–f1 from issue #69), `vexometer-efficacy-v2` reports,
+  `vexometer-frontier-v1` records under a monotone-frontier invariant, `lift`,
+  `validate`.
+| 2,519 lines; 15 tests; *doc-as-fixture*: integration tests parse
+  `EFFICACY-PROTOCOL.adoc`'s example JSON and require value-for-value
+  reproduction (`D_ISA = -2.71`). This is the estate's `Doc == tool` ratchet
+  and it must extend to everything the website prints.
+
+| `vext/` (Rust + Nickel + Idris2)
+| Verifiable, Extensible Communications Protocol — cryptographic proof of
+  algorithmic neutrality; `vext-core` + `vext-tools` CLI; `config.ncl` trust
+  parameters; Groove-compatible service manifest already staged at
+  `www/.well-known/groove/manifest.json` (capabilities: `/api/verify`,
+  `/api/feed/verify`, `/api/chain`, attestation).
+| 3,208 lines; 36 tests. Neutrality proofs ~25% (TOPOLOGY estimate). One open
+  template defect: `vext/src/abi/Layout.idr` still contains `{{PROJECT}}`
+  (PROOF-NEEDS.adoc Tier 2).
+
+| `lazy-eliminator/` (Rust)
+| Completeness enforcer: stubs, ellipses, TODO placeholders, truncation —
+  i.e. `Completion_Integrity` (CII) as code. The satellite nearest production.
+| 2,774 lines; 55 tests (unit+e2e+property+aspect) + Criterion benches;
+  CRG C→B achieved with *external* targets (protocol-squisher, panic-attacker,
+  boj-server) per TEST-NEEDS.adoc.
+
+| `verbosity-compressor/` (Rust)
+| First satellite scaffolded from `satellite-template`: semantic redundancy /
+  filler stripping — the *information-density* ergonomic, directly in scope for
+  the product.
+| 687 lines; wired into `just test-all`.
+
+| `vext-email-gateway/` (Rust)
+| Email bridge for Vext. Explicitly prototype-stage; correctly *excluded* from
+  `test-all` with an honest message in the Justfile.
+| 2,368 lines. Not v1-critical; keep parked.
+
+| Docs / governance surface
+| README, EXPLAINME ("show me the receipts"), TOPOLOGY completion dashboard,
+  PROOF-NEEDS, TEST-NEEDS, NAMING policy, GOVERNANCE, CODE_OF_CONDUCT,
+  CONTRIBUTING, SECURITY, MAINTAINERS, QUICKSTARTs, `docs/ISSUE-101-ULTRAPLAN`,
+  `docs/letter_lmsys_arena.adoc` (the LM-Arena pitch — continuity with this
+  plan), `docs/compliance/ACCESSIBILITY.adoc` (WCAG 2.1 AA target, status
+  *Partial*).
+| Community profile: *100%*. 48 labels + `label-triage.yml` jq classifier
+  (additive-only, silent-when-unsure), `labels.yml` sync, `dependabot.yml`,
+  `CODEOWNERS`, `SECURITY.adoc`, org-level CODE_OF_CONDUCT + PR template.
+|===
+
+=== The estate machinery this repo already dogfoods
+
+*Trust & invariants*: `contractile.just` + per-component `contractiles/`
+(Mustfile/Intentfile/Dustfile…), `scripts/run-must-gates.sh`, trust manifests
+(`scripts/trust/*.sh`, `.trust/trust-manifest.sha256` per component), verified
+in `quality-gates.yml` on every PR.
+*CI*: 14 workflows under `.github/workflows/` with the estate's
+`actions.lock` pin-file + `lock-sync-gate.yml` (whose own header documents that
+39/200 repos surveyed on 2026-09-22 had silently dead CI from lock drift),
+CodeQL (actions), Hypatia scan, Secret Scanner (gitleaks via standards
+reusable), Governance (13 jobs from `hyperpolymath/standards`), mirror +
+instant-sync to the forge farm, GitHub Pages.
+*Rulesets (branch/tag)*: `Base`, `Immutable-Tags`, `Require-Linear-History`,
+`Require-Signed-Commits`, `Secret-Scan-Floor` — all active.
+
+=== The live red — one root cause, three red surfaces (fix first)
+
+....
+$ # YAML pins vs actions.lock pins:
+quality-gates.yml    dtolnay/rust-toolchain@e2a55d2f…   | lock: 02cb101e…   → DRIFT
+push-email-notify.yml smtp-notify-action@c1c9fa07…      | lock: 22e7bdb3…   → DRIFT
+....
+
+Consequences observed on `main` (2026-10-11):
+
+* `Governance / Actions lockfile verify` ✗ — the *only* failing Governance job
+  (10 of 13 green, 2 skipped ratchets);
+* `Quality Gates` → `startup_failure` (the lock rejects the workflow before any
+  step runs — zero jobs);
+* `Lock Sync Gate` ✗ on PRs — correctly flagging the same drift.
+
+Everything else on `main` is green: CodeQL, Hypatia, Secret Scanner, Mirror,
+Pages, BoJ trigger. This is *exactly* the failure class `cicd-squabbler` exists
+to drive to a legitimate green (its `fight` taxonomy covers pin drift /
+required-context reconcile; `squabble ≠ bypass` is SPARK-proved). This is the
+first squabble.
+
+=== Gap register (what v1 needs that is not here yet)
+
+[cols="1,3,2", options="header"]
+|===
+| # | Gap | Evidence
+
+| G1
+| `actions.lock` drift → Quality Gates dead on `main`.
+| Above; `gh run list` 2026-10-11.
+| G2
+| No issue templates/forms (`issue_template: null` in community profile).
+  0 open issues — the backlog is empty, not "done".
+| `gh api repos/…/community/profile`.
+| G3
+| `READINESS.md` missing, yet `just crg-grade` / `crg-badge` parse it
+  (dead recipes, CRG grade "X").
+| `Justfile` lines 205+; `test -f READINESS.md` → missing.
+| G4
+| `stapeln.toml` is stale/wrong: its toolchain layer installs *Julia* and runs
+  `julia --project=.` — this is an Ada/Rust monorepo. The container story is
+  untrustworthy as committed.
+| `stapeln.toml` `[layers.toolchain]`/`[layers.build]`.
+| G5
+| No web product: `site/` is one hand-authored page (casket-ssg died in CI,
+  issue #74), `www/` holds only the groove well-known manifest. No arena, no
+  leaderboard, no profiles, no API serving, no consent layer.
+| `ls site/ www/`.
+| G6
+| No reproducible *runs* corpus: the README table is illustrative only (issue
+  #101 forced the honesty note); there is no dated, repeated, interval-bearing
+  public measurement set to rank models from.
+| `vexometer/README.adoc` post-#101 note; no `runs/` dataset anywhere.
+| G7
+| Formal posture thin where it matters for a public scoreboard: no `SPARK_Mode`
+  anywhere, 4 runtime `Pre` contracts total, vext `Layout.idr` unresolved
+  `{{PROJECT}}`, neutrality proofs ~25%.
+| PROOF-NEEDS.adoc.
+| G8
+| Estate levelling incomplete vs `rsr-template-repo` template surface: no
+  `CITATION.cff`, no `*.deed` metadata, no `coordination.k9.ncl`, no
+  `repo-map`/`validate-repo-map`, no `mise.lock` pin-file at root, no
+  OpenSSF/Sonar/Scorecard badges claimed at repo level.
+| `gh api repos/hyperpolymath/rsr-template-repo/contents` vs repo root.
+| G9
+| `panic-attack` and `pons-asinorum` are dogfooded *ad hoc* (`just assail`;
+  historical issue #20) but not standing CI screens with tracked findings.
+| `Justfile` `assail:` best-effort echo fallback.
+| G10
+| Two Pages workflows (`pages.yml` Ddraig SSG and `casket-pages.yml` prebuilt)
+  share concurrency group `pages` — one blocks the other.
+| `.github/workflows/{pages,casket-pages}.yml`.
+| G11
+| Naming axis spans three brands (vexometer / ISA / irritation-surface.dev)
+  with a NAMING policy for two of them. The web property needs an explicit
+  place in `NAMING.adoc`.
+| `NAMING.adoc`.
+| G12
+| Accessibility target WCAG 2.1 AA is *Partial*; the product vision (cognitive
+  ergonomics) cannot ship with a11y as an afterthought.
+| `docs/compliance/ACCESSIBILITY.adoc`.
+|===
+
+== The product: irritation-surface.dev v1
+
+=== Positioning
+
+Capability leaderboards (MMLU, HumanEval, Arena Elo) answer *what models can
+do*. Nothing premier answers *what it feels like to work with them* — time
+waste, sycophancy, hedging, paternalism, hallucination, refusal theatre,
+attention intrusion, information density, completion integrity, recovery
+competence. That is ISA's ten dimensions, and the letter to LMSYS
+(`vexometer/docs/letter_lmsys_arena.adoc`) already made the case. v1 is that
+case, owned and operated under irritation-surface.dev.
+
+Three public surfaces, one honesty spine:
+
+[cols="1,3,3", options="header"]
+|===
+| Surface | What it is | Estate-native anchor
+
+| *1. The Arena*
+| Blind head-to-head *experience battles*: two anonymised models get the same
+  probe/scenario set; the user votes on ergonomics criteria (respect for time,
+  information density, calibration, non-paternalism, coherence); automated ISA
+  pre-scores are revealed *after* voting. Bradley–Terry/Elo per dimension and
+  overall. Anti-gaming: rate limits, vote provenance (Vext-verifiable where
+  opted in), anomaly flags, dispute flow via issues.
+| Probe suite + scenario-set registry (`f1` provenance ruling),
+  `vexometer-trace-v1`, efficacy validator as the score oracle.
+
+| *2. The Observatory (leaderboard)*
+| Sortable ISA leaderboard: overall + 10 dimensions, *every number dated, with
+  repeats and confidence intervals* (the post-#101 reproducibility doctrine
+  made product law). Methodology page states formula + weights; a
+  `Doc == tool` test enforces site numbers recompute from `Calculate_ISA`.
+| `Compare_Models` (Welch + bootstrap CI), METRICS.adoc weights, the
+  issue-101 exact-value test pattern.
+
+| *3. Social Blade layer (profiles & grades)*
+| Per-model public "channel" pages: letter grades per dimension (fixed,
+  published score→grade bands), irritation rank + 30/90-day trend charts
+  (static SVG), growth/regression deltas, verified-run badges (trust-manifest
+  hashes), run history, an embeddable badge + public JSON, and *satellite
+  efficacy pages* (which interventions measurably move which metrics, via
+  `vexometer-efficacy-v2` frontier records) — the "channels" of the
+  intervention ecosystem.
+| Trust manifests, frontier records, SARIF/JSON reports, groove manifest
+  feed-verification capability.
+|===
+
+=== Product principles (non-negotiable)
+
+. *Reproducible or unpublished* — every leaderboard number is a dated run with
+  N repeats and an interval; snapshots are content-addressed and re-derivable.
+. *Consent-aware web* — no tracking, no third-party scripts, no consent banner
+  theatre: nothing to consent *to*. Where the AIBDP / HTTP 430 posture from
+  `metadatastician/consent-aware-web` (ADR-005) applies, the site dogfoods it
+  at `/.well-known/aibdp.json`. Votes require no account; local-first providers
+  preferred; TAI is measured *on ourselves*.
+. *Heuristic ≠ proof* — pons-asinorum's honesty rule applied to the product:
+  pattern-based findings are labelled as heuristic evidence tiers; human-eval
+  numbers carry inter-rater stats; nothing is dressed as formal.
+. *Ergonomics of the site itself* — WCAG 2.2 AA minimum (stretch the existing
+  target from 2.1), fast static-first pages under Varnish, readable information
+  density (the site must pass its own verbosity/ergonomics review).
+. *Open method, open data* — probe suites, weights, grade bands, and run
+  snapshots are versioned in-repo; disputes are issues.
+
+=== Target architecture
+
+....
+                         ┌────────────────────────────────────────────┐
+  browsers  ───────────▶ │  Varnish (Verpex edge cache)               │
+                         │  consent-aware cache classes; no cookies   │
+                         └───────────────┬────────────────────────────┘
+                                         ▼
+                         ┌────────────────────────────────────────────┐
+                         │  OpenLiteSpeed (origin, TLS/HTTP3)         │
+                         └───────────────┬────────────────────────────┘
+                                         ▼
+                         ┌────────────────────────────────────────────┐
+                         │  http-capability-gateway (verb governance)  │
+                         │  GET/HEAD public; POST only /api/vote,      │
+                         │  /api/submit; everything else stealth-404  │
+                         └───────┬───────────────────────┬────────────┘
+                                 ▼                       ▼
+                 ┌────────────────────────┐   ┌───────────────────────────┐
+                 │ Static site (OLS)      │   │ ISA API (small, boring)   │
+                 │ leaderboard, profiles, │   │ vote intake, run lookup,  │
+                 │ methodology, badges,   │   │ badge/JSON endpoints      │
+                 │ /.well-known/*         │   └──────────┬────────────────┘
+                 └────────────────────────┘              ▼
+                                         ┌───────────────────────────────┐
+                                         │ Run corpus + arena records    │
+                                         │ (content-addressed JSON:      │
+                                         │  vexometer-trace-v1,          │
+                                         │  vexometer-efficacy-v2,       │
+                                         │  votes w/ provenance)         │
+                                         └───────────────┬───────────────┘
+                                                         ▼
+                    ┌──────────────────────────────────────────────────────┐
+                    │ Measurement plane (CI + scheduled runners)           │
+                    │ Ada ISA CLI + vexometer-efficacy + lazy-eliminator    │
+                    │ probes → traces → aggregates → site data → snapshots │
+                    └──────────────────────────────────────────────────────┘
+....
+
+Deployment notes: Verpex gives OpenLiteSpeed + Varnish; the estate piece is
+`hyperpolymath/http-capability-gateway` (Elixir/OTP 27 — the canonical name;
+the "http-capability-server" of the request maps to this repo). If a
+lighter edge is needed at v1, the *policy* still ships: a verb-governance spec
+checked into this repo (`deploy/verb-governance.ncl` or TOML) enforced either
+by the gateway in front of OLS or by OLS rewrites + Varnish VCL with the same
+declarative rules — the governance model is the deliverable, the binary is
+swappable (<<Owner decisions>> D-4). Containers: fix `stapeln.toml` (G4) or
+deploy static + a single VM service; reproducibility via the trust manifests
+either way.
+
+== Binding estate constraints (from standards + rsr-template-repo)
+
+. *Licence/SPDX Manual-Only* — new files born with correct SPDX (docs
+  `CC-BY-SA-4.0`, code/tests `MPL-2.0`); no header sweeps of existing files.
+. *A2ML is retired* — no new `.a2ml` files, no new A2ML content. Legacy
+  `.machine_readable/6a2/` stays as-is; new machine-readable state goes in the
+  current formats the standards registry names.
+. *Language policy* — no Python, no TypeScript. Ada is legacy-but-maintained
+  (fix in place, no new pure-Ada projects). New web/server code: Rust
+  (already the house default), Elixir for the gateway integration tests where
+  the gateway itself is exercised; Idris2/Zig where ABI seams demand it; the
+  static site is HTML/CSS + minimal JS only where the arena vote UI needs it,
+  and that JS is hand-written, dependency-free, and consent-aware.
+. *Trust manifests* — any edit to hashed files regenerates manifests in the
+  same change (`just trust-generate`); `run-must-gates.sh` verifies.
+. *Conventional commits* — feed the changelog workflow (`fix(data):`,
+  `feat(arena):`, `docs(plan):` …).
+. *Doc == tool* — numbers printed anywhere (README, site, badges) are enforced
+  by exact-value tests (efficacy #69 ruling).
+. *Stopping rule* (issue #96) — pre-existing reds are issues, not merge
+  blockers; G1 is now the named one and gets closed in P0.
+. *Readiness grades* — ARG/FRG/CRG/TRG from `standards`; this repo tracks CRG
+  (G3) and the new web components get TRG evidence (toolchain) + CRG evidence
+  (tests per taxonomy).
+
+== Estate tooling — strictly, per the request
+
+[cols="1,2,3", options="header"]
+|===
+| Tool | Role here | How it is wired (acceptance)
+
+| `cicd-squabbler`
+| *The CI legitimacy engine.* First squabble: G1 lock-drift cure (propose the
+  re-pin / regenerate `actions.lock` with `gh actions-lock`, apply, verify
+  green legitimately). Then: standing `squabble fight` after every red, and
+  `squabble chains` before any reusable-workflow pin bump (upstream-first
+  landing order, dead-upstream detection).
+| P0 closes G1 with squabbler-run evidence in the PR; a documented
+  `just squabble` recipe (or CI job `workflow_dispatch`) keeps it attachable.
+  Green must never be an override — the squabbler's own invariant, ours by
+  adoption.
+
+| `panic-attack`
+| *Breadth screen* (49 languages, security/panic weak points, stress
+  scenarios). Pre-commit `assail` (already in Justfile) + *scheduled deep scan*
+  (monthly) + a pre-release full-stress pass over the web API in P5.
+| Findings tracked as issues (label `security`, `panic-attack`), SARIF where
+  offered; no silent `|| echo "not found"` in CI — CI installs or explicitly
+  skips with a recorded waiver.
+
+| `pons-asinorum`
+| *Depth screen*: dead work, self-contradiction, missing escape hatches —
+  exactly the failure modes a public leaderboard must not ship (contradictory
+  claims between site and docs; un-exit-able loops in the runner; computed
+  then ignored work). `pons scan` over `vexometer/`, `vexometer-efficacy/`,
+  web sources at P1 baseline, then per-PR on changed paths.
+| Baseline report committed under `docs/screens/` (dated, honest labels);
+  new findings block only at "proof" evidence tier; heuristic tiers warn.
+
+| `standards` + `rsr-template-repo`
+| The compliance spine: governance reusable (already), deed/k9/contractiles
+  metadata, repo-map + `validate-repo-map`, readiness-grade machinery, badges
+  (OpenSSF Best Practices / Scorecard / Sonar where feasible).
+| `just validate`-equivalent checks pass for every RSR surface this repo
+  claims; the gap list G8 is worked to zero-or-waived with named waivers.
+
+| `proven` / Idris2 ABI discipline
+| The ABI seam `vexometer/src/abi/` already has zero escape hatches
+  (PROOF-NEEDS inventory). The web API's wire types get the same treatment:
+  Idris2 spec of the JSON schema for run snapshots and vote records.
+| `git grep -nE 'believe_me|assert_total|postulate|sorry|Admitted'` stays
+  empty for ABI dirs; schema tests validate examples against the spec.
+
+| `vext` + trust manifests
+| Provenance spine for the Social Blade "verified run" badges and optional
+  vote attestations; groove manifest already staged in `www/.well-known/`.
+| Badge JSON carries manifest digest; `just trust-manifest-verify` gates it.
+|===
+
+== Workstreams and phases
+
+=== P0 — Heal and baseline (the week of green)
+
+*WS-0.1 — Close G1 via cicd-squabbler.* +
+Run `squabble fight` against the repo's gates; enact the lock-drift self-win:
+regenerate `.github/workflows/actions.lock` from the current YAML
+(`gh actions-lock`), verify `Governance / Actions lockfile verify`,
+`Lock Sync Gate`, and `Quality Gates` all go green *by running the checks*.
+No pin is edited without the lock regenerating in the same change. +
+Acceptance: three green surfaces on `main`; squabbler report attached to the
+closing issue; `workflow-linter` green.
+
+*WS-0.2 — Baseline the screens.* +
+Run `panic-attack assail .` and `pons scan .` on the current tree; commit dated
+reports under `docs/screens/2026-10-…`; open issues for every Critical/High
+panic-attack finding (echo of issue #20's Track C discipline) and every
+pons "proof"-tier finding. +
+Acceptance: reports committed; findings numbered and labelled; zero untracked
+Criticals.
+
+*WS-0.3 — Baseline the numbers.* +
+Snapshot the measured corpus this plan cites (test counts, assertion sites,
+lines, probe/pattern counts) into `.machine_readable/` in a current-format
+state file, each figure with its command (the STATE.a2ml convention, minus
+A2ML). Update TOPOLOGY's stale rows (13→14 probes) in the same change. +
+Acceptance: `TOPOLOGY.adoc` and the state file agree; commands reproduce
+figures.
+
+=== P1 — Repository levelling (RSR + community health)
+
+*WS-1.1 — G2: issue forms + milestones.* +
+Add issue forms (bug, metric-claim/dispute, model-run dispute, satellite
+proposal, owner-ruling, security — security routes to `SECURITY.adoc`); create
+milestones `v0.2-heal`, `v0.3-observatory`, `v0.4-arena`, `v0.5-hardening`,
+`v1.0`; file the epic issues from this plan (one per workstream, linked).
+Acceptance: `issue_template` non-null in community profile; every WS below has
+an issue.
+
+*WS-1.2 — G3: `READINESS.md` + CRG grade.* +
+Adopt the standards' CRG format; grade honestly (current evidence: tests +
+benches exist for lazy-eliminator and Ada core; the new web components grade
+later). Wire `just crg-grade`/`crg-badge` to reality. Acceptance: badge prints
+a non-X grade backed by named evidence.
+
+*WS-1.3 — G8: RSR surface adoption.* +
+`CITATION.cff`, deed metadata, `coordination.k9.ncl`, repo-map + validation,
+root `mise.lock`, README badge row (OpenSSF Best Practices claim link already
+in README points at a "new project" URL — replace with the real project id or
+file the registration). Waive-with-name anything genuinely inapplicable.
+Acceptance: template `just validate` checklist green or waiver-listed.
+
+*WS-1.4 — G4 + G10: build/deploy hygiene.* +
+Fix `stapeln.toml` to the actual Ada/Rust stack (or retire it in favour of the
+deployment reality in P4, recorded in the same doc G4 cites); resolve the
+dual-Pages-workflow collision (keep `casket-pages.yml` as the deployer of the
+committed artifact per its owner ruling; demote `pages.yml` or give it distinct
+paths). Acceptance: `just doctor` clean on build tooling; exactly one Pages
+producer.
+
+*WS-1.5 — G11: naming.* +
+Extend `NAMING.adoc` with the web property: *irritation-surface.dev* is the
+public web property; ISA is the product name; `vexometer` remains compatibility
+identifiers. Acceptance: NAMING.adoc updated; README first-mention rule holds.
+
+=== P2 — Measurement v2 (the scoreboard's credibility)
+
+*WS-2.1 — Run harness.* +
+A versioned runner that executes the 14-probe suite + scenario sets against a
+model endpoint with N repeats, seeds where supported, timestamps, and emits
+`vexometer-trace-v1` bundles; aggregates through `ISA_Calculator` +
+`Compare_Models` (bootstrap CIs already exist). This is the missing G6 corpus.
+Acceptance: one public run bundle per reference model (start: 3 local models
+via Ollama, 2 API models with explicit consent) re-derives its aggregate via
+`vexometer-efficacy validate`-style recomputation.
+
+*WS-2.2 — Benchmarks (the "benches" discipline).* +
+Existing: Ada pattern/CII suites, Criterion detection_bench. Add: scoring
+throughput bench, harness wall-time bench, JSON report generation bench, and a
+*regression gate* (bench history compared, warn on >10% regression). Acceptance:
+`just bench-all` covers all; numbers land in the state file with commands.
+
+*WS-2.3 — Doc == tool for every printed number.* +
+Generalise the issue-101 table test: a single test module recomputes every
+number the site will render (ISA, grades, deltas) from raw aggregates.
+Acceptance: editing a rendered number without recomputation fails `just test`.
+
+*WS-2.4 — Grade bands + rank rules (Social Blade math).* +
+Publish the ruled scheme (D-2): fixed score→grade bands are canonical
+(A ≤0.15, B ≤0.30, C ≤0.45, D ≤0.60, F >0.60 on the 0–1 lower-is-better
+scale — cut points to be confirmed against the run corpus in WS-2.1 before
+freezing) *plus* a percentile letter line (rank-relative per epoch, labelled
+relative). Rank/tie rules land in `docs/METRICS.adoc` (or a new
+`docs/GRADES.adoc`); both letter systems are pure functions with exhaustive
+boundary tests. Acceptance: boundary tests green for both; site renders both
+with the fixed band marked canonical.
+
+=== P3 — Observatory v0 (static-first; ships before any vote UI)
+
+*WS-3.1 — Site generator path.* +
+Per D-3, the generator is *ddraig-ssg* (Idris2, WCAG 2.2 AAA capable, already
+CI-referenced by `pages.yml`). Spike first: its build must complete inside the
+5-minute CI budget on a cold cache; if it cannot after a fair spike, fall back
+to a small Rust generator (house language) — hand-authoring does not scale past
+v0. Per the casket-ssg ruling (#74), whatever generator is chosen must build
+reliably in CI; the output contract (committed artifact vs build-on-CI) is
+settled in the spike and recorded by updating `site/README.adoc`.
+Acceptance: full site builds in < 5 min in CI and locally; output is diffable;
+contract documented.
+
+*WS-3.2 — Pages.* +
+Leaderboard, per-model profiles (grades, trends, run history, verified badges),
+methodology (formula, weights, grade bands, intervals doctrine), data page
+(dump + schema), about/charter. Static SVG charts; zero third-party assets.
+Acceptance: Lighthouse-style budgets enforced by a self-hosted check (no
+third-party beacons at all — verified by `curl` + grep of the artifact);
+WCAG 2.2 AA audit checklist in `docs/accessibility/` signed off.
+
+*WS-3.3 — Public API + badges.* +
+`/api/leaderboard.json`, `/api/model/{id}.json`, `/api/badge/{id}.svg` served
+static (generated), versioned (`/api/v1/…`), with schema + Idris2 spec of wire
+types. Groove manifest updated to advertise the real endpoints.
+Acceptance: schema tests + example fixtures; badge renders from the same
+recompute path as WS-2.3.
+
+*WS-3.4 — Consent-aware posture.* +
+`/.well-known/aibdp.json` (dogfooding `metadatastician/consent-aware-web`),
+privacy page stating zero-tracking architecture, vote anonymity model, data
+retention; TAI self-score published on the about page. Acceptance: the site's
+own TAI measurement is computed by the tool and published with a run bundle.
+
+=== P4 — Arena v0
+
+*WS-4.1 — Battle mechanics (D-1: pairwise only at v1; D-5: Bradley–Terry).* +
+Pairwise blind prompts from the scenario registry; anonymised A/B; vote on
+ergonomics criteria; reveal + ISA profile; Bradley–Terry update per dimension +
+overall, computed server-side and presented as an Arena-style rating, with
+published scale and uncertainty. Acceptance: property tests — vote totals
+conserve; ratings are deterministic given the same vote log; anonymisation
+holds in all rendered assets (grep test on model ids in pre-reveal HTML).
+
+*WS-4.2 — Integrity.* +
+Rate limits at the gateway (verb + per-IP budget in VCL/gateway policy), vote
+provenance records (anonymous session tokens; optional Vext attestation),
+anomaly detection (vote-velocity, ballot stuffing) reported like Social Blade's
+"authenticity" flags — *heuristic, labelled as such*. Dispute flow = issue
+form + public resolution log. Acceptance: chaos tests (panic-attack scenario
+scripts) demonstrate the rate limit and the flag fire; pons scan finds no
+contradiction between stated and enforced policy.
+
+*WS-4.3 — Submission path for model maintainers.* +
+`/api/submit` (POST, capability-gated) accepting endpoint definitions +
+consent record; human review queue (issues); reproducibility requirement: a
+submitter's run must re-derive within tolerance on our harness.
+Acceptance: one external submission end-to-end (use an estate model endpoint).
+
+=== P5 — Deployment (Verpex) + hardening
+
+*WS-5.1 — The stack.* +
+Per D-4: Verpex OpenLiteSpeed origin + Varnish edge, with the *policy spec*
+carrying the capability model at v1 — declarative verb governance enforced as
+config (OLS rewrites + VCL + headers): GET/HEAD public, POST only `/api/vote`
+and `/api/submit`, everything else stealth-404; cache classes: public static =
+long cache + stale-while-revalidate, API GET = short, POST = pass,
+never cookie-cache. The `http-capability-gateway` binary stays a drop-in
+follow-up (the spec is written so it can take over enforcement unchanged).
+TLS/HTTP3 via OLS; HSTS; CSP with *no* third-party origins.
+Acceptance: a `deploy/` directory with the OLS/VCL configs + verb-governance
+spec, a documented bring-up runbook, and a post-deploy checklist (headers,
+verbs, cache hit ratios, consent paths).
+
+*WS-5.2 — Estate-style ops evidence.* +
+SBOM for the API artifact (spdx-json per stapeln convention), trust-manifest
+of deployed static assets, uptime/latency budget (p95 < 200 ms for static at
+edge), panic-attack stress profile against the deployed API, pons scan of
+deploy scripts. Acceptance: dated ops report in `docs/screens/`; OpenSSF
+Best Practices entry submitted (the README badge already claims the intent).
+
+*WS-5.3 — Accessibility + ergonomics release bar.* +
+WCAG 2.2 AA verified on every page type (D-3's generator choice makes or
+breaks this); readability + information-density self-review (dogfood
+verbosity-compressor on our own copy); keyboard/AT spot checks documented.
+Acceptance: `docs/compliance/ACCESSIBILITY.adoc` moves Partial → Verified with
+dated evidence.
+
+=== P6 — v1.0 release
+
+*WS-6.1 — Launch gate.* +
+Definition of Done below, executed verbatim; squabbler report on final CI
+state; screeners clean at proof tier; all epics closed or explicitly deferred
+with owner rulings; CHANGELOG + tagged release (immutable tags ruleset);
+announcement via the forge-farm sync (already wired).
+
+*WS-6.2 — Post-v1 standing work (not blocking).* +
+Satellite efficacy pages as first-class Social Blade channels; API-model
+consent workflow at scale; vext-email-gateway revisit; neutrality-proof
+completion; SPARK contracts on `ISA_Calculator` (the scoreboard's math is the
+right place to spend proof effort).
+
+== Community health & policy package (consolidated)
+
+*Issue taxonomy* (forms + labels already half-built): `bug`, `metric-claim`,
+`run-dispute`, `arena-integrity`, `satellite-proposal`, `owner-ruling`,
+`docs`, `security` (private channel per SECURITY.adoc). The `label-triage.yml`
+classifier needs the new form prefixes added to its jq rules (additive-only
+already guaranteed).
+
+*Security/quality*: CodeQL (actions) extended to the API's language surface as
+it lands (Rust/Elixir); Hypatia + Secret Scanner + `Secret-Scan-Floor`
+ruleset (all present); dependabot present — add the `deploy/` config paths;
+`panic-attack` scheduled; `pons-asinorum` per-PR on changed paths.
+
+*Rulesets/policies*: keep the five active rulesets; once P0 lands, add
+`Quality Gates` + `Lock Sync Gate` + `Governance` to the required checks via
+the ruleset API (this is a listed cicd-squabbler self-win —
+`required-context reconcile` — so the squabbler should enact it, not a human
+with admin). Branch: linear history + signed commits already enforced.
+
+*Governance*: GOVERNANCE.adoc + MAINTAINERS already exist; add a short
+"measurement disputes" clause: how a lab contests a score, SLA for response,
+and the re-run protocol (any disputant gets a re-run on the published harness
+with published bundle).
+
+== Verification matrix (claim → proof)
+
+[cols="1,2,2", options="header"]
+|===
+| Claim | Proof | Where it lives
+
+| CI is legitimately green
+| squabbler report; all required checks ran and passed; no overrides
+| closing issue for WS-0.1 + ruleset audit log
+
+| Repo is RSR-levelled
+| template validation green-or-waived; readiness grade with evidence
+| `READINESS.md`, WS-1.3 waiver list
+
+| Scores are reproducible
+| run bundles re-derive aggregates; Doc==tool tests
+| `tests/` + `docs/screens/` bundles
+
+| Site numbers match the tool
+| exact-value tests for every rendered figure
+| WS-2.3 test module (extends #109 precedent)
+
+| Grading is deterministic
+| exhaustive boundary tests on grade bands
+| WS-2.4
+
+| Arena is honest
+| anonymisation grep tests; deterministic Elo property tests; integrity
+  chaos tests labelled heuristic where heuristic
+| WS-4.x tests
+
+| Consent-aware
+| zero third-party requests (artifact grep + runtime headers audit);
+  AIBDP manifest validated; privacy page matches behaviour
+| WS-3.4 / WS-5.1 checklist
+
+| Secure & screened
+| panic-attack + pons-asinorum reports at release date; zero untracked
+  Critical/proof-tier findings
+| `docs/screens/`
+
+| Accessible & ergonomic
+| WCAG 2.2 AA checklist per page type; self-scored TAI/verbosity
+| `docs/compliance/ACCESSIBILITY.adoc`, `docs/accessibility/`
+
+| Deployable on Verpex
+| bring-up runbook executed on the real stack; headers/verbs/cache verified
+| `deploy/` + ops report
+|===
+
+== Owner decisions — RULED 2026-10-11
+
+[cols="1,3,2,2", options="header"]
+|===
+| # | Decision | Ruling | Blocks
+
+| D-1
+| Arena vote model at v1.
+| *Pairwise battles only* (rubric ratings deferred post-v1).
+| WS-4.1
+
+| D-2
+| Grade scheme.
+| *Hybrid: fixed cut-point bands are the canonical grade*
+  (proposed A ≤0.15, B ≤0.30, C ≤0.45, D ≤0.60, F >0.60 on the 0–1
+  lower-is-better scale — exact cut points ratified with WS-2.4 tests) *plus a
+  percentile letter line* (rank-relative letter per epoch shown alongside,
+  labelled as relative). Fixed bands = honesty; percentile letters = Social
+  Blade legibility.
+| WS-2.4
+
+| D-3
+| Site generator.
+| *ddraig-ssg* (Idris2, WCAG 2.2 AAA capable, already CI-referenced via
+  `pages.yml`). Rust fallback only if its build cannot fit the 5-minute CI
+  budget after a fair spike.
+| WS-3.1
+
+| D-4
+| Gateway.
+| *Policy spec enforced on OpenLiteSpeed + Varnish at v1* (declarative verb
+  governance as config: OLS rewrites + VCL + headers). The
+  `http-capability-gateway` binary is deferred; the governance model is the
+  deliverable and stays swappable.
+| WS-5.1
+
+| D-5
+| Rating system.
+| *Bradley–Terry computed server-side, presented as an Arena-style rating*
+  (adopted per proposal).
+| WS-4.1
+
+| D-6
+| Data retention.
+| *Append-only run bundles permanently public; votes retained as aggregates +
+  salted digests* (adopted per proposal).
+| WS-3.4
+
+| D-7
+| Repo naming.
+| *Keep `hyperpolymath/vexometer`*; the web property is irritation-surface.dev
+  (adopted per proposal; renames would break the mirror farm and protocol IDs).
+| WS-1.5
+|===
+
+== Risks and honest caveats
+
+* *Measurement validity is the real risk.* Regex/probe heuristics are tested,
+  not proved (EXPLAINME caveat stands). A public leaderboard amplifies error.
+  Mitigation: evidence-tier labelling (pons doctrine), intervals on everything,
+  dispute-driven re-runs, and refusing to rank where N < threshold.
+* *Arena gaming.* Any voting surface gets attacked. Mitigation: no accounts =
+  less value in farming; rate limits; anomaly flags *labelled heuristic*;
+  public vote-log digests; post-v1 consideration of proof-of-personhood — not
+  v1.
+* *Single-maintainer capacity.* The plan sequences P0–P3 so every phase
+  leaves a shippable increment (green CI → levelled repo → honest corpus →
+  public site). P4–P5 are additive to a product that already exists at P3.
+* *Verpex constraints* (allowed runtimes, process model, Varnish position)
+  are assumed, not verified. Mitigation: WS-5.1 begins with a bring-up probe
+  before any app code depends on it; D-4 keeps a policy-only fallback.
+* *Estate coupling.* Reusables from `standards` are pinned; a broken upstream
+  can red this repo (nexia-list#100 precedent). `squabble chains` runs before
+  every pin bump.
+* *Formal-posture gap (G7).* v1 does not close it; it routes proof effort to
+  the scoreboard math (SPARK on `ISA_Calculator`) post-v1 and keeps the ABI
+  no-escape-hatch invariant everywhere it already holds.
+* *Brand confusion* across vexometer/ISA/irritation-surface.dev is managed by
+  NAMING.adoc (WS-1.5), not by renaming protocol IDs.
+
+== Explicitly out of scope
+
+* vext-email-gateway completion; neutrality-proof completion (tracked, not v1).
+* Mobile apps, browser extensions, marketplace/monetisation.
+* Training or fine-tuning any model; capability benchmarking (we complement
+  MMLU/Arena, we do not re-run them).
+* Any tracking/ads/analytics SDK — permanently out, by charter.
+* Renaming the repository or protocol identifiers (D-7).
+
+== Definition of Done — v1.0
+
+. All P0–P5 acceptance criteria green; squabbler certifies final CI state.
+. `READINESS.md` CRG grade with evidence; RSR validation green-or-waived.
+. Community health 100% *with* issue forms, milestones, and the epic issues
+  closed.
+. Run corpus: ≥5 models × ≥2 dated runs each, N ≥ 30 probes-suite repeats,
+  intervals published; every leaderboard figure re-derives in tests.
+. Arena: ≥1,000 real votes with integrity monitoring live and published.
+. Site on irritation-surface.dev (Varnish+OLS+capability policy) passing the
+  WS-5.1 checklist; zero third-party requests; WCAG 2.2 AA verified.
+. `docs/screens/` holds dated panic-attack + pons-asinorum reports with zero
+  untracked Critical/proof-tier findings.
+. TOPOLOGY.adoc dashboard updated (and only then), NAMING.adoc covers the
+  domain, CHANGELOG cut, `v1.0` tag on the immutable-tags ruleset.
+
+'''''
+
+_Rulings recorded 2026-10-11. Execution order: epics filed → P0 squabble
+(actions.lock drift cure) → P1 levelling. The first squabble is no longer
+waiting — it is in the PR that carries this plan._
