@@ -56,15 +56,18 @@ jobs:
             n=${#lines[@]}
             chunk=5
             chunks=$(( (n + chunk - 1) / chunk ))
-            c=0
-            while [ $((c * chunk)) -lt "$n" ]; do
-              c=$((c + 1))
+            # Emit in reverse chunk order: the annotations API keeps roughly
+            # the first ten annotations created, so the tail of the log has to
+            # be created first to be visible.
+            c=$chunks
+            while [ "$c" -ge 1 ]; do
               msg=""
               for line in "${lines[@]:c*chunk-chunk:chunk}"; do
                 line="${line//'%'/'%25'}"
                 if [ -z "$msg" ]; then msg="$line"; else msg="${msg}%0A${line}"; fi
               done
               printf '::error::CHUNK %d/%d| %s\n' "$c" "$chunks" "$msg"
+              c=$((c - 1))
             done
             exit "${status}"
           }
