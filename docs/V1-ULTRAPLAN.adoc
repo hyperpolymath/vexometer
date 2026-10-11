@@ -9,7 +9,7 @@
 
 [cols="1,4"]
 |===
-| Status | *Proposal — awaiting owner rulings (see <<Owner decisions>>)*
+| Status | *Ratified 2026-10-11 — D-1…D-7 ruled (see <<Owner decisions>>); execution begins at P0*
 | Scope | Product v1 + repository levelling + deployment on Verpex OpenLiteSpeed/Varnish
 | Supersedes | nothing (extends `docs/ISSUE-101-ULTRAPLAN.adoc`, which landed as PR #109)
 | Out of scope | Everything listed in <<Explicitly out of scope>>
@@ -489,22 +489,27 @@ number the site will render (ISA, grades, deltas) from raw aggregates.
 Acceptance: editing a rendered number without recomputation fails `just test`.
 
 *WS-2.4 — Grade bands + rank rules (Social Blade math).* +
-Publish fixed score→grade bands (e.g. A ≤0.15 … F >0.70 — exact cut points are
-an <<Owner decisions>> item, D-2) and rank/tie rules in `docs/METRICS.adoc`
-(or a new `docs/GRADES.adoc`); encode as tests. Acceptance: bands are a pure
-function with exhaustive boundary tests.
+Publish the ruled scheme (D-2): fixed score→grade bands are canonical
+(A ≤0.15, B ≤0.30, C ≤0.45, D ≤0.60, F >0.60 on the 0–1 lower-is-better
+scale — cut points to be confirmed against the run corpus in WS-2.1 before
+freezing) *plus* a percentile letter line (rank-relative per epoch, labelled
+relative). Rank/tie rules land in `docs/METRICS.adoc` (or a new
+`docs/GRADES.adoc`); both letter systems are pure functions with exhaustive
+boundary tests. Acceptance: boundary tests green for both; site renders both
+with the fixed band marked canonical.
 
 === P3 — Observatory v0 (static-first; ships before any vote UI)
 
 *WS-3.1 — Site generator path.* +
-Per the casket-ssg ruling (#74), the v1 site is *committed artifacts or a
-generator that completes in CI*. Options: extend the hand-authored `site/`
-precedent with a small Rust generator (house language, no Python/TS), or
-`ddraig-ssg` (Idris2, WCAG 2.2 AAA capable — already referenced by
-`pages.yml` and a better fit for G12). Decision D-3. Acceptance: full site
-builds in < 5 min in CI and locally; output is diffable and committed or
-artifact-published consistently with the chosen contract (update
-`site/README.adoc`).
+Per D-3, the generator is *ddraig-ssg* (Idris2, WCAG 2.2 AAA capable, already
+CI-referenced by `pages.yml`). Spike first: its build must complete inside the
+5-minute CI budget on a cold cache; if it cannot after a fair spike, fall back
+to a small Rust generator (house language) — hand-authoring does not scale past
+v0. Per the casket-ssg ruling (#74), whatever generator is chosen must build
+reliably in CI; the output contract (committed artifact vs build-on-CI) is
+settled in the spike and recorded by updating `site/README.adoc`.
+Acceptance: full site builds in < 5 min in CI and locally; output is diffable;
+contract documented.
 
 *WS-3.2 — Pages.* +
 Leaderboard, per-model profiles (grades, trends, run history, verified badges),
@@ -529,13 +534,13 @@ own TAI measurement is computed by the tool and published with a run bundle.
 
 === P4 — Arena v0
 
-*WS-4.1 — Battle mechanics.* +
+*WS-4.1 — Battle mechanics (D-1: pairwise only at v1; D-5: Bradley–Terry).* +
 Pairwise blind prompts from the scenario registry; anonymised A/B; vote on
-ergonomics criteria; reveal + ISA profile; Bradley–Terry/Elo update per
-dimension + overall with published K-factor and uncertainty (D-5).
-Acceptance: property tests — vote totals conserve; ratings are deterministic
-given the same vote log; anonymisation holds in all rendered assets (grep test
-on model ids in pre-reveal HTML).
+ergonomics criteria; reveal + ISA profile; Bradley–Terry update per dimension +
+overall, computed server-side and presented as an Arena-style rating, with
+published scale and uncertainty. Acceptance: property tests — vote totals
+conserve; ratings are deterministic given the same vote log; anonymisation
+holds in all rendered assets (grep test on model ids in pre-reveal HTML).
 
 *WS-4.2 — Integrity.* +
 Rate limits at the gateway (verb + per-IP budget in VCL/gateway policy), vote
@@ -555,13 +560,17 @@ Acceptance: one external submission end-to-end (use an estate model endpoint).
 === P5 — Deployment (Verpex) + hardening
 
 *WS-5.1 — The stack.* +
-Verpex OpenLiteSpeed origin + Varnish edge; `http-capability-gateway` in front
-of the API (or the policy-only variant per D-4); VCL cache classes: public
-static = long cache + stale-while-revalidate; API GET = short; POST = pass;
-never cookie-cache. TLS/HTTP3 via OLS; HSTS; CSP with *no* third-party origins.
-Acceptance: a `deploy/` directory with the OLS/VCL/gateway configs, a
-documented bring-up runbook, and a post-deploy checklist (headers, verbs,
-cache hit ratios, consent paths).
+Per D-4: Verpex OpenLiteSpeed origin + Varnish edge, with the *policy spec*
+carrying the capability model at v1 — declarative verb governance enforced as
+config (OLS rewrites + VCL + headers): GET/HEAD public, POST only `/api/vote`
+and `/api/submit`, everything else stealth-404; cache classes: public static =
+long cache + stale-while-revalidate, API GET = short, POST = pass,
+never cookie-cache. The `http-capability-gateway` binary stays a drop-in
+follow-up (the spec is written so it can take over enforcement unchanged).
+TLS/HTTP3 via OLS; HSTS; CSP with *no* third-party origins.
+Acceptance: a `deploy/` directory with the OLS/VCL configs + verb-governance
+spec, a documented bring-up runbook, and a post-deploy checklist (headers,
+verbs, cache hit ratios, consent paths).
 
 *WS-5.2 — Estate-style ops evidence.* +
 SBOM for the API artifact (spdx-json per stapeln convention), trust-manifest
@@ -665,55 +674,58 @@ with published bundle).
 | `deploy/` + ops report
 |===
 
-== Owner decisions (please rule; each blocks a named workstream)
+== Owner decisions — RULED 2026-10-11
 
-[cols="1,3,2", options="header"]
+[cols="1,3,2,2", options="header"]
 |===
-| # | Decision | Blocks
+| # | Decision | Ruling | Blocks
 
 | D-1
-| Arena vote model at v1: *pairwise battles only* (LM-Arena-like) vs
-  pairwise + occasional structured rubric ratings. Proposal: pairwise first;
-  rubrics post-v1.
+| Arena vote model at v1.
+| *Pairwise battles only* (rubric ratings deferred post-v1).
 | WS-4.1
 
 | D-2
-| Grade bands: publish fixed cut points (proposed A ≤0.15, B ≤0.30, C ≤0.45,
-  D ≤0.60, F >0.60 on the 0–1 lower-is-better scale) vs rank-relative grades
-  (Social Blade style letter per percentile). Proposal: fixed bands for
-  honesty + a separate percentile rank line.
+| Grade scheme.
+| *Hybrid: fixed cut-point bands are the canonical grade*
+  (proposed A ≤0.15, B ≤0.30, C ≤0.45, D ≤0.60, F >0.60 on the 0–1
+  lower-is-better scale — exact cut points ratified with WS-2.4 tests) *plus a
+  percentile letter line* (rank-relative letter per epoch shown alongside,
+  labelled as relative). Fixed bands = honesty; percentile letters = Social
+  Blade legibility.
 | WS-2.4
 
 | D-3
-| Site generator: small Rust generator (house language, minimal) vs
-  `ddraig-ssg` (Idris2, WCAG 2.2 AAA, already CI-referenced) vs extended
-  hand-authored `site/`. Proposal: ddraig-ssg if its build fits the 5-min CI
-  budget, else Rust generator; hand-authoring does not scale past v0.
+| Site generator.
+| *ddraig-ssg* (Idris2, WCAG 2.2 AAA capable, already CI-referenced via
+  `pages.yml`). Rust fallback only if its build cannot fit the 5-minute CI
+  budget after a fair spike.
 | WS-3.1
 
 | D-4
-| Gateway: full `http-capability-gateway` deployment on Verpex vs
-  policy-spec-only (declarative verb governance enforced via OLS+VCL, gateway
-  later). Proposal: policy-spec-now + gateway at v1 if Elixir runtime fits
-  the Verpex plan; else gateway on a small estate VM proxying in.
+| Gateway.
+| *Policy spec enforced on OpenLiteSpeed + Varnish at v1* (declarative verb
+  governance as config: OLS rewrites + VCL + headers). The
+  `http-capability-gateway` binary is deferred; the governance model is the
+  deliverable and stays swappable.
 | WS-5.1
 
 | D-5
-| Rating system: Elo (familiar, K-factor published) vs Bradley–Terry (better
-  statistically, less familiar). Proposal: Bradley–Terry computed server-side,
-  presented as an Arena-style rating.
+| Rating system.
+| *Bradley–Terry computed server-side, presented as an Arena-style rating*
+  (adopted per proposal).
 | WS-4.1
 
 | D-6
-| Data retention for votes/bundles: permanent public append-only (max
-  openness) vs rolling window with published aggregates. Proposal: append-only
-  bundles, anonymous votes retained as aggregates + salted digests.
+| Data retention.
+| *Append-only run bundles permanently public; votes retained as aggregates +
+  salted digests* (adopted per proposal).
 | WS-3.4
 
 | D-7
-| Brand surface of the repo itself: keep GitHub repo name `vexometer` with
-  the site at irritation-surface.dev (proposal) vs rename repo to match the
-  domain. Proposal: keep; renames break the mirror farm and protocol IDs.
+| Repo naming.
+| *Keep `hyperpolymath/vexometer`*; the web property is irritation-surface.dev
+  (adopted per proposal; renames would break the mirror farm and protocol IDs).
 | WS-1.5
 |===
 
@@ -769,5 +781,6 @@ with published bundle).
 
 '''''
 
-_After owner rulings on D-1…D-7: file the epics (WS-1.1) and start P0 — the
-first squabble is already waiting._
+_Rulings recorded 2026-10-11. Execution order: epics filed → P0 squabble
+(actions.lock drift cure) → P1 levelling. The first squabble is no longer
+waiting — it is in the PR that carries this plan._
