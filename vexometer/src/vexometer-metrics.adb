@@ -380,9 +380,10 @@ package body Vexometer.Metrics is
             begin
                State := State * LCG_Multiplier + LCG_Increment;
                --  High 32 bits: the low bits of this LCG have a short period
-               --  when reduced modulo a power of two.
+               --  when reduced modulo a power of two. The +1 must be inside
+               --  the conversion: Positive (x mod N) range-checks 0.
                return Positive
-                  (Shift_Right (State, 32) mod Unsigned_64 (N)) + 1;
+                  ((Shift_Right (State, 32) mod Unsigned_64 (N)) + 1);
             end Draw;
 
             function Percentile_Of (Sorted : Float_Array; P : Float)
