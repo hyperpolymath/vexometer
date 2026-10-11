@@ -40,4 +40,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y just gnat gprbuild
       - name: Run unified test gate
-        run: just test-all
+        # Failures are re-emitted as ::error:: annotations so they are visible
+        # through the Checks annotations API (the only channel some environments
+        # can read) and in the PR UI — not buried in a log blob.
+        run: |
+          set -o pipefail
+          just test-all 2>&1 | tee test-all.log || {
+            status=$?
+            echo "::error::just test-all exited ${status} — annotating tail of output"
+            tail -n 40 test-all.log | while IFS= read -r line; do
+              line="${line//'%'/'%25'}"
+              line="${line//$'\r'/'%0D'}"
+              printf '::error::%s\n' "${line}"
+            done
+            exit "${status}"
+          }
