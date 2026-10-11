@@ -11,7 +11,7 @@
 pragma Ada_2022;
 
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
-with Interfaces;
+with Interfaces;              use Interfaces;
 
 package body Vexometer.Metrics is
 

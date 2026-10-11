@@ -16,6 +16,12 @@ package Vexometer.Metrics is
 
    package Float_Math is new Ada.Numerics.Generic_Elementary_Functions (Float);
 
+   --  Unconstrained array for the statistical functions. Declared before
+   --  first use: it used to live in the private part, which made every
+   --  signature above illegal (never compiled: the Quality Gates job was
+   --  dead behind the actions.lock drift when this landed).
+   type Float_Array is array (Positive range <>) of Float;
+
    function Mean (Values : in out Float_Array) return Float
       with Pre => Values'Length > 0;
 
@@ -129,8 +135,6 @@ package Vexometer.Metrics is
          when Unusable   => 100.0);
 
 private
-
-   type Float_Array is array (Positive range <>) of Float;
 
    type ISA_Calculator is tagged record
       Config : Analysis_Config := Default_Config;
