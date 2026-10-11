@@ -42,16 +42,22 @@ jobs:
       - name: Run unified test gate
         # Failures are re-emitted as ::error:: annotations so they are visible
         # through the Checks annotations API (the only channel some environments
-        # can read) and in the PR UI — not buried in a log blob.
+        # can read) and in the PR UI — not buried in a log blob. Every annotation
+        # is self-describing (L<n>/<total>) so truncation or reordering by the
+        # API cannot hide the shape of the log.
         run: |
           set -o pipefail
           just test-all 2>&1 | tee test-all.log || {
             status=$?
-            echo "::error::just test-all exited ${status} — annotating tail of output"
-            tail -n 40 test-all.log | while IFS= read -r line; do
+            total=$(grep -c '' test-all.log)
+            echo "::error::just test-all exited ${status} — log has ${total} lines"
+            i=0
+            while IFS= read -r line; do
+              i=$((i+1))
+              [ -z "${line// /}" ] && continue
               line="${line//'%'/'%25'}"
               line="${line//$'\r'/'%0D'}"
-              printf '::error::%s\n' "${line}"
-            done
+              printf '::error::L%04d/%04d| %s\n' "$i" "$total" "$line"
+            done < test-all.log
             exit "${status}"
           }
