@@ -29,10 +29,10 @@ workflows:
         - 'actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346'
         - 'actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9'
     '.github/workflows/push-email-notify.yml':
-        - 'hyperpolymath/smtp-notify-action@22e7bdb322c430c1d0dac6b3bb307f4bb139d0be'
+        - 'hyperpolymath/smtp-notify-action@c1c9fa07992a02c1fd3d67a0dc1b08cccb852aef'
     '.github/workflows/quality-gates.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
-        - 'dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de'
+        - 'dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f'
     '.github/workflows/secret-scanner.yml':
         - 'hyperpolymath/standards@c65436ee3351cd6b0fa14b142938b195efc77586'
     '.github/workflows/workflow-linter.yml':
@@ -85,9 +85,9 @@ dependencies:
         commit: 'sha1-22d081ff2d3a40755e97629de92e3bcbfa7cf2ed'
         owner_id: 42048915
         repo_id: 356423100
-    'dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de':
+    'dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f':
         ref: 'v1'
-        commit: 'sha1-02cb101ec7c40f2c49e1d9714d64511d8e1b74de'
+        commit: 'sha1-e2a55d2ffb04f378e9626c28d38b36d230d1e12f'
         owner_id: 1940490
         repo_id: 260749683
     'dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772':
@@ -120,9 +120,9 @@ dependencies:
         commit: 'sha1-7188fc363630916deb702c7fdcf4e481b751f97a'
         owner_id: 9919
         repo_id: 259445878
-    'hyperpolymath/smtp-notify-action@22e7bdb322c430c1d0dac6b3bb307f4bb139d0be':
-        ref: 'v0.3.0'
-        commit: 'sha1-22e7bdb322c430c1d0dac6b3bb307f4bb139d0be'
+    'hyperpolymath/smtp-notify-action@c1c9fa07992a02c1fd3d67a0dc1b08cccb852aef':
+        ref: 'v0.5.0'
+        commit: 'sha1-c1c9fa07992a02c1fd3d67a0dc1b08cccb852aef'
         owner_id: 6759885
         repo_id: 1352485172
     'hyperpolymath/standards@0ef5917b3a6742dc69b6758b3e40a7beb8b97d04':
