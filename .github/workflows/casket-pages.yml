@@ -26,7 +26,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # Pages can remain queued beyond five minutes. Allow the deploy action's
+    # own bounded polling timeout to finish and report the deployment outcome.
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
