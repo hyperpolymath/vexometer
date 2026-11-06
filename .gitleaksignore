@@ -1,0 +1,5 @@
+# Gitleaks 8.18.4 generic-api-key false positive, reviewed 2026-11-06:
+# the historical line is a did:key example containing an Ed25519 PUBLIC key,
+# not an authentication secret. Scope the acknowledgement to this one commit,
+# path, rule and line; new content and future secrets remain scanned.
+1d277d2a2128c16249a58bc4937560d621ef0596:vext-email-gateway/src/types.rs:generic-api-key:47
